@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Responden\Responden;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,7 +16,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->enum('daerah', ['Kabupaten/Kota', 'Provinsi']);
-            $table->boolean('status_evaluasi')->default(true);
+            $table->boolean('akses_evaluasi')->default(true);
+            $table->string('status_evaluasi')->default(Responden::STATUS_BELUM);
             $table->timestamps();
         });
     }

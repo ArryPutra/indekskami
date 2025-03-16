@@ -11,7 +11,7 @@
             max-lg:max-w-sm max-lg:pt-6 px-4">
             @csrf
             {{-- GAMBAR --}}
-            <div class="mb-6 flex gap-2 justify-between">
+            <div class="mb-6 flex gap-2 justify-between max-lg:hidden">
                 <img class="h-16 max-lg:h-14" src="{{ asset('images/logo/prov-kalsel.png') }}"
                     alt="Logo Provinsi Kalimantan Selatan">
                 <img class="h-16 max-lg:h-14" src="{{ asset('images/logo/indeks-kami.png') }}"
@@ -44,7 +44,7 @@
                 <span>08xx-xxxx-xxxx</span>
             </div>
         </form>
-        <div class="w-full lg:h-full pl-6 max-lg:pl-4 max-lg:py-3 lg:pb-12 flex flex-col justify-center lg:justify-end gap-2 text-white"
+        <div class="w-full lg:h-full pl-6 max-lg:pl-4 max-lg:py-3 lg:pb-12 flex flex-col justify-center lg:justify-end lg:gap-2 text-white"
             style="
             background: linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0)), url('{{ asset('images/login-bg.jpg') }}');
             background-size: cover;

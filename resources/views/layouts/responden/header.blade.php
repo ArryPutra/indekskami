@@ -1,12 +1,13 @@
 <div x-data="{ showProfileMenu: false }">
     <h1
-        class="font-bold text-3xl fixed left-6 top-[1.5rem] max-md:absolute max-md:top-24 max-md:left-4 z-20 whitespace-nowrap">
+        class="font-bold text-3xl max-md:text-2xl fixed left-24 top-7 max-md:absolute max-md:top-28 max-md:left-4 z-20 md:z-30 whitespace-nowrap">
         {{ $title }}
     </h1>
     <header
-        class="bg-white w-full fixed pl-[17rem] pr-8 max-md:pl-2 max-md:pr-4 max-md:left-0 
-        h-20 z-10 flex items-center justify-between border-b border-gray-200">
-        <div></div>
+        class="bg-white w-full fixed px-6 max-md:px-4
+        h-24 z-20 flex items-center justify-between border-b border-gray-200">
+        <img class="h-16 max-md:hidden" src="{{ asset('images/logo/prov-kalsel.png') }}" alt="Logo Prov Kalsel">
+        <div class="md:hidden"></div>
 
         <div @click="showProfileMenu = !showProfileMenu" class="flex gap-2 cursor-pointer">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -19,7 +20,7 @@
         x-transition:enter="transition ease-out duration-100 transform" x-transition:enter-start="opacity-0 scale-95"
         x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75 transform"
         x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
-        class="bg-white p-4 shadow rounded-lg fixed right-8 top-24 text-sm w-32">
+        class="bg-white p-4 shadow rounded-lg fixed right-8 top-24 text-sm w-32 z-30">
         <h1 class="font-bold break-words">{{ auth()->user()->nama }}</h1>
         <h1>{{ auth()->user()->peran->nama_peran }}</h1>
         <div class="w-full h-0.5 bg-slate-200 my-2"></div>

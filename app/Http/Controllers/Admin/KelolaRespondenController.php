@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Responden;
+use App\Models\Responden\Responden;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -39,22 +39,22 @@ class KelolaRespondenController extends Controller
                 fn($query) => $query->where('daerah', $daerah[$requestDaerah])
             );
         }
-        // Request status evaluasi
-        if (($requestStatusEvaluasi = request('status-evaluasi')) && $requestStatusEvaluasi !== 'semua') {
+        // Request akses evaluasi
+        if (($requestAksesEvaluasi = request('akses-evaluasi')) && $requestAksesEvaluasi !== 'semua') {
             // Mengubah string ke boolean
-            $statusEvaluasi = filter_var($requestStatusEvaluasi, FILTER_VALIDATE_BOOLEAN);
+            $aksesEvaluasi = filter_var($requestAksesEvaluasi, FILTER_VALIDATE_BOOLEAN);
             $queryUserResponden->whereHas(
                 'responden',
-                fn($query) => $query->where('status_evaluasi', $statusEvaluasi)
+                fn($query) => $query->where('akses_evaluasi', $aksesEvaluasi)
             );
         }
-        // Request status akun
-        if (($requestStatusAkun = request('status-akun')) && $requestStatusAkun !== 'semua') {
+        // Request akses akun
+        if (($requestAksesAkun = request('akses-akun')) && $requestAksesAkun !== 'semua') {
             // Mengubah string ke boolean
-            $statusAkun =  filter_var($requestStatusAkun, FILTER_VALIDATE_BOOLEAN);
+            $aksesAkun =  filter_var($requestAksesAkun, FILTER_VALIDATE_BOOLEAN);
             $queryUserResponden->whereHas(
                 'responden',
-                fn($query) => $query->where('status_akun', $statusAkun)
+                fn($query) => $query->where('akses_akun', $aksesAkun)
             );
         }
 
@@ -107,7 +107,7 @@ class KelolaRespondenController extends Controller
         // Menambahkan data responden yg dibuat ke table responden
         Responden::create([
             'user_id' => $user->id,
-            'status_evaluasi' => $request->status_evaluasi,
+            'akses_evaluasi' => $request->akses_evaluasi,
             'daerah' => $request->daerah
         ]);
 
@@ -183,7 +183,7 @@ class KelolaRespondenController extends Controller
         $user->update($validatedEditResponden);
         $user->responden->update([
             'daerah' => $request->daerah,
-            'status_evaluasi' => $request->status_evaluasi
+            'akses_evaluasi' => $request->akses_evaluasi
         ]);
 
         return redirect()->route('kelola-responden.index')->with('success', "Responden <b>$user->nama</b> berhasil diperbarui");
@@ -194,17 +194,16 @@ class KelolaRespondenController extends Controller
      */
     public function destroy(string $id, Request $request)
     {
-
-        $statusAkun = filter_var($request->status_akun, FILTER_VALIDATE_BOOLEAN);
+        $aksesAkun = filter_var($request->akses_akun, FILTER_VALIDATE_BOOLEAN);
 
         $user = User::find($id);
         $user->update([
-            'status_akun' => $statusAkun
+            'akses_akun' => $aksesAkun
         ]);
 
-        $statusAkunMessage = $statusAkun ? 'aktifkan' : 'nonaktifkan';
+        $aksesAkunMessage = $aksesAkun ? 'aktifkan' : 'nonaktifkan';
 
         return redirect()->route('kelola-responden.index')
-            ->with('success', "Responden <b>$user->nama</b> berhasil di$statusAkunMessage");
+            ->with('success', "Responden <b>$user->nama</b> berhasil di$aksesAkunMessage");
     }
 }

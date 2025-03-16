@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Middleware\Admin\AdminMiddleware;
+use App\Http\Middleware\Responden\BelumEvaluasiMiddleware;
+use App\Http\Middleware\Responden\MengerjakanEvaluasiMiddleware;
 use App\Http\Middleware\Responden\RespondenMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -14,8 +16,13 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
+            // Admin
             'admin' => AdminMiddleware::class,
-            'responden' => RespondenMiddleware::class
+            // Verifikator
+            // Responden
+            'responden' => RespondenMiddleware::class,
+            'belumEvaluasi' => BelumEvaluasiMiddleware::class,
+            'mengerjakanEvaluasi' => MengerjakanEvaluasiMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

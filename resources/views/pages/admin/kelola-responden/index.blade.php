@@ -31,17 +31,17 @@
                 </x-dropdown>
             </div>
             <div>
-                <x-dropdown name="status-evaluasi" onchange="this.form.submit()" label="Status Evaluasi">
+                <x-dropdown name="akses-evaluasi" onchange="this.form.submit()" label="Akses Evaluasi">
                     <x-dropdown.option value="semua">Semua</x-dropdown.option>
-                    <x-dropdown.option value="true" :selected="request('status-evaluasi') == 'true'">Aktif</x-dropdown.option>
-                    <x-dropdown.option value="false" :selected="request('status-evaluasi') == 'false'">Nonaktif</x-dropdown.option>
+                    <x-dropdown.option value="true" :selected="request('akses-evaluasi') == 'true'">Aktif</x-dropdown.option>
+                    <x-dropdown.option value="false" :selected="request('akses-evaluasi') == 'false'">Nonaktif</x-dropdown.option>
                 </x-dropdown>
             </div>
             <div>
-                <x-dropdown name="status-akun" onchange="this.form.submit()" label="Status Akun">
+                <x-dropdown name="akses-akun" onchange="this.form.submit()" label="Akses Akun">
                     <x-dropdown.option value="semua">Semua</x-dropdown.option>
-                    <x-dropdown.option value="true" :selected="request('status-akun') == 'true'">Aktif</x-dropdown.option>
-                    <x-dropdown.option value="false" :selected="request('status-akun') == 'false'">Nonaktif</x-dropdown.option>
+                    <x-dropdown.option value="true" :selected="request('akses-akun') == 'true'">Aktif</x-dropdown.option>
+                    <x-dropdown.option value="false" :selected="request('akses-akun') == 'false'">Nonaktif</x-dropdown.option>
                 </x-dropdown>
             </div>
         </div>
@@ -58,70 +58,76 @@
             <x-table.th>Daerah</x-table.th>
             <x-table.th>Aksi</x-table.th>
         </x-table.thead>
-        <x-table.tbody dataCount="{{ count($daftarResponden) }}" colspan="7">
-            @foreach ($daftarResponden as $index => $responden)
+        <x-table.tbody colspan="7">
+            @if (count($daftarResponden) > 0)
+                @foreach ($daftarResponden as $index => $responden)
+                    <x-table.tr>
+                        <x-table.td>{{ ($daftarResponden->currentPage() - 1) * $daftarResponden->perPage() + $index + 1 }}</x-table.td>
+                        <x-table.td class="font-semibold">{{ $responden->nama }}</x-table.td>
+                        <x-table.td>{{ $responden->username }}</x-table.td>
+                        <x-table.td>{{ $responden->email }}</x-table.td>
+                        <x-table.td>{{ $responden->nomor_telepon }}</x-table.td>
+                        <x-table.td>{{ $responden->responden->daerah }}</x-table.td>
+                        <x-table.td>
+                            <div class="flex gap-2 flex-wrap">
+                                <x-button href="{{ route('kelola-responden.show', $responden->id) }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="size-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                                    </svg>
+                                    Detail
+                                </x-button>
+                                <x-button href="{{ route('kelola-responden.edit', $responden->id) }}" color="blue">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="size-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                                    </svg>
+                                    Edit
+                                </x-button>
+                                @if ($responden->akses_akun == true)
+                                    <form id="formNonaktifkanResponden-{{ $responden->id }}"
+                                        action="{{ route('kelola-responden.destroy', $responden->id) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <input type="hidden" name="akses_akun" value="false">
+                                        <x-button type="submit" color="red"
+                                            onclick="nonaktifResponden('{{ $responden->nama }}', {{ $responden->id }})">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor" class="size-5">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
+                                            </svg>
+                                            Nonaktif
+                                        </x-button>
+                                    </form>
+                                @else
+                                    <form id="formAktifkanResponden-{{ $responden->id }}"
+                                        action="{{ route('kelola-responden.destroy', $responden->id) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <input type="hidden" name="akses_akun" value="true">
+                                        <x-button type="submit" color="green"
+                                            onclick="aktifResponden('{{ $responden->nama }}', {{ $responden->id }})">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor" class="size-5">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="m4.5 12.75 6 6 9-13.5" />
+                                            </svg>
+                                            Aktifkan
+                                        </x-button>
+                                    </form>
+                                @endif
+                            </div>
+                        </x-table.td>
+                    </x-table.tr>
+                @endforeach
+            @else
                 <x-table.tr>
-                    <x-table.td>{{ ($daftarResponden->currentPage() - 1) * $daftarResponden->perPage() + $index + 1 }}</x-table.td>
-                    <x-table.td class="font-semibold">{{ $responden->nama }}</x-table.td>
-                    <x-table.td>{{ $responden->username }}</x-table.td>
-                    <x-table.td>{{ $responden->email }}</x-table.td>
-                    <x-table.td>{{ $responden->nomor_telepon }}</x-table.td>
-                    <x-table.td>{{ $responden->responden->daerah }}</x-table.td>
-                    <x-table.td>
-                        <div class="flex gap-2 flex-wrap">
-                            <x-button href="{{ route('kelola-responden.show', $responden->id) }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" class="size-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
-                                </svg>
-                                Detail
-                            </x-button>
-                            <x-button href="{{ route('kelola-responden.edit', $responden->id) }}" color="blue">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" class="size-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                                </svg>
-                                Edit
-                            </x-button>
-                            @if ($responden->status_akun == true)
-                                <form id="formNonaktifkanResponden-{{ $responden->id }}"
-                                    action="{{ route('kelola-responden.destroy', $responden->id) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <input type="hidden" name="status_akun" value="false">
-                                    <x-button type="submit" color="red"
-                                        onclick="showNonaktifRespondenAlert('{{ $responden->nama }}', {{ $responden->id }})">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                            stroke-width="1.5" stroke="currentColor" class="size-5">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
-                                        </svg>
-                                        Nonaktif
-                                    </x-button>
-                                </form>
-                            @else
-                                <form id="formAktifkanResponden-{{ $responden->id }}"
-                                    action="{{ route('kelola-responden.destroy', $responden->id) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <input type="hidden" name="status_akun" value="true">
-                                    <x-button type="submit" color="green"
-                                        onclick="showAktifRespondenAlert('{{ $responden->nama }}', {{ $responden->id }})">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                            stroke-width="1.5" stroke="currentColor" class="size-5">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="m4.5 12.75 6 6 9-13.5" />
-                                        </svg>
-                                        Aktifkan
-                                    </x-button>
-                                </form>
-                            @endif
-                        </div>
-                    </x-table.td>
+                    <x-table.td colspan="7" class="text-center">Data kosong!</x-table.td>
                 </x-table.tr>
-            @endforeach
+            @endif
         </x-table.tbody>
     </x-table>
 
@@ -132,7 +138,7 @@
 @push('script')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        function showNonaktifRespondenAlert(nama, userId) {
+        function nonaktifResponden(nama, userId) {
             window.event.preventDefault();
             Swal.fire({
                 title: "Apakah Anda yakin?",
@@ -151,7 +157,7 @@
             });
         }
 
-        function showAktifRespondenAlert(nama, userId) {
+        function aktifResponden(nama, userId) {
             window.event.preventDefault();
             Swal.fire({
                 title: "Apakah Anda yakin?",

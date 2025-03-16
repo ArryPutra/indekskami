@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('nomor_telepon')->unique();
             $table->foreignId('peran_id')->constrained('peran');
             $table->string('password');
-            $table->boolean('status_akun')->default(true);
+            $table->boolean('akses_akun')->default(true);
             $table->timestamps();
         });
 

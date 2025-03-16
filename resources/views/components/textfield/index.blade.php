@@ -2,7 +2,8 @@
     @if (@isset($label))
         <label for="{{ $name }}">{{ $label }}</label>
     @endif
-    <input @if (!empty($value)) value="{{ $value }}" @endif type="{{ $type ?? 'text' }}"
+    <input {{ $required ?? true == true ? 'required' : false }}
+        @if (!empty($value)) value="{{ $value }}" @endif type="{{ $type ?? 'text' }}"
         name="{{ $name }}" placeholder="{{ $placeholder }}" id="{{ $name }}"
         class="border-2 border-slate-200 rounded-lg px-3 py-1.5 outline-none ring-0 focus:ring-4
         ring-primary/40 focus:border-primary/70 duration-150 w-full">

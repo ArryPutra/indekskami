@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Rules\Recaptcha;
-use Barryvdh\Debugbar\Facades\Debugbar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 

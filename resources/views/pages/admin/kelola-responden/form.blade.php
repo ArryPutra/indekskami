@@ -18,15 +18,15 @@
         <x-textfield name="nomor_telepon" label="Nomor Telepon" placeholder="Masukkan nomor telepon"
             value="{{ old('nomor_telepon', $responden->nomor_telepon) }}" />
         <x-textfield name="password" label="Password {{ $page_meta['method'] == 'PUT' ? 'baru' : false }}"
-            placeholder="Masukkan password" type="password" />
+            placeholder="Masukkan password" type="password" :required=false />
         <x-textfield name="password_confirmation"
             label="Konfirmasi Password {{ $page_meta['method'] == 'PUT' ? 'baru' : false }}"
-            placeholder="Masukkan konfirmasi password" type="password" />
-        <x-radio>
-            <x-radio.option name="status_evaluasi" value="1" :checked="old('status_evaluasi', $responden->responden?->status_evaluasi) === 1">
+            placeholder="Masukkan konfirmasi password" type="password" :required=false />
+        <x-radio label="Apakah responden dapat melakuakan evaluasi?">
+            <x-radio.option name="akses_evaluasi" value="1" :checked="old('akses_evaluasi', $responden->responden?->akses_evaluasi) === 1">
                 Ya
             </x-radio.option>
-            <x-radio.option name="status_evaluasi" value="0" :checked="old('status_evaluasi', $responden->responden?->status_evaluasi) === 0">
+            <x-radio.option name="akses_evaluasi" value="0" :checked="old('akses_evaluasi', $responden->responden?->akses_evaluasi) === 0">
                 Tidak
             </x-radio.option>
         </x-radio>

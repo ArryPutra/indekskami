@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\Responden;
+use App\Models\Responden\Responden;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 

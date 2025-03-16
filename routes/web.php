@@ -3,10 +3,11 @@
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\KelolaRespondenController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Responden\DaftarIdentitasController;
+use App\Http\Controllers\Responden\Evaluasi\IKategoriSEController;
+use App\Http\Controllers\Responden\IdentitasRespondenController;
+use App\Http\Controllers\Responden\ProfilController as RespondenProfilController;
 use App\Http\Controllers\Responden\RedirectController;
-use App\Http\Middleware\Admin\AdminMiddleware;
-use App\Http\Middleware\Responden\RespondenMiddleware;
+use App\Http\Controllers\Responden\RiwayatController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [AuthController::class, 'index']);
@@ -28,6 +29,17 @@ Route::middleware('auth')->group(function () {
     });
     Route::prefix('responden')->middleware('responden')->group(function () {
         Route::get('/redirect', [RedirectController::class, 'index'])->name('responden.redirect');
-        Route::get('/daftar-identitas', [DaftarIdentitasController::class, 'index'])->name('responden.daftar-identitas');
+
+        Route::middleware('belumEvaluasi')->group(function () {
+            Route::get('/identitas-responden', [IdentitasRespondenController::class, 'index'])->name('responden.identitas-responden');
+            Route::post('/identitas-responden/tambah', [IdentitasRespondenController::class, 'store'])->name('responden.identitas-responden.store');
+        });
+
+        Route::prefix('evaluasi')->middleware('mengerjakanEvaluasi')->group(function () {
+            Route::get('/i-kategori-se', [IKategoriSEController::class, 'index'])->name('responden.evaluasi.i-kategori-se');
+        });
+
+        Route::get('/riwayat', [RiwayatController::class, 'index'])->name('responden.riwayat');
+        Route::get('/profil', [RespondenProfilController::class, 'index'])->name('responden.profil');
     });
 });

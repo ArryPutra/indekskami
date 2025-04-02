@@ -2,6 +2,7 @@
 
 namespace App\Models\Responden;
 
+use App\Models\Evaluasi\HasilEvaluasi;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
@@ -19,6 +20,11 @@ class Responden extends Model
     public function user()
     {
         return $this->hasOne(User::class, 'id', 'user_id');
+    }
+
+    public function hasilEvaluasi()
+    {
+        return $this->hasMany(HasilEvaluasi::class, 'responden_id', 'id');
     }
 
     // Status Evaluasi

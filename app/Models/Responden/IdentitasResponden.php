@@ -9,17 +9,7 @@ class IdentitasResponden extends Model
 {
     protected $table = 'identitas_responden';
 
-    protected $fillable = [
-        'responden_id',
-        'identitas_instansi',
-        'alamat',
-        'nomor_telepon',
-        'email',
-        'pengisi_lembar_evaluasi',
-        'jabatan',
-        'tanggal_pengisian',
-        'deskripsi_ruang_lingkup',
-    ];
+    protected $guarded = ['id', 'created_at', 'updated_at'];
 
     public function user()
     {

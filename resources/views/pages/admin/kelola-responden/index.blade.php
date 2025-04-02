@@ -4,7 +4,7 @@
     <form method="GET" action="{{ route('kelola-responden.index') }}">
         <section class="flex justify-between flex-wrap gap-4 mb-4">
             <div class="flex gap-3 w-full">
-                <x-textfield value="{{ request('cari') }}" type="text" name="cari" placeholder="Cari responden" />
+                <x-text-field value="{{ request('cari') }}" type="text" name="cari" placeholder="Cari responden" />
                 <x-button type="submit">
                     <span>Cari</span>
                 </x-button>
@@ -38,10 +38,10 @@
                 </x-dropdown>
             </div>
             <div>
-                <x-dropdown name="akses-akun" onchange="this.form.submit()" label="Akses Akun">
+                <x-dropdown name="status-akun" onchange="this.form.submit()" label="Status Akun">
                     <x-dropdown.option value="semua">Semua</x-dropdown.option>
-                    <x-dropdown.option value="true" :selected="request('akses-akun') == 'true'">Aktif</x-dropdown.option>
-                    <x-dropdown.option value="false" :selected="request('akses-akun') == 'false'">Nonaktif</x-dropdown.option>
+                    <x-dropdown.option value="true" :selected="request('status-akun') == 'true'">Aktif</x-dropdown.option>
+                    <x-dropdown.option value="false" :selected="request('status-akun') == 'false'">Nonaktif</x-dropdown.option>
                 </x-dropdown>
             </div>
         </div>
@@ -50,7 +50,7 @@
     {{-- TABLE --}}
     <x-table>
         <x-table.thead>
-            <x-table.th>No</x-table.th>
+            <x-table.th>No.</x-table.th>
             <x-table.th>Nama Instansi</x-table.th>
             <x-table.th>Username</x-table.th>
             <x-table.th>Email</x-table.th>
@@ -58,7 +58,7 @@
             <x-table.th>Daerah</x-table.th>
             <x-table.th>Aksi</x-table.th>
         </x-table.thead>
-        <x-table.tbody colspan="7">
+        <x-table.tbody>
             @if (count($daftarResponden) > 0)
                 @foreach ($daftarResponden as $index => $responden)
                     <x-table.tr>
@@ -86,12 +86,12 @@
                                     </svg>
                                     Edit
                                 </x-button>
-                                @if ($responden->akses_akun == true)
+                                @if ($responden->apakah_akun_nonaktif == false)
                                     <form id="formNonaktifkanResponden-{{ $responden->id }}"
                                         action="{{ route('kelola-responden.destroy', $responden->id) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
-                                        <input type="hidden" name="akses_akun" value="false">
+                                        <input type="hidden" name="apakah_akun_nonaktif" value="true">
                                         <x-button type="submit" color="red"
                                             onclick="nonaktifResponden('{{ $responden->nama }}', {{ $responden->id }})">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -107,7 +107,7 @@
                                         action="{{ route('kelola-responden.destroy', $responden->id) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
-                                        <input type="hidden" name="akses_akun" value="true">
+                                        <input type="hidden" name="apakah_akun_nonaktif" value="false">
                                         <x-button type="submit" color="green"
                                             onclick="aktifResponden('{{ $responden->nama }}', {{ $responden->id }})">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"

@@ -1,4 +1,4 @@
-<thead class="text-xs text-gray-700 uppercase bg-gray-100">
+<thead {{ $attributes->merge(['class' => 'text-xs uppercase bg-gray-100 text-gray-700']) }}>
     <tr>
         {{ $slot }}
     </tr>

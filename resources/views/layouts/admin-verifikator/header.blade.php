@@ -1,11 +1,11 @@
 <div x-data="{ showProfileMenu: false }">
     <h1
-        class="font-bold text-3xl fixed left-[17rem] top-[1.5rem] max-md:absolute max-md:top-24 max-md:left-4 z-20 whitespace-nowrap">
+        class="font-bold text-3xl fixed left-[17rem] top-[1.5rem] max-md:absolute max-md:top-24 max-md:left-4 z-10 md:z-30 whitespace-nowrap">
         {{ $title }}
     </h1>
     <header
         class="bg-white w-full fixed pl-[17rem] pr-8 max-md:pl-2 max-md:pr-4 max-md:left-0 
-        h-20 z-10 flex items-center justify-between border-b border-gray-200">
+        h-20 z-20 flex items-center justify-between border-b border-gray-200">
         <div></div>
 
         <div @click="showProfileMenu = !showProfileMenu" class="flex gap-2 cursor-pointer">

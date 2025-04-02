@@ -22,7 +22,7 @@ class BelumEvaluasiMiddleware
         if (!$responden) {
             return abort(403);
         } else if ($responden->status_evaluasi !== Responden::STATUS_BELUM) {
-            return redirect()->route('responden.redirect');
+            return redirect()->route('responden.redirect-evaluasi');
         }
 
         return $next($request);

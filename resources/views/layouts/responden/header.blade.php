@@ -1,12 +1,12 @@
 <div x-data="{ showProfileMenu: false }">
     <h1
-        class="font-bold text-3xl max-md:text-2xl fixed left-24 top-7 max-md:absolute max-md:top-28 max-md:left-4 z-20 md:z-30 whitespace-nowrap">
+        class="font-bold text-3xl max-md:text-2xl fixed left-[5.5rem] top-6 max-md:absolute max-md:top-24 max-md:left-4 z-20 md:z-30 whitespace-nowrap">
         {{ $title }}
     </h1>
     <header
         class="bg-white w-full fixed px-6 max-md:px-4
-        h-24 z-20 flex items-center justify-between border-b border-gray-200">
-        <img class="h-16 max-md:hidden" src="{{ asset('images/logo/prov-kalsel.png') }}" alt="Logo Prov Kalsel">
+        h-20 z-20 flex items-center justify-between border-b border-gray-200">
+        <img class="h-14 max-md:hidden" src="{{ asset('images/logo/prov-kalsel.png') }}" alt="Logo Prov Kalsel">
         <div class="md:hidden"></div>
 
         <div @click="showProfileMenu = !showProfileMenu" class="flex gap-2 cursor-pointer">

@@ -34,22 +34,20 @@
             break;
     }
 
-    $isSubmit = $attributes->get('type') === 'submit' || $attributes->get('type') === 'button';
-
 @endphp
 
-@if ($isSubmit)
-    <button type="submit"
-        {{ $attributes->merge([
-            'class' => "$bg $ringFocus $textColor fill-white flex items-center justify-center gap-2 px-3 py-2 font-semibold rounded-lg ring-0 focus:ring-4 duration-150 cursor-pointer",
-        ]) }}>
-        {{ $slot }}
-    </button>
-@else
+@if ($attributes->get('href') !== null)
     <a href="{{ $attributes->get('href') }}"
         {{ $attributes->merge([
-            'class' => "$bg $ringFocus $textColor fill-white flex items-center justify-center gap-2 px-3 py-2 font-semibold rounded-lg ring-0 focus:ring-4 duration-150 cursor-pointer",
+            'class' => "$bg $ringFocus $textColor fill-white flex items-center justify-center gap-2 px-3 py-2 font-semibold rounded-lg ring-0 ring-transparent focus:ring-4 duration-150 cursor-pointer whitespace-nowrap",
         ]) }}>
         {{ $slot }}
     </a>
+@else
+    <button
+        {{ $attributes->merge([
+            'class' => "$bg $ringFocus $textColor fill-white flex items-center justify-center gap-2 px-3 py-2 font-semibold rounded-lg ring-0 ring-transparent focus:ring-4 duration-150 cursor-pointer whitespace-nowrap",
+        ]) }}>
+        {{ $slot }}
+    </button>
 @endif

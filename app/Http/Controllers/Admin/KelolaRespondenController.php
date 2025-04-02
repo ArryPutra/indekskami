@@ -49,12 +49,12 @@ class KelolaRespondenController extends Controller
             );
         }
         // Request akses akun
-        if (($requestAksesAkun = request('akses-akun')) && $requestAksesAkun !== 'semua') {
+        if (($requestStatusAkun = request('status-akun')) && $requestStatusAkun !== 'semua') {
             // Mengubah string ke boolean
-            $aksesAkun =  filter_var($requestAksesAkun, FILTER_VALIDATE_BOOLEAN);
+            $statusAkun = filter_var($requestStatusAkun, FILTER_VALIDATE_BOOLEAN);
             $queryUserResponden->whereHas(
                 'responden',
-                fn($query) => $query->where('akses_akun', $aksesAkun)
+                fn($query) => $query->where('apakah_akun_nonaktif', !$statusAkun)
             );
         }
 
@@ -122,7 +122,7 @@ class KelolaRespondenController extends Controller
         $user = User::find($id);
         return view('pages.admin.kelola-responden.detail', [
             'title' => 'Detail Responden',
-            'responden' => $user,
+            'user' => $user,
         ]);
     }
 
@@ -194,16 +194,16 @@ class KelolaRespondenController extends Controller
      */
     public function destroy(string $id, Request $request)
     {
-        $aksesAkun = filter_var($request->akses_akun, FILTER_VALIDATE_BOOLEAN);
+        $apakahAkunNonaktif = filter_var($request->apakah_akun_nonaktif, FILTER_VALIDATE_BOOLEAN);
 
         $user = User::find($id);
         $user->update([
-            'akses_akun' => $aksesAkun
+            'apakah_akun_nonaktif' => $apakahAkunNonaktif
         ]);
 
-        $aksesAkunMessage = $aksesAkun ? 'aktifkan' : 'nonaktifkan';
+        $apakahAkunNonaktifMessage = $apakahAkunNonaktif ? 'nonaktifkan' : 'aktifkan';
 
         return redirect()->route('kelola-responden.index')
-            ->with('success', "Responden <b>$user->nama</b> berhasil di$aksesAkunMessage");
+            ->with('success', "Responden <b>$user->nama</b> berhasil di$apakahAkunNonaktifMessage");
     }
 }

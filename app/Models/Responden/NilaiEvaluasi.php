@@ -10,7 +10,6 @@ class NilaiEvaluasi extends Model
 
     protected $fillable = [
         'responden_id',
-        'identitas_responden_id',
         'skor_kategori_se',
         'kategori_se',
         'hasil_evaluasi_akhir',

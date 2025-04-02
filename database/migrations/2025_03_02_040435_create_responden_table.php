@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('responden', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users');
             $table->enum('daerah', ['Kabupaten/Kota', 'Provinsi']);
             $table->boolean('akses_evaluasi')->default(true);
             $table->string('status_evaluasi')->default(Responden::STATUS_BELUM);

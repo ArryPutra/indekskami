@@ -1,10 +1,11 @@
 @extends('layouts.layout', ['title' => 'Login'])
 
 @push('head')
-    <script src="https://www.google.com/recaptcha/api.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" defer></script>
 @endpush
 
 @section('content')
+    @dd(env('APP_NAME'))
     <main class="bg-gradient-to-t from-primary/10 to-white flex h-dvh max-lg:flex-col-reverse max-lg:items-center">
         <form method="POST" action="{{ route('login') }}"
             class="h-screen flex flex-col lg:justify-center w-full lg:max-w-xl lg:px-32 
@@ -28,14 +29,17 @@
             @error('failedLogin')
                 <x-alert class="mb-2" isClosed="true">{{ $message }}</x-alert>
             @enderror
-            {{-- USERNAME INPUT --}}
-            <x-textfield name="username" label="Username" placeholder="Masukkan username" />
-            {{-- PASSWORD INPUT --}}
-            <x-textfield name="password" class="mt-4" label="Password" placeholder="Masukkan password" type="password" />
+            <div class="space-y-2">
+                {{-- USERNAME INPUT --}}
+                <x-text-field name="username" label="Username" placeholder="Masukkan username" value="admin" />
+                {{-- PASSWORD INPUT --}}
+                <x-text-field name="password" label="Password" placeholder="Masukkan password" type="password"
+                    value="password123" />
+            </div>
             {{-- RECAPTCHA --}}
             <div class="g-recaptcha mt-4" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
             @error('g-recaptcha-response')
-                <p class="text-red-500 mt-1">reCaptcha wajib diisi.</p>
+                <p class="text-red-500 mt-1">reCAPTCHA wajib diisi.</p>
             @enderror
             {{-- TOMBOL LOGIN --}}
             <x-button type="submit" class="mt-6">Login</x-button>

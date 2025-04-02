@@ -1,7 +1,10 @@
 <?php
 
 use App\Http\Middleware\Admin\AdminMiddleware;
+use App\Http\Middleware\AkunAktifMiddleware;
+use App\Http\Middleware\Responden\AktifEvaluasiMiddleware;
 use App\Http\Middleware\Responden\BelumEvaluasiMiddleware;
+use App\Http\Middleware\Responden\KepemilikanHasilEvaluasiMiddleware;
 use App\Http\Middleware\Responden\MengerjakanEvaluasiMiddleware;
 use App\Http\Middleware\Responden\RespondenMiddleware;
 use Illuminate\Foundation\Application;
@@ -16,12 +19,15 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
+            'akunAktif' => AkunAktifMiddleware::class,
             // Admin
             'admin' => AdminMiddleware::class,
             // Verifikator
             // Responden
             'responden' => RespondenMiddleware::class,
+            'aktifEvaluasi' => AktifEvaluasiMiddleware::class,
             'belumEvaluasi' => BelumEvaluasiMiddleware::class,
+            'kepemilikanHasilEvaluasi' => KepemilikanHasilEvaluasiMiddleware::class,
             'mengerjakanEvaluasi' => MengerjakanEvaluasiMiddleware::class,
         ]);
     })

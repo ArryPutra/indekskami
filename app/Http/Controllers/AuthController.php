@@ -30,6 +30,18 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
+            // Jika akun nonaktif
+            if (Auth::user()->apakah_akun_nonaktif === 1) {
+                Auth::logout();
+
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return back()->withErrors([
+                    'failedLogin' => 'Akun Anda telah dinonaktifkan.'
+                ]);
+            }
+
             return $this->redirectUser();
         }
 
@@ -50,7 +62,7 @@ class AuthController extends Controller
                 case 2:
                     return redirect('/verifikator/dashboard');
                 case 3:
-                    return redirect()->route('responden.redirect');
+                    return redirect()->route('responden.dashboard');
                 default:
                     break;
             }

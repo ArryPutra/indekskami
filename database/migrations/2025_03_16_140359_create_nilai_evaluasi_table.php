@@ -14,8 +14,7 @@ return new class extends Migration
     {
         Schema::create('nilai_evaluasi', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('responden_id')->constrained('responden')->onDelete('cascade');
-            $table->foreignId('identitas_responden_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('responden_id')->constrained('responden');
             $table->integer('skor_kategori_se')->default(0);
             $table->string('kategori_se')->default(NilaiEvaluasi::SKOR_KATEGORI_SE_RENDAH);
             $table->string('hasil_evaluasi_akhir')->default(NilaiEvaluasi::HASIL_EVALUASI_AKHIR_TIDAK_LAYAK);

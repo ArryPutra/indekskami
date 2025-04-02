@@ -13,7 +13,11 @@ class PeranSeeder extends Seeder
      */
     public function run(): void
     {
-        $daftarNamaPeran = ['Admin', 'Responden', 'Verifikator'];
+        $daftarNamaPeran = [
+            Peran::PERAN_ADMIN,
+            Peran::PERAN_VERIFIKATOR,
+            Peran::PERAN_RESPONDEN,
+        ];
 
         foreach ($daftarNamaPeran as $namaPeran) {
             Peran::create([

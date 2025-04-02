@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('identitas_responden', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('responden_id')->constrained('responden')->onDelete('cascade');
+            $table->foreignId('responden_id')->constrained('responden');
             $table->enum('identitas_instansi', ['Satuan Kerja', 'Direktorat', 'Departemen']);
             $table->text('alamat');
             $table->string('nomor_telepon');

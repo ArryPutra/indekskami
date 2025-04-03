@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Models\Responden\Responden;
+use App\Models\Verifikator\Verifikator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -52,5 +53,10 @@ class User extends Authenticatable
     public function responden()
     {
         return $this->hasOne(Responden::class, 'user_id', 'id');
+    }
+
+    public function verifikator()
+    {
+        return $this->hasOne(Verifikator::class, 'user_id', 'id');
     }
 }

@@ -3,7 +3,7 @@
     before:bg-primary before:absolute before:right-0 opacity-100";
 @endphp
 
-<aside x-cloak x-data="{ isOpen: false }" class="bg-slate-900 h-screen fixed w-[16rem] z-20 duration-300"
+<aside x-data="{ isOpen: false }" class="max-md:-left-[16rem] bg-slate-900 h-screen fixed w-[16rem] z-20 duration-300"
     :class="{ 'max-md:-left-0 shadow-2xl': isOpen, 'max-md:-left-[16rem]': !isOpen }">
     <div class="flex justify-center items-end h-20 mb-8 max-md:justify-between max-md:px-5">
         <img class="h-16" src="{{ asset('images/logo/prov-kalsel.png') }}" alt="Logo Prov Kalsel">
@@ -47,6 +47,19 @@
                 </svg>
                 <h1 class="text-xl text-white">Kelola Responden</h1>
             </a>
+            {{-- MENU: KELOLA VERIFIKATOR --}}
+            <a href="{{ route('kelola-verifikator.index') }}"
+                class="
+        {{ request()->is('admin/kelola-verifikator*') ? $activeMenuClass : false }}
+        font-semibold relative cursor-pointer flex gap-4 items-center px-4 py-3 opacity-75 hover:opacity-100">
+                <svg class="size-6 fill-white" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24">
+                    <path
+                        d="M8 12.052c1.995 0 3.5-1.505 3.5-3.5s-1.505-3.5-3.5-3.5-3.5 1.505-3.5 3.5 1.505 3.5 3.5 3.5zM9 13H7c-2.757 0-5 2.243-5 5v1h12v-1c0-2.757-2.243-5-5-5zm11.294-4.708-4.3 4.292-1.292-1.292-1.414 1.414 2.706 2.704 5.712-5.702z">
+                    </path>
+                </svg>
+                <h1 class="text-xl text-white">Kelola Verifikator</h1>
+            </a>
             {{-- MENU: KELOLA PERTANYAAN --}}
             <a href="{{ route('kelola-pertanyaan.index') }}"
                 class="
@@ -62,6 +75,19 @@
                     </path>
                 </svg>
                 <h1 class="text-xl text-white">Kelola Pertanyaan</h1>
+            </a>
+            {{-- MENU: PROFIL --}}
+            <a href="{{ route('admin.profil') }}"
+                class="
+        {{ request()->is('admin/profil*') ? $activeMenuClass : false }}
+        font-semibold relative cursor-pointer flex gap-4 items-center px-4 py-3 opacity-75 hover:opacity-100">
+                <svg class="size-6 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"
+                        clip-rule="evenodd" />
+                </svg>
+                <h1 class="text-xl text-white">Profil</h1>
             </a>
         @endif
     </div>

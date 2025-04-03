@@ -22,7 +22,7 @@ class RedirectEvaluasiController extends Controller
         $statusEvaluasiResponden = $responden->status_evaluasi;
         switch ($statusEvaluasiResponden) {
             case Responden::STATUS_BELUM:
-                return redirect()->route('responden.identitas-responden');
+                return redirect()->route('responden.identitas-responden.create');
                 break;
             case Responden::STATUS_MENGERJAKAN:
                 return redirect()->route('responden.evaluasi.i-kategori-se', $hasilEvaluasiTerakhir->id);

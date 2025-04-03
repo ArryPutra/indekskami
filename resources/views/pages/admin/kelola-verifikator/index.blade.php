@@ -1,20 +1,20 @@
 @extends('layouts.layout')
 
 @section('content')
-    <form method="GET" action="{{ route('kelola-responden.index') }}">
+    <form method="GET" action="{{ route('kelola-verifikator.index') }}">
         <section class="flex justify-between flex-wrap gap-4 mb-4">
             <div class="flex gap-3 w-full">
-                <x-text-field value="{{ request('cari') }}" type="text" name="cari" placeholder="Cari responden" />
+                <x-text-field value="{{ request('cari') }}" type="text" name="cari" placeholder="Cari verifikator" />
                 <x-button type="submit">
                     <span>Cari</span>
                 </x-button>
             </div>
-            <x-button href="{{ route('kelola-responden.create') }}">
+            <x-button href="{{ route('kelola-verifikator.create') }}">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                 </svg>
-                Tambah Responden
+                Tambah Verifikator
             </x-button>
         </section>
 
@@ -26,17 +26,10 @@
 
         <div class="flex gap-4 mb-4 flex-wrap">
             <section>
-                <x-dropdown name="daerah" onchange="this.form.submit()" label="Daerah">
+                <x-dropdown name="akses-verifikasi" onchange="this.form.submit()" label="Akses Verifikasi">
                     <x-dropdown.option value="semua">Semua</x-dropdown.option>
-                    <x-dropdown.option :selected="request('daerah') == 'kabupaten-atau-kota'" value="kabupaten-atau-kota">Kabupaten/Kota</x-dropdown.option>
-                    <x-dropdown.option :selected="request('daerah') == 'provinsi'" value="provinsi">Provinsi</x-dropdown.option>
-                </x-dropdown>
-            </section>
-            <section>
-                <x-dropdown name="akses-evaluasi" onchange="this.form.submit()" label="Akses Evaluasi">
-                    <x-dropdown.option value="semua">Semua</x-dropdown.option>
-                    <x-dropdown.option value="true" :selected="request('akses-evaluasi') == 'true'">Aktif</x-dropdown.option>
-                    <x-dropdown.option value="false" :selected="request('akses-evaluasi') == 'false'">Nonaktif</x-dropdown.option>
+                    <x-dropdown.option value="true" :selected="request('akses-verifikasi') == 'true'">Aktif</x-dropdown.option>
+                    <x-dropdown.option value="false" :selected="request('akses-verifikasi') == 'false'">Nonaktif</x-dropdown.option>
                 </x-dropdown>
             </section>
             <section>
@@ -53,26 +46,26 @@
     <x-table>
         <x-table.thead>
             <x-table.th>No.</x-table.th>
-            <x-table.th>Nama Instansi</x-table.th>
+            <x-table.th>Nama Verifikator</x-table.th>
             <x-table.th>Username</x-table.th>
             <x-table.th>Email</x-table.th>
             <x-table.th>Nomor Telepon</x-table.th>
-            <x-table.th>Daerah</x-table.th>
+            <x-table.th>Nomor SK</x-table.th>
             <x-table.th>Aksi</x-table.th>
         </x-table.thead>
         <x-table.tbody>
-            @if (count($daftarResponden) > 0)
-                @foreach ($daftarResponden as $index => $responden)
+            @if (count($daftarVerifikator) > 0)
+                @foreach ($daftarVerifikator as $index => $verifikator)
                     <x-table.tr>
-                        <x-table.td>{{ ($daftarResponden->currentPage() - 1) * $daftarResponden->perPage() + $index + 1 }}</x-table.td>
-                        <x-table.td class="font-semibold">{{ $responden->nama }}</x-table.td>
-                        <x-table.td>{{ $responden->username }}</x-table.td>
-                        <x-table.td>{{ $responden->email }}</x-table.td>
-                        <x-table.td>{{ $responden->nomor_telepon }}</x-table.td>
-                        <x-table.td>{{ $responden->responden->daerah }}</x-table.td>
+                        <x-table.td>{{ ($daftarVerifikator->currentPage() - 1) * $daftarVerifikator->perPage() + $index + 1 }}</x-table.td>
+                        <x-table.td class="font-semibold">{{ $verifikator->nama }}</x-table.td>
+                        <x-table.td>{{ $verifikator->username }}</x-table.td>
+                        <x-table.td>{{ $verifikator->email }}</x-table.td>
+                        <x-table.td>{{ $verifikator->nomor_telepon }}</x-table.td>
+                        <x-table.td>{{ $verifikator->verifikator->nomor_sk }}</x-table.td>
                         <x-table.td>
                             <div class="flex gap-2 flex-wrap">
-                                <x-button href="{{ route('kelola-responden.show', $responden->id) }}">
+                                <x-button href="{{ route('kelola-verifikator.show', $verifikator->id) }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="size-5">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -80,7 +73,7 @@
                                     </svg>
                                     Detail
                                 </x-button>
-                                <x-button href="{{ route('kelola-responden.edit', $responden->id) }}" color="blue">
+                                <x-button href="{{ route('kelola-verifikator.edit', $verifikator->id) }}" color="blue">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="size-5">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -88,14 +81,15 @@
                                     </svg>
                                     Edit
                                 </x-button>
-                                @if ($responden->apakah_akun_nonaktif == false)
-                                    <form id="formNonaktifkanResponden-{{ $responden->id }}"
-                                        action="{{ route('kelola-responden.destroy', $responden->id) }}" method="POST">
+                                @if ($verifikator->apakah_akun_nonaktif == false)
+                                    <form id="formNonaktifkanVerifikator-{{ $verifikator->id }}"
+                                        action="{{ route('kelola-verifikator.destroy', $verifikator->id) }}"
+                                        method="POST">
                                         @csrf
                                         @method('DELETE')
                                         <input type="hidden" name="apakah_akun_nonaktif" value="true">
                                         <x-button type="submit" color="red"
-                                            onclick="nonaktifResponden('{{ $responden->nama }}', {{ $responden->id }})">
+                                            onclick="nonaktifVerifikator('{{ $verifikator->nama }}', {{ $verifikator->id }})">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                                 stroke-width="1.5" stroke="currentColor" class="size-5">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -105,13 +99,14 @@
                                         </x-button>
                                     </form>
                                 @else
-                                    <form id="formAktifkanResponden-{{ $responden->id }}"
-                                        action="{{ route('kelola-responden.destroy', $responden->id) }}" method="POST">
+                                    <form id="formAktifkanVerifikator-{{ $verifikator->id }}"
+                                        action="{{ route('kelola-verifikator.destroy', $verifikator->id) }}"
+                                        method="POST">
                                         @csrf
                                         @method('DELETE')
                                         <input type="hidden" name="apakah_akun_nonaktif" value="false">
                                         <x-button type="submit" color="green"
-                                            onclick="aktifResponden('{{ $responden->nama }}', {{ $responden->id }})">
+                                            onclick="aktifVerifikator('{{ $verifikator->nama }}', {{ $verifikator->id }})">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                                 stroke-width="1.5" stroke="currentColor" class="size-5">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -134,13 +129,14 @@
     </x-table>
 
     <div class="mt-4">
-        {{ $daftarResponden->links() }}
+        {{ $daftarVerifikator->links() }}
     </div>
 @endsection
+
 @push('script')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        function nonaktifResponden(nama, userId) {
+        function nonaktifVerifikator(nama, userId) {
             window.event.preventDefault();
             Swal.fire({
                 title: "Apakah Anda yakin?",
@@ -153,13 +149,13 @@
                 cancelButtonText: "Batal"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    const form = document.getElementById('formNonaktifkanResponden-' + userId);
+                    const form = document.getElementById('formNonaktifkanVerifikator-' + userId);
                     form.submit();
                 }
             });
         }
 
-        function aktifResponden(nama, userId) {
+        function aktifVerifikator(nama, userId) {
             window.event.preventDefault();
             Swal.fire({
                 title: "Apakah Anda yakin?",
@@ -172,7 +168,7 @@
                 cancelButtonText: "Batal"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    const form = document.getElementById('formAktifkanResponden-' + userId);
+                    const form = document.getElementById('formAktifkanVerifikator-' + userId);
                     form.submit();
                 }
             });

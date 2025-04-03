@@ -5,7 +5,6 @@
 @endpush
 
 @section('content')
-    @dd(env('APP_NAME'))
     <main class="bg-gradient-to-t from-primary/10 to-white flex h-dvh max-lg:flex-col-reverse max-lg:items-center">
         <form method="POST" action="{{ route('login') }}"
             class="h-screen flex flex-col lg:justify-center w-full lg:max-w-xl lg:px-32 

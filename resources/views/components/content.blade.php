@@ -8,7 +8,7 @@
 @can('responden')
     <main
         class="bg-slate-100 w-full min-h-dvh px-6 max-md:px-0 pt-44 max-md:pt-24 pb-6
-{{ request()->is('responden/evaluasi*') && !request()->is('responden/evaluasi/identitas-responden*') ? 'pb-24' : false }}">
+{{ request()->is('responden/evaluasi*') || request()->is('responden/evaluasi/identitas-responden/*/edit') ? 'pb-24' : false }}">
         <div {{ $attributes->merge(['class' => 'bg-white p-4 md:rounded-md max-md:mt-12']) }}>
             {{ $slot }}
         </div>

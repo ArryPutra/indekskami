@@ -127,7 +127,7 @@
         {{-- Daftar Area Evaluasi --}}
         <footer class="bg-white px-6 max-md:px-4 py-4 border-t border-gray-200 flex gap-2 overflow-x-auto">
             <x-button color="gray"
-                href="{{ route('responden.identitas-responden', $hasilEvaluasiId) }}">Identitas</x-button>
+                href="{{ route('responden.identitas-responden.edit', $identitasRespondenId) }}">Identitas</x-button>
             <x-button>I Kategori SE</x-button>
             <x-button color="gray">II Tata Kelola</x-button>
             <x-button color="gray">III Risiko</x-button>

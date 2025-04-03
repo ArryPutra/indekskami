@@ -22,11 +22,11 @@
         <x-text-field name="password_confirmation"
             label="Konfirmasi Password {{ $page_meta['method'] == 'PUT' ? 'baru' : false }}"
             placeholder="Masukkan konfirmasi password" type="password" :required=false />
-        <x-radio label="Apakah responden dapat melakuakan evaluasi?">
-            <x-radio.option name="akses_evaluasi" id="ya" value="1" :checked="old('akses_evaluasi', $responden->responden?->akses_evaluasi) === 1">
+        <x-radio label="Apakah responden dapat melakukan evaluasi?">
+            <x-radio.option name="akses_evaluasi" id="ya" value="1" :checked="old('akses_evaluasi', $responden->responden?->akses_evaluasi) == '1'">
                 Ya
             </x-radio.option>
-            <x-radio.option name="akses_evaluasi" id="tidak" value="0" :checked="old('akses_evaluasi', $responden->responden?->akses_evaluasi) === 0">
+            <x-radio.option name="akses_evaluasi" id="tidak" value="0" :checked="old('akses_evaluasi', $responden->responden?->akses_evaluasi) == '0'">
                 Tidak
             </x-radio.option>
         </x-radio>

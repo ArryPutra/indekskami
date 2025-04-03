@@ -47,7 +47,7 @@ class IKategoriSEController extends Controller
             'totalSkorJawabanArray' => array_column($daftarPertanyaanDanJawaban, 'skor_jawaban'),
             'daftarAreaEvaluasi' => $daftarAreaEvaluasi,
             'areaEvaluasi' => $daftarAreaEvaluasi->first(),
-            'hasilEvaluasiId' => $hasilEvaluasi->id
+            'identitasRespondenId' => $hasilEvaluasi->identitasResponden->id,
         ]);
     }
 

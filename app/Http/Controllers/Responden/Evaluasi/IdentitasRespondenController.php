@@ -13,27 +13,25 @@ use Illuminate\Support\Facades\Auth;
 class IdentitasRespondenController extends Controller
 {
 
-    public function index(HasilEvaluasi $hasilEvaluasi)
+    public function create()
     {
         $responden = Auth::user()->responden;
 
-        if (count($responden->hasilEvaluasi) > 0 && request()->is('responden/evaluasi/identitas-responden')) {
-            return redirect()->route('responden.identitas-responden', $responden->hasilEvaluasi->last()->id);
+        if ($responden->status_evaluasi !== Responden::STATUS_BELUM) {
+            return abort(403, 'Anda tidak memiliki akses ke halaman ini');
         }
-
-        $identitasResponden = $hasilEvaluasi->identitasResponden ?? new IdentitasResponden();
 
         return view('pages.responden.evaluasi.identitas-responden', [
             'title' => 'Identitas Responden',
-            'identitasResponden' => $identitasResponden,
+            'identitasResponden' => new IdentitasResponden(),
             'pageMeta' => [
-                'route' => route('responden.identitas-responden.simpan'),
+                'route' => route('responden.identitas-responden.store'),
                 'method' => 'POST'
             ]
         ]);
     }
 
-    public function simpan(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
             'identitas_instansi' => ['required', 'in:Satuan Kerja,Direktorat,Departemen'],
@@ -74,5 +72,35 @@ class IdentitasRespondenController extends Controller
         ]);
 
         return redirect()->route('responden.evaluasi.i-kategori-se', $HasilEvaluasi->id);
+    }
+
+    public function edit(IdentitasResponden $identitasResponden)
+    {
+        if ($identitasResponden->responden_id !== Auth::user()->responden->id) {
+            return abort(403, 'Anda tidak memiliki akses ke halaman ini');
+        }
+
+        return view('pages.responden.evaluasi.identitas-responden', [
+            'title' => 'Identitas Responden',
+            'identitasResponden' => $identitasResponden,
+            'hasilEvaluasiId' => $identitasResponden->hasilEvaluasi->id,
+            'pageMeta' => [
+                'route' => route('responden.identitas-responden.update', $identitasResponden->id),
+                'method' => 'PUT'
+            ]
+        ]);
+    }
+
+    public function update(Request $request, IdentitasResponden $identitasResponden)
+    {
+        $identitasResponden->update([
+            'identitas_instansi' => $request->identitas_instansi,
+            'alamat' => $request->alamat,
+            'pengisi_lembar_evaluasi' => $request->pengisi_lembar_evaluasi,
+            'jabatan' => $request->jabatan,
+            'deskripsi_ruang_lingkup' => $request->deskripsi_ruang_lingkup
+        ]);
+
+        return redirect()->back()->with('success', 'Data identitas berhasil diperbarui!');
     }
 }

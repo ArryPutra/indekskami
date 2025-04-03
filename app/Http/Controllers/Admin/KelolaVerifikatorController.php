@@ -3,49 +3,39 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Responden\Responden;
 use App\Models\User;
+use App\Models\Verifikator\Verifikator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
-class KelolaRespondenController extends Controller
+class KelolaVerifikatorController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        // Query terhas user dengan relasi responden
-        $queryUserResponden = User::whereHas('responden')->with('responden');
+        // Query terhas user dengan relasi verifikator
+        $queryUserVerifikator = User::whereHas('verifikator')->with('verifikator');
 
         // Request cari
         if ($requestCari = request('cari')) {
-            $queryUserResponden->where(function ($query) use ($requestCari) {
+            $queryUserVerifikator->where(function ($query) use ($requestCari) {
                 $query->where('nama', 'like', '%' . $requestCari . '%')
                     ->orWhere('username', 'like', '%' . $requestCari . '%')
                     ->orWhere('email', 'like', '%' . $requestCari . '%')
                     ->orWhere('nomor_telepon', 'like', '%' . $requestCari . '%');
             });
         }
-        // Request daerah
-        if (($requestDaerah = request('daerah')) && $requestDaerah !== 'semua') {
-            $daerah = [
-                'kabupaten-atau-kota' => 'Kabupaten/Kota',
-                'provinsi' => 'Provinsi'
-            ];
-            $queryUserResponden->whereHas(
-                'responden',
-                fn($query) => $query->where('daerah', $daerah[$requestDaerah])
-            );
-        }
-        // Request akses evaluasi
-        if (($requestAksesEvaluasi = request('akses-evaluasi')) && $requestAksesEvaluasi !== 'semua') {
+
+        // Request akses verifikasi
+        if (($requestAksesVerifikasi = request('akses-verifikasi')) && $requestAksesVerifikasi !== 'semua') {
             // Mengubah string ke boolean
-            $aksesEvaluasi = filter_var($requestAksesEvaluasi, FILTER_VALIDATE_BOOLEAN);
-            $queryUserResponden->whereHas(
-                'responden',
-                fn($query) => $query->where('akses_evaluasi', $aksesEvaluasi)
+            $aksesVerifikasi = filter_var($requestAksesVerifikasi, FILTER_VALIDATE_BOOLEAN);
+            $queryUserVerifikator->whereHas(
+                'verifikator',
+                fn($query) => $query->where('akses_verifikasi', $aksesVerifikasi)
             );
         }
 
@@ -53,18 +43,18 @@ class KelolaRespondenController extends Controller
         if (($requestStatusAkun = request('status-akun')) && $requestStatusAkun !== 'semua') {
             // Mengubah string ke boolean
             $statusAkun = filter_var($requestStatusAkun, FILTER_VALIDATE_BOOLEAN);
-            $queryUserResponden->whereHas(
-                'responden',
+            $queryUserVerifikator->whereHas(
+                'verifikator',
                 fn($query) => $query->where('apakah_akun_nonaktif', !$statusAkun)
             );
         }
 
         // Menampilkan daftar responden
-        $daftarResponden = $queryUserResponden->latest()->paginate(10);
+        $daftarVerifikator = $queryUserVerifikator->latest()->paginate(10);
 
-        return view('pages.admin.kelola-responden.index', [
-            'title' => 'Kelola Responden',
-            'daftarResponden' => $daftarResponden
+        return view('pages.admin.kelola-verifikator.index', [
+            'title' => 'Kelola Verifikator',
+            'daftarVerifikator' => $daftarVerifikator
         ]);
     }
 
@@ -73,11 +63,11 @@ class KelolaRespondenController extends Controller
      */
     public function create()
     {
-        return view('pages.admin.kelola-responden.form', [
-            'title' => 'Tambah Responden',
-            'responden' => new User(),
+        return view('pages.admin.kelola-verifikator.form', [
+            'title' => 'Tambah Verifikator',
+            'verifikator' => new User(),
             'page_meta' => [
-                'route' => route('kelola-responden.store'),
+                'route' => route('kelola-verifikator.store'),
                 'method' => 'POST'
             ]
         ]);
@@ -88,31 +78,31 @@ class KelolaRespondenController extends Controller
      */
     public function store(Request $request)
     {
-        $validatedTambahResponden = $request->validate(
+        $validatedTambahVerifikator = $request->validate(
             [
                 'nama' => ['required', 'max:255'],
-                'daerah' => ['required', 'in:Kabupaten/Kota,Provinsi'],
                 'username' => ['required', 'min:8', 'max:255', 'unique:users,username'],
                 'email' => ['required', 'email', 'max:255', 'unique:users,email'],
                 'nomor_telepon' => ['required', 'regex:/^[0-9]+$/', 'min:10', 'max:13', 'unique:users,nomor_telepon'],
+                'nomor_sk' => ['required'],
                 'password' => ['required', 'min:8', 'confirmed'],
             ]
         );
-        // Memberikan peran nilai responden (3) secara default
-        $validatedTambahResponden['peran_id'] = 3;
+        // Memberikan peran nilai verifikator (2) secara default
+        $validatedTambahVerifikator['peran_id'] = 2;
         // Memberikan enkripsi pada password
-        $validatedTambahResponden['password'] = Hash::make($validatedTambahResponden['password']);
+        $validatedTambahVerifikator['password'] = Hash::make($validatedTambahVerifikator['password']);
 
-        $user = User::create($validatedTambahResponden);
+        $user = User::create($validatedTambahVerifikator);
 
-        // Menambahkan data responden yg dibuat ke table responden
-        Responden::create([
+        // Menambahkan data verifikator yg dibuat ke table verifikator
+        Verifikator::create([
             'user_id' => $user->id,
-            'akses_evaluasi' => $request->akses_evaluasi,
-            'daerah' => $request->daerah
+            'nomor_sk' => $request->nomor_sk,
+            'akses_verifikasi' => $request->akses_verifikasi,
         ]);
 
-        return redirect()->route('kelola-responden.index')->with('success', "Responden <b>$user->nama</b> berhasil ditambahkan");
+        return redirect()->route('kelola-verifikator.index')->with('success', "Verifikator <b>$user->nama</b> berhasil ditambahkan");
     }
 
     /**
@@ -121,11 +111,11 @@ class KelolaRespondenController extends Controller
     public function show(string $id)
     {
         $user = User::where('id', $id)
-            ->where('peran_id', 3)->firstOrFail();
+            ->where('peran_id', 2)->firstOrFail();
 
-        return view('pages.admin.kelola-responden.detail', [
-            'title' => 'Detail Responden',
-            'responden' => $user,
+        return view('pages.admin.kelola-verifikator.detail', [
+            'title' => 'Detail Verifikator',
+            'verifikator' => $user,
         ]);
     }
 
@@ -135,13 +125,13 @@ class KelolaRespondenController extends Controller
     public function edit(string $id)
     {
         $user = User::where('id', $id)
-            ->where('peran_id', 3)->firstOrFail();
+            ->where('peran_id', 2)->firstOrFail();
 
-        return view('pages.admin.kelola-responden.form', [
-            'title' => 'Edit Responden',
-            'responden' => $user,
+        return view('pages.admin.kelola-verifikator.form', [
+            'title' => 'Edit Verifikator',
+            'verifikator' => $user,
             'page_meta' => [
-                'route' => route('kelola-responden.update', $user->id),
+                'route' => route('kelola-verifikator.update', $user->id),
                 'method' => 'PUT'
             ]
         ]);
@@ -152,8 +142,10 @@ class KelolaRespondenController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $user = User::find($id);
-        $validatedEditResponden = $request->validate([
+        $user = User::where('id', $id)
+            ->where('peran_id', 2)->firstOrFail();
+
+        $validatedEditVerifikator = $request->validate([
             'nama' => ['required', 'max:255'],
             'username' => [
                 'required',
@@ -179,19 +171,19 @@ class KelolaRespondenController extends Controller
         ]);
 
         // Jika terdapat password baru
-        if ($validatedEditResponden['password']) {
-            $validatedEditResponden['password'] = Hash::make($validatedEditResponden['password']);
+        if ($validatedEditVerifikator['password']) {
+            $validatedEditVerifikator['password'] = Hash::make($validatedEditVerifikator['password']);
         } else {
-            unset($validatedEditResponden['password']);
+            unset($validatedEditVerifikator['password']);
         }
 
-        $user->update($validatedEditResponden);
-        $user->responden->update([
-            'daerah' => $request->daerah,
-            'akses_evaluasi' => $request->akses_evaluasi
+        $user->update($validatedEditVerifikator);
+        $user->verifikator->update([
+            'nomor_sk' => $request->nomor_sk,
+            'akses_verifikasi' => $request->akses_verifikasi
         ]);
 
-        return redirect()->route('kelola-responden.index')->with('success', "Responden <b>$user->nama</b> berhasil diperbarui");
+        return redirect()->route('kelola-verifikator.index')->with('success', "Verifikator <b>$user->nama</b> berhasil diperbarui");
     }
 
     /**
@@ -208,7 +200,7 @@ class KelolaRespondenController extends Controller
 
         $apakahAkunNonaktifMessage = $apakahAkunNonaktif ? 'nonaktifkan' : 'aktifkan';
 
-        return redirect()->route('kelola-responden.index')
-            ->with('success', "Responden <b>$user->nama</b> berhasil di$apakahAkunNonaktifMessage");
+        return redirect()->route('kelola-verifikator.index')
+            ->with('success', "Verifikator <b>$user->nama</b> berhasil di$apakahAkunNonaktifMessage");
     }
 }

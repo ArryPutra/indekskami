@@ -3,6 +3,8 @@
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\KelolaPertanyaanController;
 use App\Http\Controllers\Admin\KelolaRespondenController;
+use App\Http\Controllers\Admin\KelolaVerifikatorController;
+use App\Http\Controllers\Admin\ProfilController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Responden\DashboardController as RespondenDashboardController;
 use App\Http\Controllers\Responden\Evaluasi\IKategoriSEController;
@@ -29,10 +31,17 @@ Route::post('/logout', [AuthController::class, 'logout'])
 Route::middleware(['auth', 'akunAktif'])->group(function () {
     Route::prefix('admin')->middleware('admin')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+        // Kelola Responden
         Route::resource('/kelola-responden', KelolaRespondenController::class);
+        // Kelola Verifikator
+        Route::resource('/kelola-verifikator', KelolaVerifikatorController::class);
+        // Kelola Evaluasi
         // Kelola Pertanyaan
         Route::resource('/kelola-pertanyaan', KelolaPertanyaanController::class);
         Route::post('/kelola-pertanyaan/{areaEvaluasi:id}/update-pertanyaan', [KelolaPertanyaanController::class, 'updatePertanyaan'])->name('kelola-pertanyaan.update-pertanyaan');
+        // Profil
+        Route::get('/profil', [ProfilController::class, 'index'])->name('admin.profil');
+        Route::post('/profil/perbarui-password', [ProfilController::class, 'perbaruiPassword'])->name('admin.profil.perbarui-password');
     });
     Route::prefix('responden')->middleware('responden')->group(function () {
         Route::get('/dashboard', [RespondenDashboardController::class, 'index'])->name('responden.dashboard');
@@ -41,13 +50,9 @@ Route::middleware(['auth', 'akunAktif'])->group(function () {
         Route::prefix('evaluasi')->group(function () {
             Route::get('/nonaktif-evaluasi', [NonaktifEvaluasiController::class, 'index'])->name('responden.nonaktif-evaluasi');
             Route::middleware('aktifEvaluasi')->group(function () {
-                Route::get('/identitas-responden/{hasilEvaluasi:id}', [IdentitasRespondenController::class, 'create'])
-                    ->name('responden.identitas-responden');
-                Route::post('/identitas-responden/simpan', [IdentitasRespondenController::class, 'simpan'])
-                    ->name('responden.identitas-responden.simpan');
-                // Route::resource('/identitas-responden', IdentitasRespondenController::class)
-                //     ->except(['index', 'show', 'destroy'])
-                //     ->names('responden.identitas-responden');
+                Route::resource('/identitas-responden', IdentitasRespondenController::class)
+                    ->only(['create', 'store', 'edit', 'update'])
+                    ->names('responden.identitas-responden');
 
                 Route::middleware('mengerjakanEvaluasi')->group(function () {
                     Route::get('/i-kategori-se/{hasilEvaluasi:id}', [IKategoriSEController::class, 'index'])->name('responden.evaluasi.i-kategori-se');

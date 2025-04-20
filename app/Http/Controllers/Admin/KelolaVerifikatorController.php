@@ -54,7 +54,10 @@ class KelolaVerifikatorController extends Controller
 
         return view('pages.admin.kelola-verifikator.index', [
             'title' => 'Kelola Verifikator',
-            'daftarVerifikator' => $daftarVerifikator
+            'daftarVerifikator' => $daftarVerifikator,
+            'daftarDataCard' => [
+                'totalVerifikator' => Verifikator::count()
+            ]
         ]);
     }
 
@@ -85,7 +88,8 @@ class KelolaVerifikatorController extends Controller
                 'email' => ['required', 'email', 'max:255', 'unique:users,email'],
                 'nomor_telepon' => ['required', 'regex:/^[0-9]+$/', 'min:10', 'max:13', 'unique:users,nomor_telepon'],
                 'nomor_sk' => ['required'],
-                'password' => ['required', 'min:8', 'confirmed'],
+                'password' => ['required', 'min:8', 'confirmed', 'regex:/^(?=.*[A-Za-z])(?=.*\d).+$/'],
+                'akses_verifikasi' => ['required', 'boolean']
             ]
         );
         // Memberikan peran nilai verifikator (2) secara default
@@ -168,6 +172,7 @@ class KelolaVerifikatorController extends Controller
                 Rule::unique('users', 'nomor_telepon')->ignore($user->id),
             ],
             'password' => ['nullable', 'min:8', 'confirmed', 'regex:/^(?=.*[A-Za-z])(?=.*\d).+$/'],
+            'akses_verifikasi' => ['required', 'boolean']
         ]);
 
         // Jika terdapat password baru

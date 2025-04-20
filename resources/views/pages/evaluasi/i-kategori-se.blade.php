@@ -4,24 +4,18 @@
     <h1 class="font-bold text-2xl">{{ $areaEvaluasi->judul }}</h1>
     <p>{{ $areaEvaluasi->deskripsi }}</p>
 
-    @php
-        $daftarPesan = [
-            'daftarJawabanTanpaDokumen' => 'Mohon isi pertanyaan dengan dokumen.',
-            'daftarJawabanTanpaStatus' => 'Mohon isi pertanyaan dengan status.',
-            'daftarJawabanDokumenUkuranKebesaran' => 'Mohon isi pertanyaan dengan maksimal ukuran dokumen 10 MB.',
-            'daftarJawabanDokumenTidakValid' => 'Mohon isi pertanyaan dengan dokumen yang valid.',
-        ];
-    @endphp
-    @foreach ($daftarPesan as $key => $pesan)
-        @if (session($key))
+    {{-- Alert: Informasi pertanyaan kesalahan --}}
+    @if (session('daftarInformasiPertanyaanKesalahan'))
+        @foreach (session('daftarInformasiPertanyaanKesalahan') as $daftarPertanyaanKesalahan)
             <x-alert class="mt-2" :isClosed=true>
-                <b>{{ $pesan }}</b>
-                <p>Berikut nomor pertanyaan yang harus diperbaiki: {{ session($key) }}</p>
+                <b>{{ $daftarPertanyaanKesalahan['pesan'] }}</b>
+                <p>Berikut nomor pertanyaan yang harus diperbaiki: {{ $daftarPertanyaanKesalahan['daftarNomor'] }}</p>
             </x-alert>
-        @endif
-    @endforeach
+        @endforeach
+    @endif
 
-    <form onsubmit="formSimpanJawaban(event)" action="{{ route('responden.evaluasi.i-kategori-se.simpan') }}" method="post"
+    <form onsubmit="formSimpanJawaban(event)"
+        action="{{ route('responden.evaluasi.i-kategori-se.simpan', $hasilEvaluasi->id) }}" method="post"
         enctype="multipart/form-data">
         @csrf
         <x-table class="mt-4">
@@ -32,28 +26,41 @@
                 <x-table.th>Dokumen</x-table.th>
                 <x-table.th>Keterangan</x-table.th>
             </x-table.thead>
-            <x-table.tbody colspan="7">
+            <x-table.tbody>
                 @foreach ($daftarPertanyaanDanJawaban as $index => $pertanyaanDanJawaban)
-                    <input type="hidden" name="{{ $loop->iteration }}[pertanyaan_id]"
-                        value="{{ $pertanyaanDanJawaban['pertanyaan_id'] }}">
+                    @foreach ($daftarJudulTemaPertanyaan as $judulTemaPertanyaan)
+                        @if ($judulTemaPertanyaan->letakkan_sebelum_nomor == $pertanyaanDanJawaban['nomor'])
+                            <x-table.tr class="!bg-gray-200">
+                                <x-table.td class="font-bold uppercase text-xs" colspan="7">
+                                    {{ $judulTemaPertanyaan->judul }}
+                                </x-table.td>
+                            </x-table.tr>
+                        @endif
+                    @endforeach
+
                     <x-table.tr>
+                        <input type="hidden" name="{{ $pertanyaanDanJawaban['nomor'] }}[pertanyaan_id]"
+                            value="{{ $pertanyaanDanJawaban['pertanyaan_id'] }}">
                         <x-table.td>1.{{ $pertanyaanDanJawaban['nomor'] }}</x-table.td>
                         <x-table.td class="min-w-56">
                             <x-radio label="{{ $pertanyaanDanJawaban['pertanyaan'] }}">
-                                <x-radio.option :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_a'" onclick="perbaruiPertanyaanSkor({{ $index }}, 5)"
-                                    name="{{ $loop->iteration }}[status_jawaban]"
-                                    id="pertanyaan{{ $loop->iteration }}StatusA" value="status_a">
-                                    {{ $pertanyaanDanJawaban['status_a'] }}
+                                <x-radio.option :checked="$pertanyaanDanJawaban['status_jawaban'] === 'skor_status_pertama'"
+                                    onclick="perbaruiPertanyaanSkor({{ $index }}, {{ $pertanyaanDanJawaban['skor_status_pertama'] }})"
+                                    name="{{ $pertanyaanDanJawaban['nomor'] }}[status_jawaban]"
+                                    id="pertanyaan{{ $pertanyaanDanJawaban['nomor'] }}StatusA" value="skor_status_pertama">
+                                    {{ $pertanyaanDanJawaban['status_pertama'] }}
                                 </x-radio.option>
-                                <x-radio.option :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_b'" onclick="perbaruiPertanyaanSkor({{ $index }}, 2)"
-                                    name="{{ $loop->iteration }}[status_jawaban]"
-                                    id="pertanyaan{{ $loop->iteration }}StatusB" value="status_b">
-                                    {{ $pertanyaanDanJawaban['status_b'] }}
+                                <x-radio.option :checked="$pertanyaanDanJawaban['status_jawaban'] === 'skor_status_kedua'"
+                                    onclick="perbaruiPertanyaanSkor({{ $index }}, {{ $pertanyaanDanJawaban['skor_status_kedua'] }})"
+                                    name="{{ $pertanyaanDanJawaban['nomor'] }}[status_jawaban]"
+                                    id="pertanyaan{{ $pertanyaanDanJawaban['nomor'] }}StatusB" value="skor_status_kedua">
+                                    {{ $pertanyaanDanJawaban['status_kedua'] }}
                                 </x-radio.option>
-                                <x-radio.option :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_c'" onclick="perbaruiPertanyaanSkor({{ $index }}, 1)"
-                                    name="{{ $loop->iteration }}[status_jawaban]"
-                                    id="pertanyaan{{ $loop->iteration }}StatusC" value="status_c">
-                                    {{ $pertanyaanDanJawaban['status_c'] }}
+                                <x-radio.option :checked="$pertanyaanDanJawaban['status_jawaban'] === 'skor_status_ketiga'"
+                                    onclick="perbaruiPertanyaanSkor({{ $index }}, {{ $pertanyaanDanJawaban['skor_status_ketiga'] }})"
+                                    name="{{ $pertanyaanDanJawaban['nomor'] }}[status_jawaban]"
+                                    id="pertanyaan{{ $pertanyaanDanJawaban['nomor'] }}StatusC" value="skor_status_ketiga">
+                                    {{ $pertanyaanDanJawaban['status_ketiga'] }}
                                 </x-radio.option>
                             </x-radio>
                         </x-table.td>
@@ -62,10 +69,10 @@
                                 id="skorPertanyaan{{ $index }}">{{ $pertanyaanDanJawaban['skor_jawaban'] }}</span>
                         </x-table.td>
                         <x-table.td>
-                            <x-file-upload name="{{ $loop->iteration }}[unggah_dokumen_baru]"
+                            <x-file-upload name="{{ $pertanyaanDanJawaban['nomor'] }}[unggah_dokumen_baru]"
                                 oninput="tampilkanSaveButton()" />
                             @if ($pertanyaanDanJawaban['dokumen'])
-                                <input type="hidden" name="{{ $loop->iteration }}[path_dokumen_lama]"
+                                <input type="hidden" name="{{ $pertanyaanDanJawaban['nomor'] }}[path_dokumen_lama]"
                                     value="{{ $pertanyaanDanJawaban['dokumen'] }}">
                                 <x-button href="/storage/{{ $pertanyaanDanJawaban['dokumen'] }}" target="_blank"
                                     class="w-fit mt-2">Lihat
@@ -74,9 +81,9 @@
                             @endif
                         </x-table.td>
                         <x-table.td>
-                            <x-text-area name="{{ $loop->iteration }}[keterangan]"
-                                value="{{ $pertanyaanDanJawaban['keterangan'] }}" placeholder="Keterangan" :required=false
-                                oninput="tampilkanSaveButton()" value="{{ $pertanyaanDanJawaban['keterangan'] }}" />
+                            <x-text-area name="{{ $pertanyaanDanJawaban['nomor'] }}[keterangan]" placeholder="Keterangan"
+                                :required=false oninput="tampilkanSaveButton()"
+                                value="{{ $pertanyaanDanJawaban['keterangan'] }}" />
                         </x-table.td>
                     </x-table.tr>
                 @endforeach
@@ -109,34 +116,38 @@
                 </svg>
             </x-button>
             {{-- Hasil Nilai Evaluasi Panel --}}
-            <div class="bg-white border-t border-gray-200 px-6 max-md:px-4 py-4 overflow-hidden"
+            <div x-cloak class="bg-white border-t border-gray-200 px-6 max-md:px-4 py-4 overflow-hidden"
                 :class="{ 'block': isOpen, 'hidden': !isOpen }">
                 <h1 class="font-bold mb-1.5">Hasil Nilai Evaluasi</h1>
-                <div class="flex gap-2 text-sm">
-                    <div>
-                        <h1>Skor</h1>
-                        <h1>Tingkat Keterangantungan</h1>
-                    </div>
-                    <div class="whitespace-nowrap">
-                        <h1>: <strong id="totalSkor">0</strong></h1>
-                        <h1>: <strong id="tingkatKetergantungan">Rendah</strong></h1>
-                    </div>
-                </div>
+                <x-table class="-mx-6">
+                    <x-table.tbody>
+                        <x-table.tr>
+                            <x-table.td>Skor</x-table.td>
+                            <x-table.td><strong id="totalSkor">0</strong></x-table.td>
+                        </x-table.tr>
+                        <x-table.tr>
+                            <x-table.td>Tingkat Ketergantungan</x-table.td>
+                            <x-table.td><strong id="tingkatKetergantungan">Rendah</strong></x-table.td>
+                        </x-table.tr>
+                    </x-table.tbody>
+                </x-table>
             </div>
         </div>
         {{-- Daftar Area Evaluasi --}}
         <footer class="bg-white px-6 max-md:px-4 py-4 border-t border-gray-200 flex gap-2 overflow-x-auto">
             <x-button color="gray"
-                href="{{ route('responden.identitas-responden.edit', $identitasRespondenId) }}">Identitas</x-button>
-            <x-button>I Kategori SE</x-button>
-            <x-button color="gray">II Tata Kelola</x-button>
-            <x-button color="gray">III Risiko</x-button>
-            <x-button color="gray">IV Kerangka Kerja</x-button>
-            <x-button color="gray">V Pengelolaan Aset</x-button>
-            <x-button color="gray">VI Teknologi</x-button>
-            <x-button color="gray">VII PDP</x-button>
+                href="{{ route('responden.identitas-responden.edit', $hasilEvaluasi->identitas_responden_id) }}">Identitas</x-button>
+            <x-button>{{ $areaEvaluasi->nama_evaluasi }}</x-button>
+            @foreach ($daftarAreaEvaluasiUtama as $areaEvaluasiUtama)
+                <x-button
+                    href="{{ route('responden.evaluasi.evaluasi-utama', [$hasilEvaluasi->id, $areaEvaluasiUtama->id]) }}"
+                    color="gray">
+                    {{ $areaEvaluasiUtama->nama_evaluasi }}
+                </x-button>
+            @endforeach
             <x-button color="gray">VIII Suplemen</x-button>
-            <x-button color="gray">Dashboard</x-button>
+            <x-button color="gray"
+                href="{{ route('responden.evaluasi.dashboard', $hasilEvaluasi->id) }}">Dashboard</x-button>
         </footer>
     </div>
 @endsection
@@ -147,22 +158,13 @@
         let totalSkor = 0;
 
         // Ketika halaman di-load
-        window.addEventListener('load', () => {
-            perbaruiScrollPosisi();
-            perbaruiTotalSkor();
-        })
+        perbaruiScrollPosisi();
+        perbaruiTotalSkor();
 
         function perbaruiScrollPosisi() {
             const scrollPosition = localStorage.getItem('scrollPosition');
 
-            const daftarPesan = [
-                "{{ session('daftarJawabanTanpaDokumen') }}",
-                "{{ session('daftarJawabanTanpaStatus') }}",
-                "{{ session('daftarJawabanDokumenUkuranKebesaran') }}",
-                "{{ session('daftarJawabanDokumenTidakValid') }}",
-            ];
-
-            const apakahTidakAdaPesanGagal = daftarPesan.every(pesan => pesan === '');
+            const apakahTidakAdaPesanGagal = {{ session('daftarInformasiPertanyaanKesalahan') ? 'false' : 'true' }};
 
             if (apakahTidakAdaPesanGagal && scrollPosition) {
                 window.scrollTo(0, scrollPosition);
@@ -179,14 +181,21 @@
         }
 
         function perbaruiPertanyaanSkor(pertanyaanIndex, skor) {
+            // Mengambil elemen skor skor pertanyaan
             let pertanyaanSkorElement = document.getElementById('skorPertanyaan' + pertanyaanIndex);
+            // Ubah isi nilai skor elemen tersebut
             const pertanyaanSkor = pertanyaanSkorElement.textContent;
 
+            // Jika pertanyaan skor berubah
             if (pertanyaanSkor != skor) {
+                // Perbarui isi skor elemen tersebut
                 pertanyaanSkorElement.textContent = skor;
 
+                // Tampilkan tombol simpan
                 tampilkanSaveButton();
+                // Perbarui skor bagian index array
                 daftarSkorArray[pertanyaanIndex] = skor;
+                // Perbarui total skor
                 perbaruiTotalSkor();
             }
         }
@@ -194,7 +203,7 @@
         function perbaruiTotalSkor() {
             totalSkor = daftarSkorArray.reduce((acc, curr) => acc + curr);
 
-            totalSkorElement = document.getElementById('totalSkor');
+            const totalSkorElement = document.getElementById('totalSkor');
             totalSkorElement.textContent = totalSkor;
 
             perbaruiTingkatKeterangantungan();

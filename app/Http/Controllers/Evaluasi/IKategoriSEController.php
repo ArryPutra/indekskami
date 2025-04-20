@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Responden\Evaluasi;
+namespace App\Http\Controllers\Evaluasi;
 
 use App\Http\Controllers\Controller;
 use App\Models\Evaluasi\AreaEvaluasi;
 use App\Models\Evaluasi\HasilEvaluasi;
 use App\Models\Evaluasi\JawabanIKategoriSE;
+use App\Models\Evaluasi\JudulTemaPertanyaan;
 use App\Models\Evaluasi\PertanyaanIKategoriSE;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,8 +16,6 @@ class IKategoriSEController extends Controller
 {
     public function index(HasilEvaluasi $hasilEvaluasi)
     {
-        $user = Auth::user();
-
         $daftarPertanyaan = PertanyaanIKategoriSE::all();
         $daftarJawabanResponden = $hasilEvaluasi->jawabanIKategoriSE->keyBy('pertanyaan_id');
 
@@ -29,11 +28,14 @@ class IKategoriSEController extends Controller
                 'pertanyaan_id' => $pertanyaan->id,
                 'nomor' => $pertanyaan->nomor,
                 'pertanyaan' => $pertanyaan->pertanyaan,
-                'status_a' => $pertanyaan->status_a,
-                'status_b' => $pertanyaan->status_b,
-                'status_c' => $pertanyaan->status_c,
+                'status_pertama' => $pertanyaan->status_pertama,
+                'status_kedua' => $pertanyaan->status_kedua,
+                'status_ketiga' => $pertanyaan->status_ketiga,
+                'skor_status_pertama' => $pertanyaan->skor_status_pertama,
+                'skor_status_kedua' => $pertanyaan->skor_status_kedua,
+                'skor_status_ketiga' => $pertanyaan->skor_status_ketiga,
                 'status_jawaban' => $jawaban?->status_jawaban,
-                'skor_jawaban' =>  $jawaban?->status_jawaban ? $pertanyaan['skor_' . $jawaban->status_jawaban] : 0,
+                'skor_jawaban' =>  $jawaban?->status_jawaban ? $pertanyaan[$jawaban->status_jawaban] : 0,
                 'dokumen' => $jawaban?->dokumen,
                 'keterangan' => $jawaban?->keterangan
             ];
@@ -41,48 +43,55 @@ class IKategoriSEController extends Controller
 
         $daftarAreaEvaluasi = AreaEvaluasi::all();
 
-        return view('pages.responden.evaluasi.i-kategori-se', [
+        return view('pages.evaluasi.i-kategori-se', [
             'title' => 'Evaluasi',
             'daftarPertanyaanDanJawaban' => $daftarPertanyaanDanJawaban,
             'totalSkorJawabanArray' => array_column($daftarPertanyaanDanJawaban, 'skor_jawaban'),
-            'daftarAreaEvaluasi' => $daftarAreaEvaluasi,
+            'daftarAreaEvaluasiUtama' => $daftarAreaEvaluasi->whereNotIn('id', [1, 8]),
             'areaEvaluasi' => $daftarAreaEvaluasi->first(),
-            'identitasRespondenId' => $hasilEvaluasi->identitasResponden->id,
+            'hasilEvaluasi' => $hasilEvaluasi,
+            'daftarJudulTemaPertanyaan' => JudulTemaPertanyaan::where('area_evaluasi_id', 1)
+                ->get()
         ]);
     }
 
-    public function simpan(Request $request)
+    public function simpan(Request $request, HasilEvaluasi $hasilEvaluasi)
     {
         $user = Auth::user();
         $responden = $user->responden;
 
-        $hasilEvaluasi = $responden->hasilEvaluasi()->latest()->first();
-
         $daftarJawaban = $request->except('_token');
 
-        $daftarJawabanTanpaDokumen = [];
-        $daftarJawabanTanpaStatus = [];
-        $daftarJawabanDokumenUkuranKebesaran = [];
-        $daftarJawabanDokumenTidakValid = [];
+        $daftarNomorJawabanTanpaDokumen = [];
+        $daftarNomorJawabanTanpaStatus = [];
+        $daftarNomorJawabanDokumenUkuranKebesaran = [];
+        $daftarNomorJawabanDokumenTidakValid = [];
+
         foreach ($daftarJawaban as $nomor => $jawaban) {
+            // Pengecekan status jawaban ada atau kosong
             $statusJawaban = $jawaban['status_jawaban'] ?? null;
+            // Jika status jawaban ada dan tidak valid
+            if ($statusJawaban && !in_array($statusJawaban, JawabanIKategoriSE::getStatusOptions())) {
+                continue;
+            }
             // Pengecekan dokumen pada pertanyaan
             $dokumen =
                 // Jika ada unggah dokumen baru
                 $jawaban['unggah_dokumen_baru']
                 // Jika tidak ada dokumen baru maka ambil path dokumen lama
                 ?? $jawaban['path_dokumen_lama'] ?? null;
+            // Pengecekan keterangan
             $keterangan = $jawaban['keterangan'] ?? null;
 
-            // Jika status jawaban dan dokumen kosong
+            // Jika status jawaban atau dokumen kosong
             if (empty($statusJawaban) || empty($dokumen)) {
                 // Jika dokumen kosong tetapi status jawaban ada
                 if (empty($dokumen) && isset($statusJawaban)) {
-                    $daftarJawabanTanpaDokumen[] = '1.' . $nomor;
+                    $daftarNomorJawabanTanpaDokumen[] = '1.' . $nomor;
                 }
                 // Jika status jawaban kosong tetapi dokumen ada atau keterangan ada
                 if (empty($statusJawaban) && (isset($dokumen) || isset($keterangan))) {
-                    $daftarJawabanTanpaStatus[] = '1.' . $nomor;
+                    $daftarNomorJawabanTanpaStatus[] = '1.' . $nomor;
                 }
                 continue; // Lewati proses kode di bawah
             }
@@ -96,14 +105,14 @@ class IKategoriSEController extends Controller
                 $ukuranDokumenBaru_MB = number_format($dokumenBaru->getSize() / 1048576, 2);
                 // Jika ukuran dokumen lebih besar dari 10 MB
                 if ($ukuranDokumenBaru_MB > 10) {
-                    $daftarJawabanDokumenUkuranKebesaran[] = '1.' . $nomor;
+                    $daftarNomorJawabanDokumenUkuranKebesaran[] = '1.' . $nomor;
                     continue;
                 }
                 // Jika tipe dokumen tidak sesuai
                 $daftarEkstensiDokumenValid = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png', 'zip', 'rar', '7z'];
                 $ekstensiDokumenBaru = $dokumenBaru->getClientOriginalExtension();
                 if (!in_array($ekstensiDokumenBaru, $daftarEkstensiDokumenValid)) {
-                    $daftarJawabanDokumenTidakValid[] = '1.' . $nomor;
+                    $daftarNomorJawabanDokumenTidakValid[] = '1.' . $nomor;
                     continue;
                 }
                 // Jika ada dokumen lama
@@ -114,7 +123,7 @@ class IKategoriSEController extends Controller
                 // Lalu tambahkan dokumen baru
                 $pathDokumenSaatIni = $dokumenBaru->storeAs(
                     "evaluasi/$user->username/evaluasi-ke-" . $responden->hasilEvaluasi->count() . "/i-kategori-se",
-                    $nomor . '-' . $dokumenBaru->getClientOriginalName()
+                    $nomor . '-' . md5($dokumenBaru->getClientOriginalName()) . '.' . $dokumenBaru->getClientOriginalExtension()
                 );
             }
 
@@ -132,10 +141,26 @@ class IKategoriSEController extends Controller
             );
         }
 
-        return redirect()->route('responden.evaluasi.i-kategori-se')
-            ->with('daftarJawabanTanpaDokumen', implode(', ', $daftarJawabanTanpaDokumen))
-            ->with('daftarJawabanTanpaStatus', implode(', ', $daftarJawabanTanpaStatus))
-            ->with('daftarJawabanDokumenUkuranKebesaran', implode(', ', $daftarJawabanDokumenUkuranKebesaran))
-            ->with('daftarJawabanDokumenTidakValid', implode(', ', $daftarJawabanDokumenTidakValid));
+        $daftarInformasiPertanyaanKesalahan = array_filter([
+            [
+                'daftarNomor' => implode(', ', $daftarNomorJawabanTanpaDokumen),
+                'pesan' => 'Mohon isi pertanyaan dengan dokumen.',
+            ],
+            [
+                'daftarNomor' => implode(', ', $daftarNomorJawabanTanpaStatus),
+                'pesan' => 'Mohon isi pertanyaan dengan status.'
+            ],
+            [
+                'daftarNomor' => implode(', ', $daftarNomorJawabanDokumenUkuranKebesaran),
+                'pesan' => 'Mohon isi pertanyaan dengan maksimal ukuran dokumen 10 MB.'
+            ],
+            [
+                'daftarNomor' => implode(', ', $daftarNomorJawabanDokumenTidakValid),
+                'pesan' => 'Mohon isi pertanyaan dengan dokumen yang valid.'
+            ]
+        ], fn($item) => !empty($item['daftarNomor']));
+
+        return redirect()->route('responden.evaluasi.i-kategori-se', $hasilEvaluasi->id)
+            ->with('daftarInformasiPertanyaanKesalahan', $daftarInformasiPertanyaanKesalahan);
     }
 }

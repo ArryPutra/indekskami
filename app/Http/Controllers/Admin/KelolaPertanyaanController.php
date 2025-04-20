@@ -4,85 +4,39 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Evaluasi\AreaEvaluasi;
+use App\Models\Evaluasi\JudulTemaEvaluasiPertanyaan;
+use App\Models\Evaluasi\JudulTemaPertanyaan;
 use App\Models\Evaluasi\PertanyaanIKategoriSE;
 use Illuminate\Http\Request;
 
 class KelolaPertanyaanController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+
+    public function index() {}
+
+    public function edit(AreaEvaluasi $areaEvaluasi) {}
+
+    public function updateAreaEvaluasi(Request $request, string $id) {}
+
+    public function updateJudulTemaPertanyaan(Request $request)
     {
-        return view('pages.admin.kelola-pertanyaan.index', [
-            'title' => 'Kelola Pertanyaan',
-            'daftarAreaEvaluasi' => AreaEvaluasi::all()
-        ]);
+        $daftarRequestJudulTemaPertanyaan = $request->except('_token');
+
+        foreach ($daftarRequestJudulTemaPertanyaan as $judulTemaPertanyaanId => $judulTemaPertanyaanBaru) {
+            $judulTemaPertanyaanLama = JudulTemaPertanyaan::find($judulTemaPertanyaanId);
+
+            $judulTemaPertanyaanLama->update([
+                'judul' => $judulTemaPertanyaanBaru['judul'],
+                'sebelum_nomor' => $judulTemaPertanyaanBaru['sebelum_nomor']
+            ]);
+        }
+
+        return redirect()->back()->with('successUpdateJudulTemaPertanyaan', 'Data judul tema pertanyaan berhasil diperbarui!');
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function storeJudulTemaPertanyaan() {}
+    public function destroyJudulTemaPertanyaan(JudulTemaPertanyaan $judulTemaPertanyaan)
     {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        $areaEvaluasi = AreaEvaluasi::find($id);
-
-        $daftarPertanyaan = $areaEvaluasi->pertanyaanIKategoriSe;
-
-        return view('pages.admin.kelola-pertanyaan.form', [
-            'title' => 'Kelola Pertanyaan',
-            'areaEvaluasi' => $areaEvaluasi,
-            'daftarPertanyaan' => $daftarPertanyaan,
-            'page_meta' => [
-                'route' => route('kelola-pertanyaan.update', $areaEvaluasi->id),
-                'method' => 'PUT'
-            ]
-        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        $request->validate([
-            'nama_evaluasi' => ['required', 'max:255'],
-            'judul' => ['required', 'max:255'],
-            'deskripsi' => ['required']
-        ]);
-        $areaEvaluasi = AreaEvaluasi::find($id);
-
-        AreaEvaluasi::where('id', $areaEvaluasi->id)->update([
-            'nama_evaluasi' => $request->nama_evaluasi,
-            'judul' => $request->judul,
-            'deskripsi' => $request->deskripsi
-        ]);
-
-        return redirect()->back()->with('success', 'Data berhasil diperbarui!');
+        return $judulTemaPertanyaan;
     }
 
     public function updatePertanyaan(Request $request, string $id)
@@ -93,11 +47,14 @@ class KelolaPertanyaanController extends Controller
             'status_a' => ['required', 'max:255'],
             'status_b' => ['required', 'max:255'],
             'status_c' => ['required', 'max:255'],
+            'skor_status_a' => ['required', 'numeric'],
+            'skor_status_b' => ['required', 'numeric'],
+            'skor_status_c' => ['required', 'numeric']
         ]);
 
         $pertanyaanId = $request['pertanyaan_id'];
 
-        $pertanyaanBaru = $request;
+        $pertanyaanBaru = $request()->except(['_token', 'pertanyaan_id']);
         $pertanyaanLama = PertanyaanIKategoriSE::find($pertanyaanId);
 
         $pertanyaanLama->update([
@@ -106,16 +63,11 @@ class KelolaPertanyaanController extends Controller
             'status_a' => $pertanyaanBaru->status_a,
             'status_b' => $pertanyaanBaru->status_b,
             'status_c' => $pertanyaanBaru->status_c,
+            'skor_status_a' => $pertanyaanBaru->skor_status_a,
+            'skor_status_b' => $pertanyaanBaru->skor_status_b,
+            'skor_status_c' => $pertanyaanBaru->skor_status_c
         ]);
 
-        return redirect()->back()->with('success', 'Data pertanyaan berhasil diperbarui!');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->back()->with('successUpdatePertanyaan', 'Data pertanyaan berhasil diperbarui!');
     }
 }

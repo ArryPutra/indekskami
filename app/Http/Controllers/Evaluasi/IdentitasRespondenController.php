@@ -1,41 +1,47 @@
 <?php
 
-namespace App\Http\Controllers\Responden\Evaluasi;
+namespace App\Http\Controllers\Evaluasi;
 
 use App\Http\Controllers\Controller;
+use App\Models\Evaluasi\AreaEvaluasi;
 use App\Models\Evaluasi\HasilEvaluasi;
 use App\Models\Responden\IdentitasResponden;
 use App\Models\Responden\NilaiEvaluasi;
 use App\Models\Responden\Responden;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class IdentitasRespondenController extends Controller
 {
 
     public function create()
     {
-        $responden = Auth::user()->responden;
+        $user = Auth::user();
+        $responden = $user->responden;
 
-        if ($responden->status_evaluasi !== Responden::STATUS_BELUM) {
-            return abort(403, 'Anda tidak memiliki akses ke halaman ini');
-        }
+        abort_if($responden->status_evaluasi !== Responden::STATUS_BELUM, 403);
 
-        return view('pages.responden.evaluasi.identitas-responden', [
+        return view('pages.evaluasi.identitas-responden', [
             'title' => 'Identitas Responden',
-            'identitasResponden' => new IdentitasResponden(),
+            'identitasResponden' => new IdentitasResponden([
+                'nomor_telepon' => $user->nomor_telepon,
+                'email' => $user->email
+            ]),
             'pageMeta' => [
                 'route' => route('responden.identitas-responden.store'),
                 'method' => 'POST'
-            ]
+            ],
         ]);
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'identitas_instansi' => ['required', 'in:Satuan Kerja,Direktorat,Departemen'],
+            'identitas_instansi' => ['required', Rule::in(IdentitasResponden::getIdentitasOptions())],
             'alamat' => ['required'],
+            'nomor_telepon' => ['required', 'regex:/^[0-9]+$/', 'min:10', 'max:13'],
+            'email' => ['required', 'email'],
             'pengisi_lembar_evaluasi' => ['required', 'max:255'],
             'jabatan' => ['required', 'max:255'],
             'deskripsi_ruang_lingkup' => ['required'],
@@ -65,6 +71,7 @@ class IdentitasRespondenController extends Controller
             'responden_id' => $responden->id,
             'identitas_responden_id' => $IdentitasResponden->id,
             'nilai_evaluasi_id' => $nilaiEvaluasi->id,
+            'status' => HasilEvaluasi::STATUS_DIKERJAKAN
         ]);
 
         $user->responden->update([
@@ -76,23 +83,34 @@ class IdentitasRespondenController extends Controller
 
     public function edit(IdentitasResponden $identitasResponden)
     {
-        if ($identitasResponden->responden_id !== Auth::user()->responden->id) {
-            return abort(403, 'Anda tidak memiliki akses ke halaman ini');
-        }
+        abort_if($identitasResponden->responden_id !== Auth::user()->responden->id, 403);
 
-        return view('pages.responden.evaluasi.identitas-responden', [
+        $daftarAreaEvaluasi = AreaEvaluasi::all();
+
+        return view('pages.evaluasi.identitas-responden', [
             'title' => 'Identitas Responden',
             'identitasResponden' => $identitasResponden,
-            'hasilEvaluasiId' => $identitasResponden->hasilEvaluasi->id,
+            'hasilEvaluasi' => $identitasResponden->hasilEvaluasi,
             'pageMeta' => [
                 'route' => route('responden.identitas-responden.update', $identitasResponden->id),
                 'method' => 'PUT'
-            ]
+            ],
+            'daftarAreaEvaluasiUtama' => $daftarAreaEvaluasi->whereNotIn('id', [1, 8])
         ]);
     }
 
     public function update(Request $request, IdentitasResponden $identitasResponden)
     {
+        $request->validate([
+            'identitas_instansi' => ['required', Rule::in(IdentitasResponden::getIdentitasOptions())],
+            'alamat' => ['required'],
+            'nomor_telepon' => ['required', 'regex:/^[0-9]+$/', 'min:10', 'max:13'],
+            'email' => ['required', 'email'],
+            'pengisi_lembar_evaluasi' => ['required', 'max:255'],
+            'jabatan' => ['required', 'max:255'],
+            'deskripsi_ruang_lingkup' => ['required'],
+        ]);
+
         $identitasResponden->update([
             'identitas_instansi' => $request->identitas_instansi,
             'alamat' => $request->alamat,

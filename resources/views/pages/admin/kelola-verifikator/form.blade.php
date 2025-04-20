@@ -20,7 +20,7 @@
         <x-text-field name="password_confirmation"
             label="Konfirmasi Password {{ $page_meta['method'] == 'PUT' ? 'baru' : false }}"
             placeholder="Masukkan konfirmasi password" type="password" :required=false />
-        <x-radio label="Apakah verifikator dapat melakukan verifikasi?">
+        <x-radio name="akses_verifikasi" label="Apakah verifikator dapat melakukan verifikasi?">
             <x-radio.option name="akses_verifikasi" id="ya" value="1" :checked="old('akses_verifikasi', $verifikator->verifikator?->akses_verifikasi) == '1'">
                 Ya
             </x-radio.option>

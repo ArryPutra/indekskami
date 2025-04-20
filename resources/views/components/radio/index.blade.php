@@ -3,4 +3,7 @@
     <div class="space-y-1">
         {{ $slot }}
     </div>
+    @error($attributes->get('name'))
+        <p class="text-red-500">{{ $message }}</p>
+    @enderror
 </div>

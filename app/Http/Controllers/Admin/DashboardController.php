@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Evaluasi\HasilEvaluasi;
 use App\Models\Responden\Responden;
+use App\Models\Verifikator\Verifikator;
 
 class DashboardController extends Controller
 {
@@ -11,7 +13,11 @@ class DashboardController extends Controller
     {
         return view('pages.admin.dashboard', [
             'title' => 'Dashboard',
-            'totalResponden' => Responden::count()
+            'daftarDataCard' => [
+                'totalResponden' => Responden::count(),
+                'totalVerifikator' => Verifikator::count(),
+                'totalMengerjakanEvaluasi' => HasilEvaluasi::where('status', 'Dikerjakan')->count()
+            ]
         ]);
     }
 }

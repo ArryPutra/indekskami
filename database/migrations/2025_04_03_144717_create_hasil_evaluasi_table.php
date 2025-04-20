@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Evaluasi\HasilEvaluasi;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,6 +17,10 @@ return new class extends Migration
             $table->foreignId('responden_id')->constrained('responden');
             $table->foreignId('identitas_responden_id')->constrained('identitas_responden');
             $table->foreignId('nilai_evaluasi_id')->constrained('nilai_evaluasi');
+            $table->string('status')->default(HasilEvaluasi::STATUS_DIKERJAKAN);
+            $table->foreignId('verifikator_id')
+                ->nullable()
+                ->constrained('users');
             $table->timestamps();
         });
     }

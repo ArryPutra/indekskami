@@ -14,14 +14,14 @@ return new class extends Migration
         Schema::create('pertanyaan_i_kategori_se', function (Blueprint $table) {
             $table->id();
             $table->foreignId('area_evaluasi_id')->constrained('area_evaluasi');
-            $table->smallInteger('nomor');
+            $table->unsignedTinyInteger('nomor');
             $table->text('pertanyaan');
-            $table->string('status_a');
-            $table->string('status_b');
-            $table->string('status_c');
-            $table->tinyInteger('skor_status_a')->default(5);
-            $table->tinyInteger('skor_status_b')->default(2);
-            $table->tinyInteger('skor_status_c')->default(1);
+            $table->string('status_pertama');
+            $table->string('status_kedua');
+            $table->string('status_ketiga');
+            $table->tinyInteger('skor_status_pertama')->default(5);
+            $table->tinyInteger('skor_status_kedua')->default(2);
+            $table->tinyInteger('skor_status_ketiga')->default(1);
             $table->timestamps();
         });
     }

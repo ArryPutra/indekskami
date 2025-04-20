@@ -62,9 +62,18 @@ class KelolaRespondenController extends Controller
         // Menampilkan daftar responden
         $daftarResponden = $queryUserResponden->latest()->paginate(10);
 
+        $totalDaftarDaerahResponden = Responden::selectRaw('daerah, COUNT(*) as total')
+            ->groupBy('daerah')
+            ->pluck('total', 'daerah');
+
         return view('pages.admin.kelola-responden.index', [
             'title' => 'Kelola Responden',
-            'daftarResponden' => $daftarResponden
+            'daftarResponden' => $daftarResponden,
+            'daftarDataCard' => [
+                'totalResponden' => Responden::count(),
+                'totalKabupatenKota' => $totalDaftarDaerahResponden['Kabupaten/Kota'] ?? 0,
+                'totalProvinsi' => $totalDaftarDaerahResponden['Provinsi'] ?? 0,
+            ]
         ]);
     }
 
@@ -95,7 +104,8 @@ class KelolaRespondenController extends Controller
                 'username' => ['required', 'min:8', 'max:255', 'unique:users,username'],
                 'email' => ['required', 'email', 'max:255', 'unique:users,email'],
                 'nomor_telepon' => ['required', 'regex:/^[0-9]+$/', 'min:10', 'max:13', 'unique:users,nomor_telepon'],
-                'password' => ['required', 'min:8', 'confirmed'],
+                'password' => ['required', 'min:8', 'confirmed', 'regex:/^(?=.*[A-Za-z])(?=.*\d).+$/'],
+                'akses_evaluasi' => ['required', 'boolean']
             ]
         );
         // Memberikan peran nilai responden (3) secara default
@@ -175,7 +185,13 @@ class KelolaRespondenController extends Controller
                 'regex:/^[0-9]+$/',
                 Rule::unique('users', 'nomor_telepon')->ignore($user->id),
             ],
-            'password' => ['nullable', 'min:8', 'confirmed', 'regex:/^(?=.*[A-Za-z])(?=.*\d).+$/'],
+            'password' => [
+                'nullable',
+                'min:8',
+                'confirmed',
+                'regex:/^(?=.*[A-Za-z])(?=.*\d).+$/',
+            ],
+            'akses_evaluasi' => ['required', 'boolean']
         ]);
 
         // Jika terdapat password baru

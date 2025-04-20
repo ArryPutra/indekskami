@@ -12,6 +12,20 @@ class IdentitasResponden extends Model
 
     protected $guarded = ['id', 'created_at', 'updated_at'];
 
+    // Identitas
+    const SATUAN_KERJA = 'Satuan Kerja';
+    const DIREKTORAT = 'Direktorat';
+    const DEPARTEMEN = 'Departemen';
+
+    public static function getIdentitasOptions()
+    {
+        return [
+            self::SATUAN_KERJA,
+            self::DIREKTORAT,
+            self::DEPARTEMEN,
+        ];
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');

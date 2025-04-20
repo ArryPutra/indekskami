@@ -8,7 +8,7 @@ class PertanyaanIKategoriSE extends Model
 {
     protected $table = 'pertanyaan_i_kategori_se';
 
-    protected $guarded = ['id'];
+    protected $guarded = ['id', 'created_at', 'updated_at'];
 
     function getJawabanResponden($respondenId, $hasilEvaluasiId, $pertanyaanId)
     {

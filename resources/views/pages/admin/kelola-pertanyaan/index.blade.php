@@ -1,6 +1,11 @@
 @extends('layouts.layout')
 
 @section('content')
+    @if (session('error'))
+        <x-alert class="mb-4" type="error" isClosed="true">
+            {{ session('error') }}
+        </x-alert>
+    @endif
     <x-table>
         <x-table.thead>
             <x-table.th>No.</x-table.th>
@@ -17,12 +22,9 @@
                     <x-table.td>{{ $areaEvaluasi->judul }}</x-table.td>
                     <x-table.td>{{ $areaEvaluasi->deskripsi }}</x-table.td>
                     <x-table.td>
-                        <div class="flex gap-2">
-                            <x-button>Detail</x-button>
-                            <x-button color="blue" href="{{ route('kelola-pertanyaan.edit', $areaEvaluasi->id) }}">
-                                Edit
-                            </x-button>
-                        </div>
+                        <x-button color="blue" href="{{ route('kelola-area-evaluasi.edit', $areaEvaluasi->id) }}">
+                            Edit
+                        </x-button>
                     </x-table.td>
                 </x-table.tr>
             @endforeach

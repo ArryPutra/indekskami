@@ -17,6 +17,7 @@ class PeranSeeder extends Seeder
             Peran::PERAN_ADMIN,
             Peran::PERAN_VERIFIKATOR,
             Peran::PERAN_RESPONDEN,
+            Peran::PERAN_PENINJAU
         ];
 
         foreach ($daftarNamaPeran as $namaPeran) {

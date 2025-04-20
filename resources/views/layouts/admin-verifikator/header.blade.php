@@ -19,7 +19,7 @@
         x-transition:enter="transition ease-out duration-100 transform" x-transition:enter-start="opacity-0 scale-95"
         x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75 transform"
         x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
-        class="bg-white p-4 shadow rounded-lg fixed right-8 top-24 text-sm w-32">
+        class="bg-white p-4 shadow rounded-lg fixed right-8 top-24 text-sm w-32 max-md:z-10">
         <h1 class="font-bold break-words">{{ auth()->user()->nama }}</h1>
         <h1>{{ auth()->user()->peran->nama_peran }}</h1>
         <div class="w-full h-0.5 bg-slate-200 my-2"></div>

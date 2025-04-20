@@ -1,6 +1,21 @@
 @extends('layouts.layout')
 
 @section('content')
+    <div class="grid lg:grid-cols-3 md:grid-cols-2 gap-4 mb-8">
+        {{-- Total Verifikator --}}
+        <x-card>
+            <x-slot:icon>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path
+                        d="M8 12.052c1.995 0 3.5-1.505 3.5-3.5s-1.505-3.5-3.5-3.5-3.5 1.505-3.5 3.5 1.505 3.5 3.5 3.5zM9 13H7c-2.757 0-5 2.243-5 5v1h12v-1c0-2.757-2.243-5-5-5zm11.294-4.708-4.3 4.292-1.292-1.292-1.414 1.414 2.706 2.704 5.712-5.702z">
+                    </path>
+                </svg>
+            </x-slot:icon>
+            <x-slot:label>Total Verifikator</x-slot:label>
+            <x-slot:value>{{ $daftarDataCard['totalVerifikator'] }}</x-slot:value>
+        </x-card>
+    </div>
+
     <form method="GET" action="{{ route('kelola-verifikator.index') }}">
         <section class="flex justify-between flex-wrap gap-4 mb-4">
             <div class="flex gap-3 w-full">
@@ -8,6 +23,9 @@
                 <x-button type="submit">
                     <span>Cari</span>
                 </x-button>
+                @if (request('cari') !== null)
+                    <x-button type="submit" name="cari" value="" color="red">Hapus</x-button>
+                @endif
             </div>
             <x-button href="{{ route('kelola-verifikator.create') }}">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"

@@ -1,15 +1,15 @@
 {{-- 
 
     Catatan:
-    - Setiap kompenen diberikan variabel $type untuk menentukan jenis alert (tidak wajib, default: danger).
+    - Setiap kompenen diberikan variabel $type untuk menentukan jenis alert (tidak wajib, default: error).
     - Variabel $isClosed digunakan agar dapat menutup alert jika variabel bernilai true.
 
 --}}
 @php
-    $type = $type ?? 'danger';
+    $type = $type ?? 'error';
 
     switch ($type) {
-        case 'danger':
+        case 'error':
             $backgroundColor = 'bg-red-100';
             $color = 'text-red-400';
             $borderColor = 'border-red-200';

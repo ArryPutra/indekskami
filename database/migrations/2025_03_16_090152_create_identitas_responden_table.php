@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Responden\IdentitasResponden;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,7 +15,7 @@ return new class extends Migration
         Schema::create('identitas_responden', function (Blueprint $table) {
             $table->id();
             $table->foreignId('responden_id')->constrained('responden');
-            $table->enum('identitas_instansi', ['Satuan Kerja', 'Direktorat', 'Departemen']);
+            $table->string('identitas_instansi');
             $table->text('alamat');
             $table->string('nomor_telepon');
             $table->string('email');

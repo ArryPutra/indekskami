@@ -31,6 +31,7 @@
             $peranId = Auth::user()->peran_id;
         @endphp
         @switch($peranId)
+            {{-- Admin --}}
             @case(1)
                 @include('layouts.admin-verifikator.header')
                 @include('layouts.admin-verifikator.sidebar')
@@ -39,6 +40,7 @@
                 </x-content>
             @break
 
+            {{-- Verifikator --}}
             @case(2)
                 @include('layouts.admin-verifikator.header')
                 @include('layouts.admin-verifikator.sidebar')
@@ -47,6 +49,7 @@
                 </x-content>
             @break
 
+            {{-- Responden --}}
             @case(3)
                 @include('layouts.responden.header')
                 @include('layouts.responden.sidebar')

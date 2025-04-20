@@ -60,7 +60,7 @@ class AuthController extends Controller
                 case 1:
                     return redirect()->route('admin.dashboard');
                 case 2:
-                    return redirect('/verifikator/dashboard');
+                    return redirect()->route('verifikator.dashboard');
                 case 3:
                     return redirect()->route('responden.dashboard');
                 default:

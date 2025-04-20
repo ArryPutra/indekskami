@@ -14,6 +14,18 @@
             <h1>Nomor Telepon:</h1>
             <h1 class="font-bold text-lg">{{ $user->nomor_telepon }}</h1>
         </section>
+        <section>
+            <h1>Tanggal Dibuat:</h1>
+            <h1 class="font-bold text-lg">
+                {{ Carbon\Carbon::parse($user->created_at)->translatedFormat('l, d F Y, H:i:s') }}
+            </h1>
+        </section>
+        <section>
+            <h1>Tanggal Diperbarui:</h1>
+            <h1 class="font-bold text-lg">
+                {{ Carbon\Carbon::parse($user->updated_at)->translatedFormat('l, d F Y, H:i:s') }}
+            </h1>
+        </section>
     </div>
 
     @if (session('success'))

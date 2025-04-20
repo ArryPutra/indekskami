@@ -17,14 +17,9 @@ class KepemilikanHasilEvaluasiMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $respondenId = Auth::user()->responden->id;
-        $hasilEvaluasiId = $request->route('hasilEvaluasi');
+        $hasilEvaluasi = $request->route('hasilEvaluasi');
 
-        $hasilEvaluasi = HasilEvaluasi::find($hasilEvaluasiId)->first();
-
-        if (($hasilEvaluasi->responden_id !== $respondenId) && $hasilEvaluasi !== null) {
-            return abort(403, 'Anda tidak memiliki akses ke hasil evaluasi ini');
-        }
+        abort_if($hasilEvaluasi->responden_id !== Auth::user()->responden->id, 403);
 
         return $next($request);
     }

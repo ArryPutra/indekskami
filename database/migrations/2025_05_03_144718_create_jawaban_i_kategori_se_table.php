@@ -19,8 +19,9 @@ return new class extends Migration
             $table->string('status_jawaban');
             $table->text('dokumen');
             $table->text('keterangan')->nullable();
-            $table->unique(['responden_id', 'pertanyaan_id', 'hasil_evaluasi_id'], 'unique_jawaban');
             $table->timestamps();
+
+            $table->unique(['responden_id', 'pertanyaan_id', 'hasil_evaluasi_id'], 'unique_jawaban');
         });
     }
 

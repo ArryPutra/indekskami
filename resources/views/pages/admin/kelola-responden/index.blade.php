@@ -1,6 +1,48 @@
 @extends('layouts.layout')
 
 @section('content')
+    <div class="grid lg:grid-cols-3 md:grid-cols-2 gap-4 mb-8">
+        {{-- Total Responden --}}
+        <x-card>
+            <x-slot:icon>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path
+                        d="M7.5 6.5C7.5 8.981 9.519 11 12 11s4.5-2.019 4.5-4.5S14.481 2 12 2 7.5 4.019 7.5 6.5zM20 21h1v-1c0-3.859-3.141-7-7-7h-4c-3.86 0-7 3.141-7 7v1h17z">
+                    </path>
+                </svg>
+            </x-slot:icon>
+            <x-slot:label>Total Responden</x-slot:label>
+            <x-slot:value>{{ $daftarDataCard['totalResponden'] }}</x-slot:value>
+        </x-card>
+        {{-- Total Kabupaten/Kota --}}
+        <x-card>
+            <x-slot:icon>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                    <path fill-rule="evenodd"
+                        d="M4.5 2.25a.75.75 0 0 0 0 1.5v16.5h-.75a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5h-.75V3.75a.75.75 0 0 0 0-1.5h-15ZM9 6a.75.75 0 0 0 0 1.5h1.5a.75.75 0 0 0 0-1.5H9Zm-.75 3.75A.75.75 0 0 1 9 9h1.5a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75ZM9 12a.75.75 0 0 0 0 1.5h1.5a.75.75 0 0 0 0-1.5H9Zm3.75-5.25A.75.75 0 0 1 13.5 6H15a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75ZM13.5 9a.75.75 0 0 0 0 1.5H15A.75.75 0 0 0 15 9h-1.5Zm-.75 3.75a.75.75 0 0 1 .75-.75H15a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75ZM9 19.5v-2.25a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-.75.75h-4.5A.75.75 0 0 1 9 19.5Z"
+                        clip-rule="evenodd" />
+                </svg>
+            </x-slot:icon>
+            <x-slot:label>Total Kabupaten/Kota</x-slot:label>
+            <x-slot:value>{{ $daftarDataCard['totalKabupatenKota'] }}</x-slot:value>
+        </x-card>
+        {{-- Total Provinsi --}}
+        <x-card>
+            <x-slot:icon>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                    <path
+                        d="M11.584 2.376a.75.75 0 0 1 .832 0l9 6a.75.75 0 1 1-.832 1.248L12 3.901 3.416 9.624a.75.75 0 0 1-.832-1.248l9-6Z" />
+                    <path fill-rule="evenodd"
+                        d="M20.25 10.332v9.918H21a.75.75 0 0 1 0 1.5H3a.75.75 0 0 1 0-1.5h.75v-9.918a.75.75 0 0 1 .634-.74A49.109 49.109 0 0 1 12 9c2.59 0 5.134.202 7.616.592a.75.75 0 0 1 .634.74Zm-7.5 2.418a.75.75 0 0 0-1.5 0v6.75a.75.75 0 0 0 1.5 0v-6.75Zm3-.75a.75.75 0 0 1 .75.75v6.75a.75.75 0 0 1-1.5 0v-6.75a.75.75 0 0 1 .75-.75ZM9 12.75a.75.75 0 0 0-1.5 0v6.75a.75.75 0 0 0 1.5 0v-6.75Z"
+                        clip-rule="evenodd" />
+                    <path d="M12 7.875a1.125 1.125 0 1 0 0-2.25 1.125 1.125 0 0 0 0 2.25Z" />
+                </svg>
+            </x-slot:icon>
+            <x-slot:label>Total Provinsi</x-slot:label>
+            <x-slot:value>{{ $daftarDataCard['totalProvinsi'] }}</x-slot:value>
+        </x-card>
+    </div>
+
     <form method="GET" action="{{ route('kelola-responden.index') }}">
         <section class="flex justify-between flex-wrap gap-4 mb-4">
             <div class="flex gap-3 w-full">
@@ -8,6 +50,9 @@
                 <x-button type="submit">
                     <span>Cari</span>
                 </x-button>
+                @if (request('cari') !== null)
+                    <x-button type="submit" name="cari" value="" color="red">Hapus</x-button>
+                @endif
             </div>
             <x-button href="{{ route('kelola-responden.create') }}">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"

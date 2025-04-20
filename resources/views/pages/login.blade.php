@@ -44,19 +44,20 @@
             <x-button type="submit" class="mt-6">Login</x-button>
             <div class="flex flex-wrap text-center items-center justify-center pt-4 text-slate-500">
                 <span>Bantuan & Layanan Hubungi:</span>
-                <span>08xx-xxxx-xxxx</span>
+                <span>082254249276</span>
             </div>
         </form>
-        <div class="w-full lg:h-full pl-6 max-lg:pl-4 max-lg:py-3 lg:pb-12 flex flex-col justify-center lg:justify-end lg:gap-2 text-white"
+        <div class="w-full lg:h-full pl-6 max-lg:pl-4 max-lg:py-5 lg:pb-12 flex flex-col justify-center lg:justify-end text-white"
             style="
             background: linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0)), url('{{ asset('images/login-bg.jpg') }}');
             background-size: cover;
             background-position: left;
             ">
             <h1 class="font-bold lg:text-4xl max-lg:text-3xl">Indeks KAMI versi 5.0</h1>
-            <a href="https://diskominfo.kalselprov.go.id" class="hover:underline" target="_blank">
+            <a href="https://diskominfo.kalselprov.go.id" class="hover:underline text-xl font-semibold" target="_blank">
                 Dinas Komunikasi dan Informatika Kalimantan Selatan
             </a>
+            <span class="opacity-75">Bidang Persandian dan Keamanan Informasi</span>
         </div>
     </main>
 @endsection

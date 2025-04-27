@@ -1,4 +1,4 @@
-<div class="flex flex-col gap-1.5 w-full">
+<div {{ $attributes->class('flex flex-col gap-1.5') }}>
     @if (isset($label))
         <label for="{{ $name }}">{{ $label }}</label>
     @endif

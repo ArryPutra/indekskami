@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('pertanyaan_i_kategori_se', function (Blueprint $table) {
             $table->id();
             $table->foreignId('area_evaluasi_id')->constrained('area_evaluasi');
-            $table->unsignedTinyInteger('nomor');
+            $table->unsignedSmallInteger('nomor');
+            $table->text('catatan')->nullable();
             $table->text('pertanyaan');
             $table->string('status_pertama');
             $table->string('status_kedua');
@@ -22,7 +23,10 @@ return new class extends Migration
             $table->tinyInteger('skor_status_pertama')->default(5);
             $table->tinyInteger('skor_status_kedua')->default(2);
             $table->tinyInteger('skor_status_ketiga')->default(1);
+            $table->boolean('apakah_tampil')->default(true);
             $table->timestamps();
+
+            $table->unique(['nomor', 'area_evaluasi_id', 'apakah_tampil'], 'nomor_area_evaluasi_apakah_tampil_unique');
         });
     }
 

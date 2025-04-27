@@ -27,8 +27,11 @@
                 <x-table.th>Keterangan</x-table.th>
             </x-table.thead>
             <x-table.tbody>
+                {{-- Looping pertanyaan --}}
                 @foreach ($daftarPertanyaanDanJawaban as $index => $pertanyaanDanJawaban)
+                    {{-- Looping judul tema pertanyaan --}}
                     @foreach ($daftarJudulTemaPertanyaan as $judulTemaPertanyaan)
+                        {{-- Menyesuaikan judul tema pertanyaan --}}
                         @if ($judulTemaPertanyaan->letakkan_sebelum_nomor == $pertanyaanDanJawaban['nomor'])
                             <x-table.tr class="!bg-gray-200">
                                 <x-table.td class="font-bold uppercase text-xs" colspan="7">
@@ -37,11 +40,33 @@
                             </x-table.tr>
                         @endif
                     @endforeach
-
                     <x-table.tr>
                         <input type="hidden" name="{{ $pertanyaanDanJawaban['nomor'] }}[pertanyaan_id]"
                             value="{{ $pertanyaanDanJawaban['pertanyaan_id'] }}">
-                        <x-table.td>1.{{ $pertanyaanDanJawaban['nomor'] }}</x-table.td>
+                        {{-- Kolom: Nomor --}}
+                        <x-table.td>
+                            <span>1.{{ $pertanyaanDanJawaban['nomor'] }}</span>
+                            @if ($pertanyaanDanJawaban['catatan'])
+                                <div x-data="{ isOpen: false }" x-on:mouseenter="isOpen = true"
+                                    x-on:mouseleave="isOpen = false">
+                                    <svg class="mt-1.5 cursor-pointer fill-gray-400 hover:fill-gray-700 hover:scale-110 duration-150"
+                                        xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                        viewBox="0 0 24 24">
+                                        <path
+                                            d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z">
+                                        </path>
+                                        <path d="M11 11h2v6h-2zm0-4h2v2h-2z"></path>
+                                    </svg>
+                                    <div x-cloak x-show="isOpen"
+                                        class=" bg-white p-3 rounded-lg absolute max-w-5/6 translate-x-5
+                                        duration-150 border border-gray-200 w-fit -translate-y-1/2">
+                                        <h1 class="font-semibold">Catatan:</h1>
+                                        <p>{{ $pertanyaanDanJawaban['catatan'] }}</p>
+                                    </div>
+                                </div>
+                            @endif
+                        </x-table.td>
+                        {{-- Kolom: Pertanyaan --}}
                         <x-table.td class="min-w-56">
                             <x-radio label="{{ $pertanyaanDanJawaban['pertanyaan'] }}">
                                 <x-radio.option :checked="$pertanyaanDanJawaban['status_jawaban'] === 'skor_status_pertama'"
@@ -64,22 +89,25 @@
                                 </x-radio.option>
                             </x-radio>
                         </x-table.td>
+                        {{-- Kolom: Skor --}}
                         <x-table.td>
                             <span
                                 id="skorPertanyaan{{ $index }}">{{ $pertanyaanDanJawaban['skor_jawaban'] }}</span>
                         </x-table.td>
+                        {{-- Kolom: Dokumen --}}
                         <x-table.td>
                             <x-file-upload name="{{ $pertanyaanDanJawaban['nomor'] }}[unggah_dokumen_baru]"
                                 oninput="tampilkanSaveButton()" />
                             @if ($pertanyaanDanJawaban['dokumen'])
                                 <input type="hidden" name="{{ $pertanyaanDanJawaban['nomor'] }}[path_dokumen_lama]"
                                     value="{{ $pertanyaanDanJawaban['dokumen'] }}">
-                                <x-button href="/storage/{{ $pertanyaanDanJawaban['dokumen'] }}" target="_blank"
+                                <x-button href="/file/{{ $pertanyaanDanJawaban['dokumen'] }}" target="_blank"
                                     class="w-fit mt-2">Lihat
                                     Dokumen
                                 </x-button>
                             @endif
                         </x-table.td>
+                        {{-- Kolom: Keterangan --}}
                         <x-table.td>
                             <x-text-area name="{{ $pertanyaanDanJawaban['nomor'] }}[keterangan]" placeholder="Keterangan"
                                 :required=false oninput="tampilkanSaveButton()"
@@ -116,8 +144,8 @@
                 </svg>
             </x-button>
             {{-- Hasil Nilai Evaluasi Panel --}}
-            <div x-cloak class="bg-white border-t border-gray-200 px-6 max-md:px-4 py-4 overflow-hidden"
-                :class="{ 'block': isOpen, 'hidden': !isOpen }">
+            <div x-cloak class="bg-white border-t border-gray-200 px-6 max-md:px-4 pt-4 overflow-hidden"
+                :class="{ 'block shadow-2xl': isOpen, 'hidden': !isOpen }">
                 <h1 class="font-bold mb-1.5">Hasil Nilai Evaluasi</h1>
                 <x-table class="-mx-6">
                     <x-table.tbody>
@@ -125,7 +153,7 @@
                             <x-table.td>Skor</x-table.td>
                             <x-table.td><strong id="totalSkor">0</strong></x-table.td>
                         </x-table.tr>
-                        <x-table.tr>
+                        <x-table.tr class="!border-b-0">
                             <x-table.td>Tingkat Ketergantungan</x-table.td>
                             <x-table.td><strong id="tingkatKetergantungan">Rendah</strong></x-table.td>
                         </x-table.tr>

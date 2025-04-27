@@ -37,7 +37,7 @@ class JudulTemaPertanyaanSeeder extends Seeder
             [
                 'area_evaluasi_id' => 4,
                 'judul' => 'Pengelolaan Strategi dan Program Keamanan Informasi',
-                'letakkan_sebelum_nomor' => 23
+                'letakkan_sebelum_nomor' => 24
             ],
             [
                 'area_evaluasi_id' => 5,

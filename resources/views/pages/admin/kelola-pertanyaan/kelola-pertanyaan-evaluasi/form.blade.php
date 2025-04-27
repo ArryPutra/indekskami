@@ -10,10 +10,19 @@
             <x-text-field name="nomor" label="Nomor" placeholder="Masukkan nomor"
                 value="{{ old('nomor', $pertanyaan->nomor) }}" />
             @if ($tipeEvaluasi === 'Evaluasi Utama')
-                <x-text-field name="tingkat_kematangan" label="Tingkat Kematangan" placeholder="Masukkan tingkat kematangan"
-                    value="{{ old('tingkat_kematangan', $pertanyaan->tingkat_kematangan) }}" />
-                <x-text-field name="pertanyaan_tahap" label="Pertanyaan Tahap" placeholder="Masukkan pertanyaan tahap"
-                    value="{{ old('pertanyaan_tahap', $pertanyaan->pertanyaan_tahap) }}" />
+                <x-dropdown name="tingkat_kematangan" label="Pilih Tingkat Kematangan">
+                    @foreach ($dropdownOptions['tingkatKematangan'] as $tingkatKematangan)
+                        <x-dropdown.option value="{{ $tingkatKematangan }}"
+                            :selected="old('tingkat_kematangan', $pertanyaan->tingkat_kematangan) ===
+                                $tingkatKematangan">{{ $tingkatKematangan }}</x-dropdown.option>
+                    @endforeach
+                </x-dropdown>
+                <x-dropdown name="pertanyaan_tahap" label="Pilih Pertanyaan Tahap">
+                    @foreach ($dropdownOptions['pertanyaanTahap'] as $pertanyaanTahap)
+                        <x-dropdown.option value="{{ $pertanyaanTahap }}"
+                            :selected="old('pertanyaan_tahap', $pertanyaan->pertanyaan_tahap) == $pertanyaanTahap">{{ $pertanyaanTahap }}</x-dropdown.option>
+                    @endforeach
+                </x-dropdown>
             @endif
             <x-text-area name="pertanyaan" label="Pertanyaan" placeholder="Masukkan pertanyaan"
                 value="{{ old('pertanyaan', $pertanyaan->pertanyaan) }}" />
@@ -26,7 +35,8 @@
             @if ($tipeEvaluasi !== 'Kategori Sistem Elektronik')
                 <x-text-field name="status_keempat" label="Status Keempat" placeholder="Masukkan status keempat"
                     value="{{ old('status_keempat', $pertanyaan->status_keempat) }}" />
-                <x-text-field name="status_kelima" label="Status Kelima" placeholder="Masukkan status kelima"
+                <x-text-field name="status_kelima" label="Status Kelima (Opsional)"
+                    placeholder="Masukkan status kelima (opsional)"
                     value="{{ old('status_kelima', $pertanyaan->status_kelima) }}" />
             @endif
             <x-text-field name="skor_status_pertama" label="Skor Status Pertama" placeholder="Masukkan skor status pertama"
@@ -39,10 +49,15 @@
                 <x-text-field name="skor_status_keempat" label="Skor Status Keempat"
                     placeholder="Masukkan skor status keempat"
                     value="{{ old('skor_status_keempat', $pertanyaan->skor_status_keempat) }}" />
-                <x-text-field name="skor_status_kelima" label="Skor Status Kelima" placeholder="Masukkan skor status kelima"
+                <x-text-field name="skor_status_kelima" label="Skor Status Kelima (Opsional)"
+                    placeholder="Masukkan skor status kelima (opsional)"
                     value="{{ old('skor_status_kelima', $pertanyaan->skor_status_kelima) }}" />
             @endif
+            <x-text-area name="catatan" label="Catatan" placeholder="Masukkan catatan"
+                value="{{ old('catatan', $pertanyaan->catatan) }}" />
         </div>
-        <x-button type="submit" class="mt-4">Simpan</x-button>
+        <x-button type="submit" class="mt-4">
+            {{ $pageMeta['method'] === 'POST' ? 'Tambah' : 'Perbarui' }}
+        </x-button>
     </form>
 @endsection

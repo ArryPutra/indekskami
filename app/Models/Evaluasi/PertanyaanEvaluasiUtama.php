@@ -10,6 +10,23 @@ class PertanyaanEvaluasiUtama extends Model
 
     protected $guarded = ['id', 'created_at', 'updated_at'];
 
+    const STATUS_PERTAMA = 'Tidak Dilakukan';
+    const STATUS_KEDUA = 'Dalam Perencanaan';
+    const STATUS_KETIGA = 'Dalam Perencanaan / Diterapkan Sebagian';
+    const STATUS_KEEMPAT = 'Diterapkan Secara Menyeluruh';
+    const STATUS_KELIMA = 'Tidak Berlaku/Relevan';
+
+    public static function getStatusOptions()
+    {
+        return [
+            self::STATUS_PERTAMA,
+            self::STATUS_KEDUA,
+            self::STATUS_KETIGA,
+            self::STATUS_KEEMPAT,
+            self::STATUS_KELIMA
+        ];
+    }
+
     const TINGKAT_KEMATANGAN_II = 'II';
     const TINGKAT_KEMATANGAN_III = 'III';
     const TINGKAT_KEMATANGAN_IV = 'IV';
@@ -25,7 +42,20 @@ class PertanyaanEvaluasiUtama extends Model
         ];
     }
 
-    function getJawabanResponden($areaEvaluasiId, $respondenId, $hasilEvaluasiId, $pertanyaanId)
+    const PERTANYAAN_TAHAP_1 = '1';
+    const PERTANYAAN_TAHAP_2 = '2';
+    const PERTANYAAN_TAHAP_3 = '3';
+
+    public static function getPertanyaanTahapOptions()
+    {
+        return [
+            self::PERTANYAAN_TAHAP_1,
+            self::PERTANYAAN_TAHAP_2,
+            self::PERTANYAAN_TAHAP_3,
+        ];
+    }
+
+    public function getJawabanResponden($areaEvaluasiId, $respondenId, $hasilEvaluasiId, $pertanyaanId)
     {
         return JawabanEvaluasiUtama::where([
             'area_evaluasi_id' => $areaEvaluasiId,

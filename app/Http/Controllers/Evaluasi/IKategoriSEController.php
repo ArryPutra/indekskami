@@ -8,6 +8,7 @@ use App\Models\Evaluasi\HasilEvaluasi;
 use App\Models\Evaluasi\JawabanIKategoriSE;
 use App\Models\Evaluasi\JudulTemaPertanyaan;
 use App\Models\Evaluasi\PertanyaanIKategoriSE;
+use App\Models\Files;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -16,7 +17,7 @@ class IKategoriSEController extends Controller
 {
     public function index(HasilEvaluasi $hasilEvaluasi)
     {
-        $daftarPertanyaan = PertanyaanIKategoriSE::all();
+        $daftarPertanyaan = PertanyaanIKategoriSE::where('apakah_tampil', true)->orderBy('nomor')->get();
         $daftarJawabanResponden = $hasilEvaluasi->jawabanIKategoriSE->keyBy('pertanyaan_id');
 
         $daftarPertanyaanDanJawaban = [];
@@ -27,6 +28,7 @@ class IKategoriSEController extends Controller
             $daftarPertanyaanDanJawaban[] = [
                 'pertanyaan_id' => $pertanyaan->id,
                 'nomor' => $pertanyaan->nomor,
+                'catatan' => $pertanyaan->catatan,
                 'pertanyaan' => $pertanyaan->pertanyaan,
                 'status_pertama' => $pertanyaan->status_pertama,
                 'status_kedua' => $pertanyaan->status_kedua,
@@ -99,8 +101,9 @@ class IKategoriSEController extends Controller
             $dokumenBaru = $jawaban['unggah_dokumen_baru'] ?? null;
             $pathDokumenSaatIni = $jawaban['path_dokumen_lama'] ?? null;
 
-            // Jika ada unggah dokumen baru
-            if (isset($dokumenBaru)) {
+            // Jika ada unggah dokumen baru dan
+            // jumlah karakter dokumen kurang dari 100 (untuk menambahkan  nama file ke table karena max: 255)
+            if (isset($dokumenBaru) && strlen($dokumenBaru->getClientOriginalName()) <= 100) {
                 // Pengecekan ukuran dokumen dalam MB
                 $ukuranDokumenBaru_MB = number_format($dokumenBaru->getSize() / 1048576, 2);
                 // Jika ukuran dokumen lebih besar dari 10 MB
@@ -122,9 +125,16 @@ class IKategoriSEController extends Controller
                 }
                 // Lalu tambahkan dokumen baru
                 $pathDokumenSaatIni = $dokumenBaru->storeAs(
-                    "evaluasi/$user->username/evaluasi-ke-" . $responden->hasilEvaluasi->count() . "/i-kategori-se",
-                    $nomor . '-' . md5($dokumenBaru->getClientOriginalName()) . '.' . $dokumenBaru->getClientOriginalExtension()
+                    "Evaluasi/$responden->daerah/$user->username/Evaluasi " . $responden->hasilEvaluasi->count() . "/I Kategori SE",
+                    $nomor . ' - ' . $dokumenBaru->getClientOriginalName()
                 );
+                // Simpan data dokumen ke database
+                Files::create([
+                    'user_id' => $user->id,
+                    'path' => $pathDokumenSaatIni,
+                    'tipe' => Files::EVALUASI,
+                    'nama_file' => $dokumenBaru->getClientOriginalName()
+                ]);
             }
 
             JawabanIKategoriSE::updateOrCreate(

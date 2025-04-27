@@ -14,18 +14,24 @@ use App\Http\Controllers\AdminVerifikator\KelolaEvaluasi\MengerjakanController;
 use App\Http\Controllers\AdminVerifikator\KelolaEvaluasi\SelesaiController;
 use App\Http\Controllers\AdminVerifikator\KelolaEvaluasi\VerifikasiController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Evaluasi\AksesFileController;
 use App\Http\Controllers\Evaluasi\DashboardController as EvaluasiDashboardController;
+use App\Http\Controllers\Evaluasi\EvaluasiController;
 use App\Http\Controllers\Evaluasi\EvaluasiUtamaController;
+use App\Http\Controllers\Evaluasi\FileController;
 use App\Http\Controllers\Evaluasi\IKategoriSEController;
 use App\Http\Controllers\Responden\DashboardController as RespondenDashboardController;
 use App\Http\Controllers\Responden\Evaluasi\RedirectEvaluasiController;
 use App\Http\Controllers\Evaluasi\IdentitasRespondenController;
 use App\Http\Controllers\Evaluasi\IITataKelolaController;
+use App\Http\Controllers\Evaluasi\KepemilikanDokumenController;
+use App\Http\Controllers\Evaluasi\PertanyaanController;
 use App\Http\Controllers\Responden\Evaluasi\NonaktifEvaluasiController;
 use App\Http\Controllers\Responden\ProfilController as RespondenProfilController;
 use App\Http\Controllers\Responden\RiwayatController;
 use App\Http\Controllers\Verifikator\DashboardController as VerifikatorDashboardController;
 use App\Http\Controllers\Verifikator\ProfilController as VerifikatorProfilController;
+use App\Models\KepemilikanDokumen;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [AuthController::class, 'index']);
@@ -87,15 +93,18 @@ Route::middleware(['auth', 'akunAktif'])->group(function () {
             Route::middleware('aktifEvaluasi')->group(function () {
                 Route::resource('/identitas-responden', IdentitasRespondenController::class)
                     ->only(['create', 'store', 'edit', 'update'])
-                    ->names('responden.identitas-responden');
+                    ->names('responden.evaluasi.identitas-responden');
 
                 Route::middleware(['mengerjakanEvaluasi', 'kepemilikanHasilEvaluasi'])->group(function () {
-                    Route::get('/i-kategori-se/{hasilEvaluasi:id}', [IKategoriSEController::class, 'index'])->name('responden.evaluasi.i-kategori-se');
-                    Route::post('/i-kategori-se/simpan/{hasilEvaluasi:id}', [IKategoriSEController::class, 'simpan'])
-                        ->name('responden.evaluasi.i-kategori-se.simpan');
+                    // Route::get('/i-kategori-se/{hasilEvaluasi:id}', [IKategoriSEController::class, 'index'])->name('responden.evaluasi.i-kategori-se');
+                    // Route::post('/i-kategori-se/simpan/{hasilEvaluasi:id}', [IKategoriSEController::class, 'simpan'])
+                    //     ->name('responden.evaluasi.i-kategori-se.simpan');
 
-                    Route::get('/evaluasi-utama/{hasilEvaluasi}/{areaEvaluasi}', [EvaluasiUtamaController::class, 'index'])->name('responden.evaluasi.evaluasi-utama');
-                    Route::post('/evaluasi-utama/simpan/{hasilEvaluasi}/{areaEvaluasi}', [EvaluasiUtamaController::class, 'simpan'])->name('responden.evaluasi.evaluasi-utama.simpan');
+                    // Route::get('/evaluasi-utama/{hasilEvaluasi}/{areaEvaluasi}', [EvaluasiUtamaController::class, 'index'])->name('responden.evaluasi.evaluasi-utama');
+                    // Route::post('/evaluasi-utama/simpan/{hasilEvaluasi}/{areaEvaluasi}', [EvaluasiUtamaController::class, 'simpan'])->name('responden.evaluasi.evaluasi-utama.simpan');
+
+                    Route::get('/evaluasi/{areaEvaluasi}/{hasilEvaluasi}', [PertanyaanController::class, 'index'])->name('responden.evaluasi.pertanyaan');
+                    Route::post('/evaluasi/simpan/{areaEvaluasi}/{hasilEvaluasi}', [PertanyaanController::class, 'simpan'])->name('responden.evaluasi.pertanyaan.simpan');
 
                     Route::get('/dashboard/{hasilEvaluasi:id}', [EvaluasiDashboardController::class, 'index'])->name('responden.evaluasi.dashboard');
                 });
@@ -105,4 +114,6 @@ Route::middleware(['auth', 'akunAktif'])->group(function () {
         Route::get('/riwayat', [RiwayatController::class, 'index'])->name('responden.riwayat');
         Route::get('/profil', [RespondenProfilController::class, 'index'])->name('responden.profil');
     });
+    // Akses File Evaluasi
+    Route::get('/file/{path}', [KepemilikanDokumenController::class, 'show'])->where('path', '.*');
 });

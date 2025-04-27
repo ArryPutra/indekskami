@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('area_evaluasi_id')->constrained('area_evaluasi');
             $table->foreignId('responden_id')->constrained('responden');
-            $table->foreignId('pertanyaan_id')->constrained('pertanyaan_i_kategori_se');
+            $table->foreignId('pertanyaan_id')->constrained('pertanyaan_evaluasi_utama');
             $table->foreignId('hasil_evaluasi_id')->constrained('hasil_evaluasi');
             $table->string('status_jawaban');
-            $table->text('dokumen');
+            $table->text('dokumen')->nullable();
             $table->text('keterangan')->nullable();
             $table->timestamps();
 

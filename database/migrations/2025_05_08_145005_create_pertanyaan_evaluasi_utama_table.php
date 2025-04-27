@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('area_evaluasi_id')->constrained('area_evaluasi');
             $table->unsignedSmallInteger('nomor');
+            $table->text('catatan')->nullable();
             $table->tinyText('tingkat_kematangan');
             $table->unsignedTinyInteger('pertanyaan_tahap');
             $table->text('pertanyaan');
@@ -28,9 +29,10 @@ return new class extends Migration
             $table->tinyInteger('skor_status_ketiga');
             $table->tinyInteger('skor_status_keempat');
             $table->tinyInteger('skor_status_kelima')->nullable();
+            $table->boolean('apakah_tampil')->default(true);
             $table->timestamps();
 
-            $table->unique(['area_evaluasi_id', 'nomor']);
+            $table->unique(['nomor', 'area_evaluasi_id', 'apakah_tampil'], 'nomor_area_evaluasi_apakah_tampil_unique');
         });
     }
 

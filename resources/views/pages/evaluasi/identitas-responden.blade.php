@@ -45,16 +45,12 @@
 fixed bottom-0 left-0 w-full
 bg-white px-6 max-md:px-4 py-4 border-t border-gray-200 flex gap-2 overflow-x-auto">
             <x-button>Identitas</x-button>
-            <x-button color="gray" href="{{ route('responden.evaluasi.i-kategori-se', $hasilEvaluasi->id) }}">I Kategori
-                SE</x-button>
             @foreach ($daftarAreaEvaluasiUtama as $areaEvaluasiUtama)
-                <x-button
-                    href="{{ route('responden.evaluasi.evaluasi-utama', [$hasilEvaluasi->id, $areaEvaluasiUtama->id]) }}"
+                <x-button href="{{ route('responden.evaluasi.pertanyaan', [$areaEvaluasiUtama->id, $hasilEvaluasi->id]) }}"
                     color="gray">
                     {{ $areaEvaluasiUtama->nama_evaluasi }}
                 </x-button>
             @endforeach
-            <x-button color="gray">VIII Suplemen</x-button>
             <x-button color="gray"
                 href="{{ route('responden.evaluasi.dashboard', $hasilEvaluasi->id) }}">Dashboard</x-button>
         </footer>

@@ -29,7 +29,7 @@ class IdentitasRespondenController extends Controller
                 'email' => $user->email
             ]),
             'pageMeta' => [
-                'route' => route('responden.identitas-responden.store'),
+                'route' => route('responden.evaluasi.identitas-responden.store'),
                 'method' => 'POST'
             ],
         ]);
@@ -67,7 +67,7 @@ class IdentitasRespondenController extends Controller
             'identitas_responden_id' => $IdentitasResponden->id
         ]);
 
-        $HasilEvaluasi = HasilEvaluasi::create([
+        $hasilEvaluasi = HasilEvaluasi::create([
             'responden_id' => $responden->id,
             'identitas_responden_id' => $IdentitasResponden->id,
             'nilai_evaluasi_id' => $nilaiEvaluasi->id,
@@ -78,24 +78,22 @@ class IdentitasRespondenController extends Controller
             'status_evaluasi' => Responden::STATUS_MENGERJAKAN
         ]);
 
-        return redirect()->route('responden.evaluasi.i-kategori-se', $HasilEvaluasi->id);
+        return redirect()->route('responden.evaluasi.pertanyaan', [1, $hasilEvaluasi->id]);
     }
 
     public function edit(IdentitasResponden $identitasResponden)
     {
         abort_if($identitasResponden->responden_id !== Auth::user()->responden->id, 403);
 
-        $daftarAreaEvaluasi = AreaEvaluasi::all();
-
         return view('pages.evaluasi.identitas-responden', [
             'title' => 'Identitas Responden',
             'identitasResponden' => $identitasResponden,
             'hasilEvaluasi' => $identitasResponden->hasilEvaluasi,
             'pageMeta' => [
-                'route' => route('responden.identitas-responden.update', $identitasResponden->id),
+                'route' => route('responden.evaluasi.identitas-responden.update', $identitasResponden->id),
                 'method' => 'PUT'
             ],
-            'daftarAreaEvaluasiUtama' => $daftarAreaEvaluasi->whereNotIn('id', [1, 8])
+            'daftarAreaEvaluasiUtama' => AreaEvaluasi::all()
         ]);
     }
 

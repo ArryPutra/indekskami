@@ -30,10 +30,31 @@
                         class="{{ $pertanyaanDanJawaban['apakah_terkunci'] ? '!bg-red-50 pointer-events-none' : false }}">
                         <input type="hidden" name="{{ $loop->iteration }}[pertanyaan_id]"
                             value="{{ $pertanyaanDanJawaban['pertanyaan_id'] }}">
-                        <x-table.td class="md:flex max-md:grid max-md:grid-rows-3 gap-2 mt-0.5">
-                            <span>2.{{ $pertanyaanDanJawaban['nomor'] }}</span>
-                            <span>{{ $pertanyaanDanJawaban['tingkat_kematangan'] }}</span>
-                            <span>{{ $pertanyaanDanJawaban['pertanyaan_tahap'] }}</span>
+                        <x-table.td>
+                            <div class="flex max-md:flex-col justify-center gap-2">
+                                <span>2.{{ $pertanyaanDanJawaban['nomor'] }}</span>
+                                <span>{{ $pertanyaanDanJawaban['tingkat_kematangan'] }}</span>
+                                <span>{{ $pertanyaanDanJawaban['pertanyaan_tahap'] }}</span>
+                                @if ($pertanyaanDanJawaban['catatan'])
+                                    <div x-data="{ isOpen: false }" x-on:mouseenter="isOpen = true"
+                                        x-on:mouseleave="isOpen = false">
+                                        <svg class="cursor-pointer fill-gray-400 hover:fill-gray-700 hover:scale-110 duration-150"
+                                            xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                            viewBox="0 0 24 24">
+                                            <path
+                                                d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z">
+                                            </path>
+                                            <path d="M11 11h2v6h-2zm0-4h2v2h-2z"></path>
+                                        </svg>
+                                        <div x-cloak x-show="isOpen"
+                                            class=" bg-white p-3 rounded-lg absolute max-w-5/6 translate-x-5
+                                        duration-150 border border-gray-200 w-fit -translate-y-1/2 opacity-100 pointer-events-auto">
+                                            <h1 class="font-semibold">Catatan:</h1>
+                                            <p>{{ $pertanyaanDanJawaban['catatan'] }}</p>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
                         </x-table.td>
                         <x-table.td>
                             <x-radio label="{{ $pertanyaanDanJawaban['pertanyaan'] }}">

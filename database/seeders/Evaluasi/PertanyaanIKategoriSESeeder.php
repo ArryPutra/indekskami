@@ -90,6 +90,7 @@ class PertanyaanIKategoriSESeeder extends Seeder
             PertanyaanIKategoriSE::create([
                 'area_evaluasi_id' => 1,
                 'nomor' => $pertanyaan['nomor'],
+                'catatan' => $pertanyaan['catatan'] ?? null,
                 'pertanyaan' => $pertanyaan['pertanyaan'],
                 'status_pertama' => $pertanyaan['status_pertama'],
                 'status_kedua' => $pertanyaan['status_kedua'],

@@ -14,7 +14,8 @@ class EvaluasiUtamaController extends Controller
 {
     public function index(HasilEvaluasi $hasilEvaluasi, AreaEvaluasi $areaEvaluasi)
     {
-        $daftarPertanyaan = PertanyaanEvaluasiUtama::where('area_evaluasi_id', $areaEvaluasi->id)->get();
+        $daftarPertanyaan = PertanyaanEvaluasiUtama::where('area_evaluasi_id', $areaEvaluasi->id)
+            ->where('apakah_tampil', true)->orderBy('nomor')->get();
         $daftarJawabanResponden = $hasilEvaluasi->jawabanEvaluasiUtama->keyBy('pertanyaan_id');
 
         $daftarPertanyaanDanJawaban = [];
@@ -25,6 +26,7 @@ class EvaluasiUtamaController extends Controller
             $daftarPertanyaanDanJawaban[] = [
                 'pertanyaan_id' => $pertanyaan->id,
                 'nomor' => $pertanyaan->nomor,
+                'catatan' => $pertanyaan->catatan,
                 'tingkat_kematangan' => $pertanyaan->tingkat_kematangan,
                 'pertanyaan_tahap' => $pertanyaan->pertanyaan_tahap,
                 'pertanyaan' => $pertanyaan->pertanyaan,
@@ -56,7 +58,7 @@ class EvaluasiUtamaController extends Controller
             'jumlahPertanyaanTahap2' => 0,
             'daftarAreaEvaluasiUtama' => $daftarAreaEvaluasi->whereNotIn('id', [1, 8]),
             'areaEvaluasi' => $areaEvaluasi,
-            'daftarJudulTemaPertanyaan' => JudulTemaPertanyaan::where('area_evaluasi_id', $areaEvaluasi->id)->get()
+            'daftarJudulTemaPertanyaan' => JudulTemaPertanyaan::where('area_evaluasi_id', $areaEvaluasi->id)->get(),
         ]);
     }
 

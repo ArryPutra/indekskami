@@ -33,11 +33,13 @@
         @switch($peranId)
             {{-- Admin --}}
             @case(1)
-                @include('layouts.admin-verifikator.header')
-                @include('layouts.admin-verifikator.sidebar')
-                <x-content>
-                    @yield('content')
-                </x-content>
+                <div x-data="{ isOpen: localStorage.getItem('isOpenSidebar') === 'true' ? true : false }">
+                    @include('layouts.admin-verifikator.header')
+                    @include('layouts.admin-verifikator.sidebar')
+                    <x-content>
+                        @yield('content')
+                    </x-content>
+                </div>
             @break
 
             {{-- Verifikator --}}

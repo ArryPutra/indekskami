@@ -40,4 +40,9 @@ class HasilEvaluasi extends Model
     {
         return $this->hasMany(JawabanEvaluasiUtama::class, 'hasil_evaluasi_id', 'id');
     }
+
+    public function jawabanSuplemen()
+    {
+        return $this->hasMany(JawabanSuplemen::class, 'hasil_evaluasi_id', 'id');
+    }
 }

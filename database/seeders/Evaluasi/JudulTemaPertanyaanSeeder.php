@@ -64,6 +64,47 @@ class JudulTemaPertanyaanSeeder extends Seeder
                 'judul' => 'Pelindungan Data Pribadi',
                 'letakkan_sebelum_nomor' => 1
             ],
+            // Evaluasi: Suplemen
+            [
+                'area_evaluasi_id' => 8,
+                'judul' => 'Pengamanan Keterlibatan Pihak Ketiga Penyedia Layanan',
+                'letakkan_sebelum_nomor' => 1
+            ],
+            [
+                'area_evaluasi_id' => 8,
+                'judul' => 'Manajemen Risiko dan Pengelolaan Keamanan pihak ketiga',
+                'letakkan_sebelum_nomor' => 1
+            ],
+            [
+                'area_evaluasi_id' => 8,
+                'judul' => 'Pengelolaan Sub-Kontraktor/Alih Daya pada Pihak Ketiga',
+                'letakkan_sebelum_nomor' => 8
+            ],
+            [
+                'area_evaluasi_id' => 8,
+                'judul' => 'Pengelolaan Layanan dan Keamanan Pihak Ketiga',
+                'letakkan_sebelum_nomor' => 11
+            ],
+            [
+                'area_evaluasi_id' => 8,
+                'judul' => 'Pengelolaan Perubahan Layanan dan Kebijakan Pihak Ketiga',
+                'letakkan_sebelum_nomor' => 19
+            ],
+            [
+                'area_evaluasi_id' => 8,
+                'judul' => 'Penanganan Aset',
+                'letakkan_sebelum_nomor' => 21
+            ],
+            [
+                'area_evaluasi_id' => 8,
+                'judul' => 'Pengelolaan Insiden oleh Pihak Ketiga',
+                'letakkan_sebelum_nomor' => 23
+            ],
+            [
+                'area_evaluasi_id' => 8,
+                'judul' => 'Rencana Kelangsungan Layanan Pihak Ketiga',
+                'letakkan_sebelum_nomor' => 25
+            ],
         ];
 
         JudulTemaPertanyaan::insert($daftarJudulTemaPertanyaan);

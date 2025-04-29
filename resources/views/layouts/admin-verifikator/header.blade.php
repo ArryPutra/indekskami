@@ -1,6 +1,6 @@
 <div x-data="{ showProfileMenu: false }">
-    <h1
-        class="font-bold text-3xl fixed left-[17rem] top-[1.5rem] max-md:absolute max-md:top-24 max-md:left-4 z-10 md:z-30 whitespace-nowrap">
+    <h1 class="font-bold text-3xl fixed top-[1.5rem] max-md:absolute max-md:top-24 max-md:left-4 z-10 md:z-30 whitespace-nowrap duration-300"
+        :class="{ 'md:left-[17rem]': isOpen, 'md:left-[5rem]': !isOpen }" x-cloak>
         {{ $title }}
     </h1>
     <header

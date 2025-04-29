@@ -86,39 +86,54 @@
                         <x-table.td class="min-w-56">
                             <x-radio label="{{ $pertanyaanDanJawaban['pertanyaan'] }}">
                                 <x-radio.option :checked="$pertanyaanDanJawaban['status_jawaban'] === 'skor_status_pertama'"
-                                    onclick="perbaruiPertanyaanSkor({{ $index }}, {{ $pertanyaanDanJawaban['skor_status_pertama'] }}, {{ $tipeEvaluasi === 'Evaluasi Utama' ? $pertanyaanDanJawaban['pertanyaan_tahap'] !== 3 : false }})"
+                                    onclick="pilihOpsiJawaban(
+                                    {{ $index }},
+                                    {{ $pertanyaanDanJawaban['skor_status_pertama'] }},
+                                    )"
                                     name="{{ $pertanyaanDanJawaban['nomor'] }}[status_jawaban]"
                                     id="pertanyaan{{ $pertanyaanDanJawaban['nomor'] }}StatusPertama"
                                     value="skor_status_pertama">
                                     {{ $pertanyaanDanJawaban['status_pertama'] }}
                                 </x-radio.option>
                                 <x-radio.option :checked="$pertanyaanDanJawaban['status_jawaban'] === 'skor_status_kedua'"
-                                    onclick="perbaruiPertanyaanSkor({{ $index }}, {{ $pertanyaanDanJawaban['skor_status_kedua'] }}, {{ $tipeEvaluasi === 'Evaluasi Utama' ? $pertanyaanDanJawaban['pertanyaan_tahap'] !== 3 : false }})"
+                                    onclick="pilihOpsiJawaban(
+                                    {{ $index }},
+                                    {{ $pertanyaanDanJawaban['skor_status_kedua'] }},
+                                    )"
                                     name="{{ $pertanyaanDanJawaban['nomor'] }}[status_jawaban]"
                                     id="pertanyaan{{ $pertanyaanDanJawaban['nomor'] }}StatusKedua"
                                     value="skor_status_kedua">
                                     {{ $pertanyaanDanJawaban['status_kedua'] }}
                                 </x-radio.option>
                                 <x-radio.option :checked="$pertanyaanDanJawaban['status_jawaban'] === 'skor_status_ketiga'"
-                                    onclick="perbaruiPertanyaanSkor({{ $index }}, {{ $pertanyaanDanJawaban['skor_status_ketiga'] }}, {{ $tipeEvaluasi === 'Evaluasi Utama' ? $pertanyaanDanJawaban['pertanyaan_tahap'] !== 3 : false }})"
+                                    onclick="pilihOpsiJawaban(
+                                    {{ $index }},
+                                    {{ $pertanyaanDanJawaban['skor_status_ketiga'] }},
+                                    )"
                                     name="{{ $pertanyaanDanJawaban['nomor'] }}[status_jawaban]"
                                     id="pertanyaan{{ $pertanyaanDanJawaban['nomor'] }}StatusKetiga"
                                     value="skor_status_ketiga">
                                     {{ $pertanyaanDanJawaban['status_ketiga'] }}
                                 </x-radio.option>
                                 {{-- Khusus Evaluasi Utama --}}
-                                @if ($tipeEvaluasi === 'Evaluasi Utama')
+                                @if ($tipeEvaluasi !== 'Kategori Sistem Elektronik')
                                     <x-radio.option :checked="$pertanyaanDanJawaban['status_jawaban'] === 'skor_status_keempat'"
-                                        onclick="perbaruiPertanyaanSkor({{ $index }}, {{ $pertanyaanDanJawaban['skor_status_keempat'] }}, {{ $tipeEvaluasi === 'Evaluasi Utama' ? $pertanyaanDanJawaban['pertanyaan_tahap'] !== 3 : false }})"
+                                        onclick="pilihOpsiJawaban(
+                                        {{ $index }},
+                                        {{ $pertanyaanDanJawaban['skor_status_keempat'] }},
+                                        )"
                                         name="{{ $pertanyaanDanJawaban['nomor'] }}[status_jawaban]"
                                         id="pertanyaan{{ $pertanyaanDanJawaban['nomor'] }}StatusKeempat"
                                         value="skor_status_keempat">
                                         {{ $pertanyaanDanJawaban['status_keempat'] }}
                                     </x-radio.option>
                                     {{-- Jika ternyata opsi status kelima --}}
-                                    @if ($pertanyaanDanJawaban['status_kelima'])
+                                    @if ($tipeEvaluasi === 'Evaluasi Utama' && $pertanyaanDanJawaban['status_kelima'])
                                         <x-radio.option :checked="$pertanyaanDanJawaban['status_jawaban'] === 'skor_status_kelima'"
-                                            onclick="perbaruiPertanyaanSkor({{ $index }}, {{ $pertanyaanDanJawaban['skor_status_kelima'] }}, {{ $tipeEvaluasi === 'Evaluasi Utama' ? $pertanyaanDanJawaban['pertanyaan_tahap'] !== 3 : false }})"
+                                            onclick="pilihOpsiJawaban(
+                                            {{ $index }},
+                                            {{ $pertanyaanDanJawaban['skor_status_kelima'] }},
+                                            )"
                                             name="{{ $pertanyaanDanJawaban['nomor'] }}[status_jawaban]"
                                             id="pertanyaan{{ $pertanyaanDanJawaban['nomor'] }}StatusKelima"
                                             value="skor_status_kelima">
@@ -169,52 +184,59 @@
     </form>
 
     <div class="fixed bottom-0 left-0 w-full" x-data="{ isOpen: (localStorage.getItem('isOpenHasilNilaiEvaluasiPanel') ?? 'true') === 'true' ? true : false }">
-        <div>
-            {{-- Tombol Hasil Nilai Evaluasi Panel --}}
-            <x-button
-                @click="
+        {{-- Tombol Hasil Nilai Evaluasi Panel --}}
+        <x-button
+            @click="
             isOpen = !isOpen,
             localStorage.setItem('isOpenHasilNilaiEvaluasiPanel', isOpen)"
-                color="gray" class="bg-white rounded-b-none border border-gray-200 ml-10">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="size-6 duration-300"
-                    x-bind:class="{ 'rotate-180': isOpen, 'rotate-0': !isOpen }">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
-                </svg>
-            </x-button>
-            {{-- Hasil Nilai Evaluasi Panel --}}
-            <div x-cloak class="bg-white border-t border-gray-200 px-6 max-md:px-4 pt-4 overflow-hidden"
-                :class="{ 'block shadow-2xl': isOpen, 'hidden': !isOpen }">
-                <h1 class="font-bold mb-1.5">Hasil Nilai Evaluasi</h1>
-                <x-table class="-mx-6">
-                    <x-table.tbody>
-                        <x-table.tr>
-                            <x-table.td>Total Skor</x-table.td>
-                            <x-table.td><strong id="totalSkor"></strong></x-table.td>
+            color="gray" class="bg-white rounded-b-none border border-gray-200 ml-10">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="size-6 duration-300"
+                x-bind:class="{ 'rotate-180': isOpen, 'rotate-0': !isOpen }">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
+            </svg>
+        </x-button>
+        {{-- Hasil Nilai Evaluasi Panel --}}
+        <div x-cloak class="bg-white border-t border-gray-200 px-6 max-md:px-4 pt-4 overflow-hidden"
+            :class="{ 'block shadow-2xl': isOpen, 'hidden': !isOpen }">
+            <h1 class="font-bold mb-1.5">Hasil Nilai Evaluasi</h1>
+            <x-table class="-mx-6">
+                <x-table.tbody>
+                    <x-table.tr>
+                        <x-table.td>Pertanyaan Dijawab</x-table.td>
+                        <x-table.td><strong id="pertanyaanDijawab"></strong></x-table.td>
+                    </x-table.tr>
+                    <x-table.tr>
+                        <x-table.td>Total Skor</x-table.td>
+                        <x-table.td><strong id="totalSkor"></strong></x-table.td>
+                    </x-table.tr>
+                    {{-- TIPE EVALUASI: Kategori Sistem Elektronik --}}
+                    @if ($tipeEvaluasi == 'Kategori Sistem Elektronik')
+                        <x-table.tr class="!border-b-0">
+                            <x-table.td>Tingkat Ketergantungan</x-table.td>
+                            <x-table.td><strong id="tingkatKetergantungan"></strong></x-table.td>
                         </x-table.tr>
-                        {{-- TIPE EVALUASI: Kategori Sistem Elektronik --}}
-                        @if ($tipeEvaluasi == 'Kategori Sistem Elektronik')
-                            <x-table.tr class="!border-b-0">
-                                <x-table.td>Tingkat Ketergantungan</x-table.td>
-                                <x-table.td><strong id="tingkatKetergantungan"></strong></x-table.td>
-                            </x-table.tr>
-                        @elseif ($tipeEvaluasi == 'Evaluasi Utama')
-                            <x-table.tr>
-                                <x-table.td>Batas Skor Min untuk Skor Tahap Penerapan 3</x-table.td>
-                                <x-table.td><strong id="batasSkorMinUntukSkorTahapPenerapan3"></strong></x-table.td>
-                            </x-table.tr>
-                            <x-table.tr>
-                                <x-table.td>Total Skor Tahap Penerapan 1 & 2</x-table.td>
-                                <x-table.td><strong id="totalSkorTahapPenerapan1Dan2"></strong></x-table.td>
-                            </x-table.tr>
-                            <x-table.tr>
-                                <x-table.td>Status Peniliaian Tahap Penerapan 3</x-table.td>
-                                <x-table.td><strong id="statusPeniliaianTahapPenerapan3"></strong></x-table.td>
-                            </x-table.tr>
-                        @endif
-                    </x-table.tbody>
-                </x-table>
-            </div>
+                    @elseif ($tipeEvaluasi == 'Evaluasi Utama')
+                        <x-table.tr>
+                            <x-table.td>Batas Skor Min untuk Skor Tahap Penerapan 3</x-table.td>
+                            <x-table.td><strong id="batasSkorMinUntukSkorTahapPenerapan3"></strong></x-table.td>
+                        </x-table.tr>
+                        <x-table.tr>
+                            <x-table.td>Total Skor Tahap Penerapan 1 & 2</x-table.td>
+                            <x-table.td><strong id="totalSkorTahapPenerapan1Dan2"></strong></x-table.td>
+                        </x-table.tr>
+                        <x-table.tr>
+                            <x-table.td>Status Peniliaian Tahap Penerapan 3</x-table.td>
+                            <x-table.td><strong id="statusPeniliaianTahapPenerapan3"></strong></x-table.td>
+                        </x-table.tr>
+                    @elseif ($tipeEvaluasi == 'Suplemen')
+                        <x-table.tr>
+                            <x-table.td>Total Skor Suplemen</x-table.td>
+                            <x-table.td><strong id="totalSkorSuplemen"></strong><strong>%</strong></x-table.td>
+                        </x-table.tr>
+                    @endif
+                </x-table.tbody>
+            </x-table>
         </div>
         {{-- Daftar Area Evaluasi --}}
         <footer class="bg-white px-6 max-md:px-4 py-4 border-t border-gray-200 flex gap-2 overflow-x-auto">
@@ -235,19 +257,93 @@
 @push('script')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // Daftar Skor Jawaban
-        let daftarSkorArray = {{ json_encode($daftarSkorJawabanArray) }};
-        // Total Skor
-        let totalSkor = 0;
+        let daftarPertanyaanDanJawaban = {!! json_encode($dataScript['daftarPertanyaanDanJawaban']) !!};
+        let totalSkor = daftarPertanyaanDanJawaban.reduce((total, item) => total + item['skor_jawaban'], 0);
+        @if ($tipeEvaluasi == 'Evaluasi Utama')
+            let batasSkorMinUntukSkorTahap3 = 0;
+            let totalSkorTahapPenerapan1Dan2 = daftarPertanyaanDanJawaban
+                .filter(item => item['pertanyaan_tahap'] === 1 || item['pertanyaan_tahap'] === 2)
+                .reduce((total, item) => total + item['skor_jawaban'], 0);
+        @elseif ($tipeEvaluasi == 'Suplemen')
+            let totalSkorSuplemen = ((totalSkor / 27 * 3) / 9 * 100).toFixed(2);
+        @endif
 
-        // Ketika halaman di-reload
         perbaruiScrollPosisi();
-        perbaruiTotalSkor();
 
-        @switch($tipeEvaluasi)
-            @case('Kategori Sistem Elektronik')
+        hitungTotalPertanyaanDijawab();
+        hitungTotalSkor();
+        @if ($tipeEvaluasi == 'Kategori Sistem Elektronik')
+            hitungTingkatKeterangantungan();
+        @elseif ($tipeEvaluasi == 'Evaluasi Utama')
+            hitungBatasSkorMinUntukSkorTahap3();
+            hitungTotalSkorTahap1Dan2();
+            hitungStatusPenilaianTahapPenerapan3();
+        @elseif ($tipeEvaluasi == 'Suplemen')
+            hitungTotalSkorSuplemen();
+        @endif
 
-            function perbaruiTingkatKeterangantungan() {
+        function pilihOpsiJawaban(pertanyaanIndex, skorBaru) {
+            const pertanyaanObject = daftarPertanyaanDanJawaban[pertanyaanIndex];
+
+            perbaruiPertanyaanDijawab(pertanyaanObject);
+            perbaruiPertanyaanSkor(pertanyaanObject, pertanyaanIndex, skorBaru);
+            @if ($tipeEvaluasi == 'Kategori Sistem Elektronik')
+                hitungTingkatKeterangantungan();
+            @elseif ($tipeEvaluasi == 'Evaluasi Utama')
+                hitungTotalSkorTahap1Dan2();
+                hitungStatusPenilaianTahapPenerapan3();
+            @elseif ($tipeEvaluasi == 'Suplemen')
+                hitungTotalSkorSuplemen();
+            @endif
+
+            tampilkanSaveButton();
+        }
+
+        function perbaruiPertanyaanDijawab(pertanyaanObject) {
+            // Perbarui status apakah_pertanyaan_baru
+            pertanyaanObject['apakah_pertanyaan_baru'] = false;
+            hitungTotalPertanyaanDijawab();
+        }
+
+        function hitungTotalPertanyaanDijawab() {
+            const pertanyaanDijawabElement = document.getElementById('pertanyaanDijawab');
+
+            const totalPertanyaan = daftarPertanyaanDanJawaban.length;
+
+            totalPertanyaanDijawab = daftarPertanyaanDanJawaban
+                .filter(item => item['apakah_pertanyaan_baru'] === false).length;
+            pertanyaanDijawabElement.textContent = totalPertanyaanDijawab + "/" + totalPertanyaan;
+
+            pertanyaanDijawabElement.classList.remove('text-red-600');
+            pertanyaanDijawabElement.classList.remove('text-primary');
+            if (totalPertanyaanDijawab === 0) {
+                pertanyaanDijawabElement.classList.add('text-red-600');
+            } else if (totalPertanyaanDijawab === totalPertanyaan) {
+                pertanyaanDijawabElement.classList.add('text-primary');
+            }
+        }
+
+        function perbaruiPertanyaanSkor(pertanyaanObject, pertanyaanIndex, skorBaru) {
+            // Mengambil skor lama object
+            const pertanyaanSkorLama = pertanyaanObject['skor_jawaban'];
+            // Mengambil elemen skor pertanyaan
+            let pertanyaanSkorElement = document.getElementById('skorPertanyaan' + pertanyaanIndex);
+            // Perbarui isi skor elemen tersebut dengan skor baru
+            pertanyaanSkorElement.textContent = skorBaru;
+            // Perbarui skor pertanyaan object
+            pertanyaanObject['skor_jawaban'] = skorBaru;
+            hitungTotalSkor();
+        }
+
+        function hitungTotalSkor() {
+            totalSkor = daftarPertanyaanDanJawaban.reduce((total, item) => total + item['skor_jawaban'], 0);
+
+            const totalSkorElement = document.getElementById('totalSkor');
+            totalSkorElement.textContent = totalSkor;
+        }
+
+        @if ($tipeEvaluasi == 'Kategori Sistem Elektronik')
+            function hitungTingkatKeterangantungan() {
                 let tingkatKeterangantunganElement = document.getElementById('tingkatKetergantungan');
 
                 if (totalSkor <= 15) {
@@ -258,50 +354,34 @@
                     tingkatKeterangantunganElement.textContent = 'Strategis';
                 }
             }
-            @break
+        @elseif ($tipeEvaluasi == 'Evaluasi Utama')
 
-            @case('Evaluasi Utama')
-            let daftarSkorTahap1Dan2Array = {{ json_encode($dataScript['daftarSkorJawabanTahap1Dan2Array']) }};
+            function hitungBatasSkorMinUntukSkorTahap3() {
+                const totalPertanyaanTahap1 = daftarPertanyaanDanJawaban.filter(item => item['pertanyaan_tahap'] === 1)
+                    .length;
+                const totalPertanyaanTahap2 = daftarPertanyaanDanJawaban.filter(item => item['pertanyaan_tahap'] === 2)
+                    .length;
 
-            const batasSkorMinUntukSkorTahapPenerapan3 =
-                {{ 2 * $dataScript['jumlahPertanyaanTahap1'] + 4 * $dataScript['jumlahPertanyaanTahap2'] }}
-            let totalSkorTahapPenerapan1Dan2 = {{ $dataScript['daftarSkorJawabanTahap1Dan2Array']->sum() }};
-            let statusPenilaianTahapPenerapan3 = 'Tidak Valid';
+                batasSkorMinUntukSkorTahap3 = (2 * totalPertanyaanTahap1) + (4 * totalPertanyaanTahap2);
 
-            hitungBatasSkorMinUntukSkorTahapPenerapan3();
-            hitungTotalSkorTahapPenerapan1Dan2();
-            perbaruiStatusPenilaianTahapPenerapan3();
-
-            function hitungBatasSkorMinUntukSkorTahapPenerapan3() {
                 const batasSkorMinUntukSkorTahapPenerapan3Element = document.getElementById(
                     'batasSkorMinUntukSkorTahapPenerapan3');
-
-                batasSkorMinUntukSkorTahapPenerapan3Element.textContent = batasSkorMinUntukSkorTahapPenerapan3;
+                batasSkorMinUntukSkorTahapPenerapan3Element.textContent = batasSkorMinUntukSkorTahap3;
             }
 
-            function hitungTotalSkorTahapPenerapan1Dan2() {
-                const totalSkorTahapPenerapan1Dan2Element = document.getElementById('totalSkorTahapPenerapan1Dan2');
+            function hitungTotalSkorTahap1Dan2() {
+                totalSkorTahapPenerapan1Dan2 = daftarPertanyaanDanJawaban
+                    .filter(item => item['pertanyaan_tahap'] === 1 || item['pertanyaan_tahap'] === 2)
+                    .reduce((total, item) => total + item['skor_jawaban'], 0);
 
+                const totalSkorTahapPenerapan1Dan2Element = document.getElementById('totalSkorTahapPenerapan1Dan2');
                 totalSkorTahapPenerapan1Dan2Element.textContent = totalSkorTahapPenerapan1Dan2;
             }
 
-            function perbaruiTotalSkorTahapPenerapan1Dan2(pertanyaanIndex, skorBaru) {
-                // Perbarui skor tahap 1 dan 2 dengan skor baru
-                daftarSkorTahap1Dan2Array[pertanyaanIndex] = skorBaru;
-                // Perbarui total skor tahap 1 dan 2
-                totalSkorTahapPenerapan1Dan2 = daftarSkorTahap1Dan2Array.reduce((acc, curr) => acc + curr);
-                // Ambil elemen teks total skor tahap 1 dan 2
-                const totalSkorTahapPenerapan1Dan2Element = document.getElementById('totalSkorTahapPenerapan1Dan2');
-                // Perbarui teks total skor tahap 1 dan 2
-                totalSkorTahapPenerapan1Dan2Element.textContent = totalSkorTahapPenerapan1Dan2;
-                // Perbarui status penilaian tahap penerapan 3 
-                perbaruiStatusPenilaianTahapPenerapan3();
-            }
-
-            function perbaruiStatusPenilaianTahapPenerapan3() {
+            function hitungStatusPenilaianTahapPenerapan3() {
                 const statusPeniliaianTahapPenerapan3Element = document.getElementById('statusPeniliaianTahapPenerapan3');
 
-                if (totalSkorTahapPenerapan1Dan2 >= batasSkorMinUntukSkorTahapPenerapan3) {
+                if (totalSkorTahapPenerapan1Dan2 >= batasSkorMinUntukSkorTahap3) {
                     statusPenilaianTahapPenerapan3 = 'Valid';
 
                     statusPeniliaianTahapPenerapan3Element.textContent = statusPenilaianTahapPenerapan3;
@@ -341,11 +421,14 @@
                     });
                 }
             }
-            @break
+        @elseif ($tipeEvaluasi == 'Suplemen')
 
-            @case('Suplemen')
-            @break
-        @endswitch
+            function hitungTotalSkorSuplemen() {
+                const totalSkorSuplemenElement = document.getElementById('totalSkorSuplemen');
+                totalSkorSuplemen = ((totalSkor / 27 * 3) / 9 * 100).toFixed(2);
+                totalSkorSuplemenElement.textContent = totalSkorSuplemen;
+            }
+        @endif
 
         function perbaruiScrollPosisi() {
             // Mengambil posisi scroll di local storage
@@ -370,44 +453,6 @@
             }
             // Menghapus data posisi scroll di local storage
             localStorage.removeItem('scrollPosition');
-        }
-
-        function perbaruiPertanyaanSkor(pertanyaanIndex, skor, apakahPertanyaanTahap1Dan2) {
-            // Mengambil elemen total skor pertanyaan
-            let pertanyaanSkorElement = document.getElementById('skorPertanyaan' + pertanyaanIndex);
-            // Ubah isi nilai total skor elemen tersebut
-            const pertanyaanSkor = pertanyaanSkorElement.textContent;
-
-            // Perbarui isi skor elemen tersebut
-            pertanyaanSkorElement.textContent = skor;
-            // Tampilkan tombol simpan
-            tampilkanSaveButton();
-
-            // Jika tipe evaluasi I Kategori SE
-            @if ($tipeEvaluasi !== 'Kategori Sistem Elektronik')
-                // Jika yang dipilih opsi jawaban pertanyaan tahap 1 dan 2
-                if (apakahPertanyaanTahap1Dan2) {
-                    // Perbarui total skor tahap 1 dan 2
-                    perbaruiTotalSkorTahapPenerapan1Dan2(pertanyaanIndex, skor);
-                }
-            @endif
-
-            // Perbarui skor bagian index array
-            daftarSkorArray[pertanyaanIndex] = skor;
-
-            // Perbarui total skor
-            perbaruiTotalSkor();
-        }
-
-        function perbaruiTotalSkor() {
-            totalSkor = daftarSkorArray.reduce((acc, curr) => acc + curr);
-
-            const totalSkorElement = document.getElementById('totalSkor');
-            totalSkorElement.textContent = totalSkor;
-
-            @if ($tipeEvaluasi == 'Kategori Sistem Elektronik')
-                perbaruiTingkatKeterangantungan();
-            @endif
         }
 
         function tampilkanSaveButton() {

@@ -119,16 +119,13 @@
 fixed bottom-0 left-0 w-full
 bg-white px-6 max-md:px-4 py-4 border-t border-gray-200 flex gap-2 overflow-x-auto">
         <x-button color="gray"
-            href="{{ route('responden.identitas-responden.edit', $identitasRespondenId) }}">Identitas</x-button>
-        <x-button color="gray" href="{{ route('responden.evaluasi.i-kategori-se', $hasilEvaluasiId) }}">I Kategori
-            SE</x-button>
-        <x-button color="gray">II Tata Kelola</x-button>
-        <x-button color="gray">III Risiko</x-button>
-        <x-button color="gray">IV Kerangka Kerja</x-button>
-        <x-button color="gray">V Pengelolaan Aset</x-button>
-        <x-button color="gray">VI Teknologi</x-button>
-        <x-button color="gray">VII PDP</x-button>
-        <x-button color="gray">VIII Suplemen</x-button>
+            href="{{ route('responden.evaluasi.identitas-responden.edit', $hasilEvaluasi->identitas_responden_id) }}">Identitas</x-button>
+        @foreach ($daftarAreaEvaluasiUtama as $areaEvaluasiUtama)
+            <x-button href="{{ route('responden.evaluasi.pertanyaan', [$areaEvaluasiUtama->id, $hasilEvaluasi->id]) }}"
+                color="gray">
+                {{ $areaEvaluasiUtama->nama_evaluasi }}
+            </x-button>
+        @endforeach
         <x-button>Dashboard</x-button>
     </footer>
 @endsection

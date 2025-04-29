@@ -15,6 +15,7 @@
             <x-table.th>Email</x-table.th>
             <x-table.th>Nomor Telepon</x-table.th>
             <x-table.th>Tanggal Mulai</x-table.th>
+            <x-table.th>Aksi</x-table.th>
         </x-table.thead>
         <x-table.tbody>
             @foreach ($daftarHasilEvaluasi as $index => $hasilEvaluasi)
@@ -28,6 +29,9 @@
                     <x-table.td>{{ $hasilEvaluasi->identitasResponden->email }}</x-table.td>
                     <x-table.td>{{ $hasilEvaluasi->identitasResponden->nomor_telepon }}</x-table.td>
                     <x-table.td>{{ Carbon\Carbon::parse($hasilEvaluasi->created_at)->translatedFormat('l, d F Y, H:i:s') }}</x-table.td>
+                    <x-table.td>
+                        <x-button>Detail</x-button>
+                    </x-table.td>
                 </x-table.tr>
             @endforeach
         </x-table.tbody>

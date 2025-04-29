@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Evaluasi\AreaEvaluasi;
 use App\Models\Evaluasi\PertanyaanEvaluasiUtama;
 use App\Models\Evaluasi\PertanyaanIKategoriSE;
+use App\Models\Evaluasi\PertanyaanSuplemen;
+use App\Models\Evaluasi\TipeEvaluasi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -18,12 +20,12 @@ class KelolaPertanyaanEvaluasiController extends Controller
     public function index()
     {
         $areaEvaluasiId = (int) session('areaEvaluasiId');
-        $areaEvaluasi = AreaEvaluasi::findOrFail($areaEvaluasiId);
 
         // Ambil query pertanyaan berdasarkan area evaluasi id
-        $queryPertanyaan = match ($areaEvaluasi->tipeEvaluasi->id) {
-            1 => PertanyaanIKategoriSE::query(),
-            2 => PertanyaanEvaluasiUtama::where('area_evaluasi_id', $areaEvaluasiId),
+        $queryPertanyaan = match ($this->getAreaEvaluasi()->tipeEvaluasi->tipe_evaluasi) {
+            TipeEvaluasi::KATEGORI_SISTEM_ELEKTRONIK => PertanyaanIKategoriSE::where('area_evaluasi_id', $areaEvaluasiId),
+            TipeEvaluasi::EVALUASI_UTAMA => PertanyaanEvaluasiUtama::where('area_evaluasi_id', $areaEvaluasiId),
+            TipeEvaluasi::SUPLEMEN => PertanyaanSuplemen::where('area_evaluasi_id', $areaEvaluasiId),
             default => collect()
         };
         $daftarPertanyaan = collect();
@@ -49,9 +51,9 @@ class KelolaPertanyaanEvaluasiController extends Controller
         return view('pages.admin.kelola-pertanyaan.kelola-pertanyaan-evaluasi.index', [
             'title' => 'Kelola Pertanyaan',
             'areaEvaluasiId' => $areaEvaluasiId,
-            'namaAreaEvaluasi' => $areaEvaluasi->nama_evaluasi,
+            'namaAreaEvaluasi' => AreaEvaluasi::find($areaEvaluasiId)->nama_evaluasi,
             'daftarPertanyaan' => $daftarPertanyaan,
-            'tipeEvaluasi' => $areaEvaluasi->tipeEvaluasi->tipe_evaluasi
+            'tipeEvaluasi' => $this->getAreaEvaluasi()->tipeEvaluasi->tipe_evaluasi
         ]);
     }
 
@@ -80,9 +82,10 @@ class KelolaPertanyaanEvaluasiController extends Controller
      */
     public function store(Request $request)
     {
-        $tipeEvaluasiTable = match ($this->getAreaEvaluasi()->tipeEvaluasi->id) {
-            1 => 'pertanyaan_i_kategori_se',
-            2 => 'pertanyaan_evaluasi_utama',
+        $tipeEvaluasiTable = match ($this->getAreaEvaluasi()->tipeEvaluasi->tipe_evaluasi) {
+            TipeEvaluasi::KATEGORI_SISTEM_ELEKTRONIK => 'pertanyaan_i_kategori_se',
+            TipeEvaluasi::EVALUASI_UTAMA => 'pertanyaan_evaluasi_utama',
+            TipeEvaluasi::SUPLEMEN => 'pertanyaan_suplemen',
             default => null
         };
 
@@ -150,17 +153,6 @@ class KelolaPertanyaanEvaluasiController extends Controller
         return redirect()->route('kelola-pertanyaan-evaluasi.index')->with('success', 'Pertanyaan berhasil ditambahkan');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $pertanyaanId)
     {
         return view('pages.admin.kelola-pertanyaan.kelola-pertanyaan-evaluasi.form', [
@@ -183,9 +175,10 @@ class KelolaPertanyaanEvaluasiController extends Controller
      */
     public function update(Request $request, string $pertanyaanId)
     {
-        $tipeEvaluasiTable = match ($this->getAreaEvaluasi($this->getAreaEvaluasiId())->tipeEvaluasi->id) {
-            1 => 'pertanyaan_i_kategori_se',
-            2 => 'pertanyaan_evaluasi_utama',
+        $tipeEvaluasiTable = match ($this->getAreaEvaluasi()->tipeEvaluasi->tipe_evaluasi) {
+            TipeEvaluasi::KATEGORI_SISTEM_ELEKTRONIK => 'pertanyaan_i_kategori_se',
+            TipeEvaluasi::EVALUASI_UTAMA => 'pertanyaan_evaluasi_utama',
+            TipeEvaluasi::SUPLEMEN => 'pertanyaan_suplemen',
             default => null
         };
 
@@ -283,9 +276,10 @@ class KelolaPertanyaanEvaluasiController extends Controller
 
     private function getPertanyaan($pertanyaanId = null)
     {
-        $pertanyaan = match ($this->getAreaEvaluasi()->tipeEvaluasi->id) {
-            1 => PertanyaanIKategoriSE::find($pertanyaanId) ?? new PertanyaanIKategoriSE(),
-            2 => PertanyaanEvaluasiUtama::find($pertanyaanId) ?? new PertanyaanEvaluasiUtama(),
+        $pertanyaan = match ($this->getAreaEvaluasi()->tipeEvaluasi->tipe_evaluasi) {
+            TipeEvaluasi::KATEGORI_SISTEM_ELEKTRONIK => PertanyaanIKategoriSE::find($pertanyaanId) ?? new PertanyaanIKategoriSE(),
+            TipeEvaluasi::EVALUASI_UTAMA => PertanyaanEvaluasiUtama::find($pertanyaanId) ?? new PertanyaanEvaluasiUtama(),
+            TipeEvaluasi::SUPLEMEN => PertanyaanSuplemen::find($pertanyaanId) ?? new PertanyaanSuplemen(),
             default => null
         };
 

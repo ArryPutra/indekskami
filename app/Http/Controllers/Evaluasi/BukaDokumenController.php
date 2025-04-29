@@ -7,9 +7,9 @@ use App\Models\KepemilikanDokumen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class KepemilikanDokumenController extends Controller
+class BukaDokumenController extends Controller
 {
-    public function show($path)
+    public function index($path)
     {
         $user = Auth::user();
         $responden = $user->responden;
@@ -25,8 +25,4 @@ class KepemilikanDokumenController extends Controller
             abort(403);
         }
     }
-
-    public function upload() {}
-
-    public function delete() {}
 }

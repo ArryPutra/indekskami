@@ -15,6 +15,7 @@ use App\Http\Controllers\AdminVerifikator\KelolaEvaluasi\SelesaiController;
 use App\Http\Controllers\AdminVerifikator\KelolaEvaluasi\VerifikasiController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Evaluasi\AksesFileController;
+use App\Http\Controllers\Evaluasi\BukaDokumenController;
 use App\Http\Controllers\Evaluasi\DashboardController as EvaluasiDashboardController;
 use App\Http\Controllers\Evaluasi\EvaluasiController;
 use App\Http\Controllers\Evaluasi\EvaluasiUtamaController;
@@ -81,6 +82,8 @@ Route::middleware(['auth', 'akunAktif'])->group(function () {
             Route::get('/verifikasi', [VerifikasiController::class, 'index'])->name('admin-verifikator.kelola-evaluasi.verifikasi');
             Route::get('/mengerjakan', [MengerjakanController::class, 'index'])->name('admin-verifikator.kelola-evaluasi.mengerjakan');
             Route::get('/selesai', [SelesaiController::class, 'index'])->name('admin-verifikator.kelola-evaluasi.selesai');
+
+            Route::get('/evaluasi-responden', fn() => 1);
         });
     });
     // # PERAN: Responden #
@@ -115,5 +118,5 @@ Route::middleware(['auth', 'akunAktif'])->group(function () {
         Route::get('/profil', [RespondenProfilController::class, 'index'])->name('responden.profil');
     });
     // Akses File Evaluasi
-    Route::get('/file/{path}', [KepemilikanDokumenController::class, 'show'])->where('path', '.*');
+    Route::get('/file/{path}', [BukaDokumenController::class, 'index'])->where('path', '.*');
 });

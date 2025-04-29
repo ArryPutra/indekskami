@@ -9,6 +9,7 @@ use Database\Seeders\Evaluasi\JudulTemaEvaluasiPertanyaanSeeder;
 use Database\Seeders\Evaluasi\JudulTemaPertanyaanSeeder;
 use Database\Seeders\Evaluasi\PertanyaanEvaluasiUtamaSeeder;
 use Database\Seeders\Evaluasi\PertanyaanIKategoriSESeeder;
+use Database\Seeders\Evaluasi\PertanyaanSuplemenSeeder;
 use Database\Seeders\Evaluasi\TipeEvaluasiSeeder;
 use Illuminate\Database\Seeder;
 
@@ -28,6 +29,7 @@ class DatabaseSeeder extends Seeder
             AreaEvaluasiSeeder::class,
             PertanyaanIKategoriSESeeder::class,
             PertanyaanEvaluasiUtamaSeeder::class,
+            PertanyaanSuplemenSeeder::class,
             JudulTemaPertanyaanSeeder::class
         ]);
     }

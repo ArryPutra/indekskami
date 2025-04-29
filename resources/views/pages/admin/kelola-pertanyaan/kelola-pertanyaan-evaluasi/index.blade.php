@@ -60,16 +60,20 @@
             <x-table.th>Status Pertama</x-table.th>
             <x-table.th>Status Kedua</x-table.th>
             <x-table.th>Status Ketiga</x-table.th>
-            @if ($tipeEvaluasi === 'Evaluasi Utama')
+            @if ($tipeEvaluasi !== 'Kategori Sistem Elektronik')
                 <x-table.th>Status Keempat</x-table.th>
-                <x-table.th>Status Kelima</x-table.th>
+                @if ($tipeEvaluasi === 'Evaluasi Utama')
+                    <x-table.th>Status Kelima</x-table.th>
+                @endif
             @endif
             <x-table.th>Skor Status Pertama</x-table.th>
             <x-table.th>Skor Status Kedua</x-table.th>
             <x-table.th>Skor Status Ketiga</x-table.th>
             @if ($tipeEvaluasi !== 'Kategori Sistem Elektronik')
                 <x-table.th>Skor Status Keempat</x-table.th>
-                <x-table.th>Skor Status Kelima</x-table.th>
+                @if ($tipeEvaluasi === 'Evaluasi Utama')
+                    <x-table.th>Skor Status Kelima</x-table.th>
+                @endif
             @endif
             <x-table.th>Catatan</x-table.th>
             <x-table.th>Apakah Tampil</x-table.th>
@@ -105,13 +109,15 @@
                         <x-table.td>
                             {{ $pertanyaan->status_keempat }}
                         </x-table.td>
-                        <x-table.td>
-                            @if ($pertanyaan->status_kelima)
-                                {{ $pertanyaan->status_kelima }}
-                            @else
-                                <span class="text-red-600 font-semibold">Kosong</span>
-                            @endif
-                        </x-table.td>
+                        @if ($tipeEvaluasi === 'Evaluasi Utama')
+                            <x-table.td>
+                                @if ($pertanyaan->status_kelima)
+                                    {{ $pertanyaan->status_kelima }}
+                                @else
+                                    <span class="text-red-600 font-semibold">Kosong</span>
+                                @endif
+                            </x-table.td>
+                        @endif
                     @endif
                     <x-table.td>
                         {{ $pertanyaan->skor_status_pertama }}
@@ -126,13 +132,15 @@
                         <x-table.td>
                             {{ $pertanyaan->skor_status_keempat }}
                         </x-table.td>
-                        <x-table.td>
-                            @if ($pertanyaan->skor_status_kelima)
-                                {{ $pertanyaan->skor_status_kelima }}
-                            @else
-                                <span class="text-red-600 font-semibold">Kosong</span>
-                            @endif
-                        </x-table.td>
+                        @if ($tipeEvaluasi === 'Evaluasi Utama')
+                            <x-table.td>
+                                @if ($pertanyaan->skor_status_kelima)
+                                    {{ $pertanyaan->skor_status_kelima }}
+                                @else
+                                    <span class="text-red-600 font-semibold">Kosong</span>
+                                @endif
+                            </x-table.td>
+                        @endif
                     @endif
                     <x-table.td>
                         @if ($pertanyaan->catatan)

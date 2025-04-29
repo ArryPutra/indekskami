@@ -1,5 +1,6 @@
 @can('adminOrVerifikator')
-    <main class="bg-slate-100 w-full min-h-dvh pl-[17rem] pr-6 pt-28 max-md:pt-24 max-md:pl-0 max-md:pr-0 pb-6">
+    <main class="bg-slate-100 w-full min-h-dvh pl-[17rem] pr-6 pt-28 max-md:pt-24 max-md:pl-0 max-md:pr-0 pb-6 duration-300"
+        :class="{ 'md:pl-[17rem]': isOpen, 'md:pl-[5rem]': !isOpen }" x-cloak>
         <div class="bg-white p-4 md:rounded-md max-md:mt-12">
             {{ $slot }}
         </div>

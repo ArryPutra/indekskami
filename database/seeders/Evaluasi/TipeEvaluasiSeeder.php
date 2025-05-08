@@ -13,13 +13,7 @@ class TipeEvaluasiSeeder extends Seeder
      */
     public function run(): void
     {
-        $daftarTipeEvaluasi = [
-            'Kategori Sistem Elektronik',
-            'Evaluasi Utama',
-            'Suplemen'
-        ];
-
-        foreach ($daftarTipeEvaluasi as $tipeEvaluasi) {
+        foreach (TipeEvaluasi::getTipeEvaluasiOptions() as $tipeEvaluasi) {
             TipeEvaluasi::create([
                 'tipe_evaluasi' => $tipeEvaluasi
             ]);

@@ -11,16 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('jawaban_suplemen', function (Blueprint $table) {
+        Schema::create('jawaban_evaluasi', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('area_evaluasi_id')->constrained('area_evaluasi');
             $table->foreignId('responden_id')->constrained('responden');
-            $table->foreignId('pertanyaan_id')->constrained('pertanyaan_i_kategori_se');
+            $table->foreignId('pertanyaan_evaluasi_id')->constrained('pertanyaan_evaluasi');
             $table->foreignId('hasil_evaluasi_id')->constrained('hasil_evaluasi');
             $table->string('status_jawaban');
-            $table->text('dokumen')->nullable();
+            $table->text('bukti_dokumen')->nullable();
             $table->text('keterangan')->nullable();
             $table->timestamps();
+
+            $table->unique(['pertanyaan_evaluasi_id', 'hasil_evaluasi_id']);
         });
     }
 
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jawaban_suplemen');
+        Schema::dropIfExists('jawaban_evaluasi');
     }
 };

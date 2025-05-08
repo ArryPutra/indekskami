@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin\KelolaPertanyaan;
 
 use App\Http\Controllers\Controller;
 use App\Models\Evaluasi\AreaEvaluasi;
+use App\Models\Evaluasi\PertanyaanEvaluasi;
 use App\Models\Evaluasi\PertanyaanEvaluasiUtama;
 use App\Models\Evaluasi\PertanyaanIKategoriSE;
+use App\Models\Evaluasi\PertanyaanKategoriSe;
 use App\Models\Evaluasi\PertanyaanSuplemen;
 use App\Models\Evaluasi\TipeEvaluasi;
 use Illuminate\Http\Request;
@@ -22,12 +24,18 @@ class KelolaPertanyaanEvaluasiController extends Controller
         $areaEvaluasiId = (int) session('areaEvaluasiId');
 
         // Ambil query pertanyaan berdasarkan area evaluasi id
-        $queryPertanyaan = match ($this->getAreaEvaluasi()->tipeEvaluasi->tipe_evaluasi) {
-            TipeEvaluasi::KATEGORI_SISTEM_ELEKTRONIK => PertanyaanIKategoriSE::where('area_evaluasi_id', $areaEvaluasiId),
-            TipeEvaluasi::EVALUASI_UTAMA => PertanyaanEvaluasiUtama::where('area_evaluasi_id', $areaEvaluasiId),
-            TipeEvaluasi::SUPLEMEN => PertanyaanSuplemen::where('area_evaluasi_id', $areaEvaluasiId),
-            default => collect()
-        };
+        $queryPertanyaan = PertanyaanEvaluasi::where('area_evaluasi_id', $areaEvaluasiId);
+        switch ($this->getAreaEvaluasi()->tipeEvaluasi->tipe_evaluasi) {
+            case TipeEvaluasi::KATEGORI_SISTEM_ELEKTRONIK:
+                $queryPertanyaan = $queryPertanyaan->with('pertanyaanKategoriSe');
+                break;
+            case TipeEvaluasi::EVALUASI_UTAMA:
+                $queryPertanyaan = $queryPertanyaan->with('pertanyaanEvaluasiUtama');
+                break;
+            case TipeEvaluasi::SUPLEMEN:
+                $queryPertanyaan = $queryPertanyaan->with('pertanyaanSuplemen');
+                break;
+        }
         $daftarPertanyaan = collect();
 
         // Request cari
@@ -65,7 +73,8 @@ class KelolaPertanyaanEvaluasiController extends Controller
         return view('pages.admin.kelola-pertanyaan.kelola-pertanyaan-evaluasi.form', [
             'title' => 'Kelola Pertanyaan',
             'tipeEvaluasi' => $this->getAreaEvaluasi()->tipeEvaluasi->tipe_evaluasi,
-            'pertanyaan' => $this->getPertanyaan(),
+            'pertanyaanEvaluasi' => new PertanyaanEvaluasi(),
+            'pertanyaanRelasi' => $this->getPertanyaanRelasi(),
             'pageMeta' => [
                 'route' => route('kelola-pertanyaan-evaluasi.store'),
                 'method' => 'POST'
@@ -82,18 +91,12 @@ class KelolaPertanyaanEvaluasiController extends Controller
      */
     public function store(Request $request)
     {
-        $tipeEvaluasiTable = match ($this->getAreaEvaluasi()->tipeEvaluasi->tipe_evaluasi) {
-            TipeEvaluasi::KATEGORI_SISTEM_ELEKTRONIK => 'pertanyaan_i_kategori_se',
-            TipeEvaluasi::EVALUASI_UTAMA => 'pertanyaan_evaluasi_utama',
-            TipeEvaluasi::SUPLEMEN => 'pertanyaan_suplemen',
-            default => null
-        };
-
         $pertanyaanBaruRequest = [
             'nomor' => [
                 'required',
                 'integer',
-                Rule::unique($tipeEvaluasiTable, 'nomor')
+                Rule::unique('pertanyaan_evaluasi', 'nomor')
+                    ->where('area_evaluasi_id', $this->getAreaEvaluasiId())
                     ->where(function ($query) {
                         return $query->where('area_evaluasi_id', $this->getAreaEvaluasiId())
                             ->where('apakah_tampil', true);
@@ -110,7 +113,7 @@ class KelolaPertanyaanEvaluasiController extends Controller
         ];
 
         // Tambahkan aturan khusus jika tipe evaluasi adalah 'pertanyaan_evaluasi_utama'
-        if ($tipeEvaluasiTable === 'pertanyaan_evaluasi_utama') {
+        if ($this->getAreaEvaluasi()->tipeEvaluasi->tipe_evaluasi === TipeEvaluasi::EVALUASI_UTAMA) {
             $pertanyaanBaruRequest += [
                 'tingkat_kematangan' => [
                     'required',
@@ -127,17 +130,28 @@ class KelolaPertanyaanEvaluasiController extends Controller
                 'skor_status_keempat' => ['required', 'integer'],
                 'skor_status_kelima' => ['nullable', 'integer'],
             ];
+        } else if ($this->getAreaEvaluasi()->tipeEvaluasi->tipe_evaluasi === TipeEvaluasi::SUPLEMEN) {
+            $pertanyaanBaruRequest += [
+                'status_keempat' => ['required', 'max:255'],
+                'skor_status_keempat' => ['required', 'integer'],
+
+            ];
         }
 
         $request->validate($pertanyaanBaruRequest);
 
-        $this->getPertanyaan()->create([
+        $pertanyaanEvaluasi = PertanyaanEvaluasi::create([
             'area_evaluasi_id' => $this->getAreaEvaluasiId(),
             'tingkat_kematangan' => $request->tingkat_kematangan,
-            'pertanyaan_tahap' => $request->pertanyaan_tahap,
             'nomor' => $request->nomor,
             'catatan' => $request->catatan,
             'pertanyaan' => $request->pertanyaan,
+        ]);
+
+        $this->getPertanyaanRelasi()->create([
+            'pertanyaan_evaluasi_id' => $pertanyaanEvaluasi->id,
+            'tingkat_kematangan' => $request->tingkat_kematangan,
+            'pertanyaan_tahap' => $request->pertanyaan_tahap,
             'status_pertama' => $request->status_pertama,
             'status_kedua' => $request->status_kedua,
             'status_ketiga' => $request->status_ketiga,
@@ -153,14 +167,15 @@ class KelolaPertanyaanEvaluasiController extends Controller
         return redirect()->route('kelola-pertanyaan-evaluasi.index')->with('success', 'Pertanyaan berhasil ditambahkan');
     }
 
-    public function edit(string $pertanyaanId)
+    public function edit(string $pertanyaanEvaluasiId)
     {
         return view('pages.admin.kelola-pertanyaan.kelola-pertanyaan-evaluasi.form', [
             'title' => 'Kelola Pertanyaan',
             'tipeEvaluasi' => $this->getAreaEvaluasi()->tipeEvaluasi->tipe_evaluasi,
-            'pertanyaan' => $this->getPertanyaan($pertanyaanId),
+            'pertanyaanEvaluasi' => PertanyaanEvaluasi::find($pertanyaanEvaluasiId),
+            'pertanyaanRelasi' => $this->getPertanyaanRelasi($pertanyaanEvaluasiId),
             'pageMeta' => [
-                'route' => route('kelola-pertanyaan-evaluasi.update', $pertanyaanId),
+                'route' => route('kelola-pertanyaan-evaluasi.update', $pertanyaanEvaluasiId),
                 'method' => 'PUT'
             ],
             'dropdownOptions' => [
@@ -170,28 +185,19 @@ class KelolaPertanyaanEvaluasiController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $pertanyaanId)
+    public function update(Request $request, string $pertanyaanEvaluasiId)
     {
-        $tipeEvaluasiTable = match ($this->getAreaEvaluasi()->tipeEvaluasi->tipe_evaluasi) {
-            TipeEvaluasi::KATEGORI_SISTEM_ELEKTRONIK => 'pertanyaan_i_kategori_se',
-            TipeEvaluasi::EVALUASI_UTAMA => 'pertanyaan_evaluasi_utama',
-            TipeEvaluasi::SUPLEMEN => 'pertanyaan_suplemen',
-            default => null
-        };
-
         $pertanyaanBaruRequest = [
             'nomor' => [
                 'required',
                 'integer',
-                Rule::unique($tipeEvaluasiTable, 'nomor')
+                Rule::unique('pertanyaan_evaluasi', 'nomor')
+                    ->where('area_evaluasi_id', $this->getAreaEvaluasiId())
                     ->where(function ($query) {
                         return $query->where('area_evaluasi_id', $this->getAreaEvaluasiId())
                             ->where('apakah_tampil', true);
                     })
-                    ->ignore($pertanyaanId),
+                    ->ignore($pertanyaanEvaluasiId),
             ],
             'catatan' => ['nullable', 'string'],
             'pertanyaan' => ['required'],
@@ -204,7 +210,7 @@ class KelolaPertanyaanEvaluasiController extends Controller
         ];
 
         // Tambahkan aturan khusus jika tipe evaluasi adalah 'pertanyaan_evaluasi_utama'
-        if ($tipeEvaluasiTable === 'pertanyaan_evaluasi_utama') {
+        if ($this->getAreaEvaluasi()->tipeEvaluasi->tipe_evaluasi === TipeEvaluasi::EVALUASI_UTAMA) {
             $pertanyaanBaruRequest += [
                 'tingkat_kematangan' => [
                     'required',
@@ -221,16 +227,28 @@ class KelolaPertanyaanEvaluasiController extends Controller
                 'skor_status_keempat' => ['required', 'integer'],
                 'skor_status_kelima' => ['nullable', 'integer'],
             ];
+        } else if ($this->getAreaEvaluasi()->tipeEvaluasi->tipe_evaluasi === TipeEvaluasi::SUPLEMEN) {
+            $pertanyaanBaruRequest += [
+                'status_keempat' => ['required', 'max:255'],
+                'skor_status_keempat' => ['required', 'integer'],
+
+            ];
         }
 
         $request->validate($pertanyaanBaruRequest);
 
-        $this->getPertanyaan($pertanyaanId)->update([
+        PertanyaanEvaluasi::find($pertanyaanEvaluasiId)->update([
+            'area_evaluasi_id' => $this->getAreaEvaluasiId(),
+            'tingkat_kematangan' => $request->tingkat_kematangan,
             'nomor' => $request->nomor,
-            'catatan' => $request->catatan ?? null,
-            'tingkat_kematangan' => $request->tingkat_kematangan ?? null,
-            'pertanyaan_tahap' => $request->pertanyaan_tahap ?? null,
+            'catatan' => $request->catatan,
             'pertanyaan' => $request->pertanyaan,
+        ]);
+
+        $this->getPertanyaanRelasi($pertanyaanEvaluasiId)->update([
+            'pertanyaan_evaluasi_id' => $pertanyaanEvaluasiId,
+            'tingkat_kematangan' => $request->tingkat_kematangan,
+            'pertanyaan_tahap' => $request->pertanyaan_tahap,
             'status_pertama' => $request->status_pertama,
             'status_kedua' => $request->status_kedua,
             'status_ketiga' => $request->status_ketiga,
@@ -249,11 +267,11 @@ class KelolaPertanyaanEvaluasiController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request, string $pertanyaanId)
+    public function destroy(Request $request, string $pertanyaanEvaluasiId)
     {
         $apakahTampil = filter_var($request->apakah_tampil, FILTER_VALIDATE_BOOLEAN);
 
-        $this->getPertanyaan($pertanyaanId)->update(
+        PertanyaanEvaluasi::find($pertanyaanEvaluasiId)->update(
             [
                 'apakah_tampil' => $apakahTampil
             ]
@@ -274,15 +292,17 @@ class KelolaPertanyaanEvaluasiController extends Controller
         return AreaEvaluasi::find($this->getAreaEvaluasiId());
     }
 
-    private function getPertanyaan($pertanyaanId = null)
+    private function getPertanyaanRelasi($pertanyaanEvaluasiId = null)
     {
-        $pertanyaan = match ($this->getAreaEvaluasi()->tipeEvaluasi->tipe_evaluasi) {
-            TipeEvaluasi::KATEGORI_SISTEM_ELEKTRONIK => PertanyaanIKategoriSE::find($pertanyaanId) ?? new PertanyaanIKategoriSE(),
-            TipeEvaluasi::EVALUASI_UTAMA => PertanyaanEvaluasiUtama::find($pertanyaanId) ?? new PertanyaanEvaluasiUtama(),
-            TipeEvaluasi::SUPLEMEN => PertanyaanSuplemen::find($pertanyaanId) ?? new PertanyaanSuplemen(),
+        return match ($this->getAreaEvaluasi()->tipeEvaluasi->tipe_evaluasi) {
+            TipeEvaluasi::KATEGORI_SISTEM_ELEKTRONIK =>
+            PertanyaanKategoriSe::where('pertanyaan_evaluasi_id', $pertanyaanEvaluasiId)->first()
+                ?? new PertanyaanKategoriSe(),
+            TipeEvaluasi::EVALUASI_UTAMA => PertanyaanEvaluasiUtama::where('pertanyaan_evaluasi_id', $pertanyaanEvaluasiId)->first()
+                ?? new PertanyaanEvaluasiUtama(),
+            TipeEvaluasi::SUPLEMEN => PertanyaanSuplemen::where('pertanyaan_evaluasi_id', $pertanyaanEvaluasiId)->first()
+                ?? new PertanyaanSuplemen(),
             default => null
         };
-
-        return $pertanyaan;
     }
 }

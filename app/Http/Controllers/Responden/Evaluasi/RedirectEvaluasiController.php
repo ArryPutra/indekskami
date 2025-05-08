@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Responden\Evaluasi;
 use App\Http\Controllers\Controller;
 use App\Models\Evaluasi\HasilEvaluasi;
 use App\Models\Responden\Responden;
+use App\Models\Responden\StatusEvaluasi;
+use App\Models\Responden\StatusProgresEvaluasi;
 use Illuminate\Support\Facades\Auth;
 
 class RedirectEvaluasiController extends Controller
@@ -18,16 +20,16 @@ class RedirectEvaluasiController extends Controller
             return redirect()->route('responden.nonaktif-evaluasi');
         }
 
-        $statusEvaluasiResponden = $responden->status_evaluasi;
-        switch ($statusEvaluasiResponden) {
-            case Responden::STATUS_BELUM:
+        $statusProgreEvaluasiResponden = $responden->statusProgresEvaluasi->status_progres_evaluasi;
+        switch ($statusProgreEvaluasiResponden) {
+            case StatusProgresEvaluasi::BELUM_MEMULAI:
                 return redirect()->route('responden.evaluasi.identitas-responden.create');
                 break;
-            case Responden::STATUS_MENGERJAKAN:
+            case StatusProgresEvaluasi::SEDANG_MENGERJAKAN:
                 $hasilEvaluasiTerakhir = $responden->hasilEvaluasi->last();
                 return redirect()->route('responden.evaluasi.pertanyaan', [1, $hasilEvaluasiTerakhir->id]);
                 break;
-            case Responden::STATUS_SELESAI:
+            case StatusProgresEvaluasi::SELESAI_MENGERJAKAN:
                 return redirect()->route('responden.selesai-evaluasi');
                 break;
         }

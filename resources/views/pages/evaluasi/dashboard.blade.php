@@ -11,19 +11,19 @@
         <div class="gap-3 grid md:grid-cols-2">
             <section>
                 <h1>Identitas Instansi:</h1>
-                <b>{{ $identitasResponden->identitas_instansi }}</b>
+                <b>Satuan Kerja</b>
             </section>
             <section>
                 <h1>Alamat:</h1>
-                <b>{{ $identitasResponden->alamat }}</b>
+                <b>{{ $responden->alamat }}</b>
             </section>
             <section>
                 <h1>Nomor Telepon:</h1>
-                <b>{{ $identitasResponden->nomor_telepon }}</b>
+                <b>{{ $responden->user->nomor_telepon }}</b>
             </section>
             <section>
                 <h1>Email:</h1>
-                <b>{{ $identitasResponden->email }}</b>
+                <b>{{ $responden->user->email }}</b>
             </section>
             <section>
                 <h1>Pengisi Lembar Evaluasi:</h1>

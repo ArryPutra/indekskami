@@ -11,12 +11,12 @@
 
     <div class="mb-3">
         <h1 class="font-bold text-xl">{{ $namaAreaEvaluasi }}</h1>
-        <h1>Jumlah Pertanyaan: {{ $daftarPertanyaan->count() }}</h1>
+        <h1>Jumlah Pertanyaan ditemukan: {{ $daftarPertanyaan->count() }}</h1>
     </div>
 
     <form action="{{ route('kelola-pertanyaan-evaluasi.index') }}" method="GET">
         <div class="flex gap-3 w-full mb-4">
-            <x-text-field value="{{ request('cari') }}" type="text" name="cari" placeholder="Cari responden" />
+            <x-text-field value="{{ request('cari') }}" type="text" name="cari" placeholder="Cari pertanyaan" />
             <x-button type="submit">
                 <span>Cari</span>
             </x-button>
@@ -82,37 +82,59 @@
         <x-table.tbody>
             @foreach ($daftarPertanyaan as $pertanyaan)
                 <x-table.tr>
+                    @php
+                        $pertanyaanRelasi = $pertanyaan->pertanyaanKategoriSe;
+                    @endphp
+                    @switch($tipeEvaluasi)
+                        @case('Kategori Sistem Elektronik')
+                            @php
+                                $pertanyaanRelasi = $pertanyaan->pertanyaanKategoriSe;
+                            @endphp
+                        @break
+
+                        @case('Evaluasi Utama')
+                            @php
+                                $pertanyaanRelasi = $pertanyaan->pertanyaanEvaluasiUtama;
+                            @endphp
+                        @break
+
+                        @case('Suplemen')
+                            @php
+                                $pertanyaanRelasi = $pertanyaan->pertanyaanSuplemen;
+                            @endphp
+                        @break
+                    @endswitch
                     <x-table.td>
                         {{ $pertanyaan->nomor }}
                     </x-table.td>
                     @if ($tipeEvaluasi === 'Evaluasi Utama')
                         <x-table.td>
-                            {{ $pertanyaan->tingkat_kematangan }}
+                            {{ $pertanyaanRelasi->tingkat_kematangan }}
                         </x-table.td>
                         <x-table.td>
-                            {{ $pertanyaan->pertanyaan_tahap }}
+                            {{ $pertanyaanRelasi->pertanyaan_tahap }}
                         </x-table.td>
                     @endif
                     <x-table.td>
                         {{ $pertanyaan->pertanyaan }}
                     </x-table.td>
                     <x-table.td>
-                        {{ $pertanyaan->status_pertama }}
+                        {{ $pertanyaanRelasi->status_pertama }}
                     </x-table.td>
                     <x-table.td>
-                        {{ $pertanyaan->status_kedua }}
+                        {{ $pertanyaanRelasi->status_kedua }}
                     </x-table.td>
                     <x-table.td>
-                        {{ $pertanyaan->status_ketiga }}
+                        {{ $pertanyaanRelasi->status_ketiga }}
                     </x-table.td>
                     @if ($tipeEvaluasi !== 'Kategori Sistem Elektronik')
                         <x-table.td>
-                            {{ $pertanyaan->status_keempat }}
+                            {{ $pertanyaanRelasi->status_keempat }}
                         </x-table.td>
                         @if ($tipeEvaluasi === 'Evaluasi Utama')
                             <x-table.td>
-                                @if ($pertanyaan->status_kelima)
-                                    {{ $pertanyaan->status_kelima }}
+                                @if ($pertanyaanRelasi->status_kelima)
+                                    {{ $pertanyaanRelasi->status_kelima }}
                                 @else
                                     <span class="text-red-600 font-semibold">Kosong</span>
                                 @endif
@@ -120,22 +142,22 @@
                         @endif
                     @endif
                     <x-table.td>
-                        {{ $pertanyaan->skor_status_pertama }}
+                        {{ $pertanyaanRelasi->skor_status_pertama }}
                     </x-table.td>
                     <x-table.td>
-                        {{ $pertanyaan->skor_status_kedua }}
+                        {{ $pertanyaanRelasi->skor_status_kedua }}
                     </x-table.td>
                     <x-table.td>
-                        {{ $pertanyaan->skor_status_ketiga }}
+                        {{ $pertanyaanRelasi->skor_status_ketiga }}
                     </x-table.td>
                     @if ($tipeEvaluasi !== 'Kategori Sistem Elektronik')
                         <x-table.td>
-                            {{ $pertanyaan->skor_status_keempat }}
+                            {{ $pertanyaanRelasi->skor_status_keempat }}
                         </x-table.td>
                         @if ($tipeEvaluasi === 'Evaluasi Utama')
                             <x-table.td>
-                                @if ($pertanyaan->skor_status_kelima)
-                                    {{ $pertanyaan->skor_status_kelima }}
+                                @if ($pertanyaanRelasi->skor_status_kelima)
+                                    {{ $pertanyaanRelasi->skor_status_kelima }}
                                 @else
                                     <span class="text-red-600 font-semibold">Kosong</span>
                                 @endif

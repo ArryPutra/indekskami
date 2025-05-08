@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('area_evaluasi', function (Blueprint $table) {
             $table->id();
             $table->foreignId('tipe_evaluasi_id')->constrained('tipe_evaluasi');
-            $table->string('nama_evaluasi');
+            $table->string('nama_evaluasi')->unique();
             $table->string('judul');
             $table->text('deskripsi');
             $table->timestamps();

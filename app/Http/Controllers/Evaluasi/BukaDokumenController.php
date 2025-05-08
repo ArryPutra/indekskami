@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Evaluasi;
 
 use App\Http\Controllers\Controller;
+use App\Models\Evaluasi\JawabanEvaluasi;
 use App\Models\KepemilikanDokumen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,12 +14,17 @@ class BukaDokumenController extends Controller
     {
         $user = Auth::user();
         $responden = $user->responden;
-        $fileDatabase = KepemilikanDokumen::where('path', $path)->first() ?? abort(404);
-        $fileDatabaseRespondenId = $fileDatabase->responden_id;
 
-        // Jika file tersebut milik responden yang sah atau
-        // Jika user bukan peran responden
-        if (($responden && $fileDatabaseRespondenId === $responden->id) || $user->peran_id !== 3) {
+        $dokumenRespondenId = JawabanEvaluasi::where('bukti_dokumen', $path)->first()->responden_id
+            ?? abort(404);
+
+        // Jika file tersebut milik responden yang sah 
+        // atau jika user bukan peran responden
+        if (
+            ($responden && $dokumenRespondenId === $responden->id)
+            ||
+            $user->peran_id !== 3
+        ) {
             // Menampilkan file
             return response()->file(storage_path("app/private/$path"));
         } else {

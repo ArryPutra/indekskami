@@ -21,7 +21,7 @@ class MengerjakanEvaluasiMiddleware
 
         if (!$responden) {
             return abort(403);
-        } else if ($responden->status_evaluasi !== Responden::STATUS_MENGERJAKAN) {
+        } else if ($responden->statusProgresEvaluasi->status_progres_evaluasi === Responden::STATUS_MENGERJAKAN) {
             return redirect()->route('responden.redirect-evaluasi');
         }
 

@@ -23,8 +23,12 @@
             <h1 class="font-bold text-lg">{{ $responden->daerah }}</h1>
         </section>
         <section>
+            <h1>Alamat:</h1>
+            <h1 class="font-bold text-lg">{{ $responden->alamat }}</h1>
+        </section>
+        <section>
             <h1>Status Evaluasi:</h1>
-            <h1 class="font-bold text-lg">{{ $responden->status_evaluasi }}</h1>
+            <h1 class="font-bold text-lg">{{ $responden->statusProgresEvaluasi->status_progres_evaluasi }}</h1>
         </section>
     </div>
 @endsection

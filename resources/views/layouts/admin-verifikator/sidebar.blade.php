@@ -9,9 +9,8 @@
     z-20 duration-300"
     :class="{ 'max-md:-left-0 shadow-2xl md:w-[16rem]': isOpen, 'max-md:-left-[16rem] md:w-[4rem]': !isOpen }" x-cloak>
     <div class="flex items-end h-20 max-h-20 mb-8 justify-between px-5">
-        <img class="h-16" :class="{
-            'md:hidden':
-                !isOpen
+        <img class="h-16 min-w-12" :class="{
+            'md:hidden': !isOpen,
         }"
             src="{{ asset('images/logo/prov-kalsel.png') }}" alt="Logo Prov Kalsel">
         <svg @click="isOpen = false; localStorage.setItem('isOpenSidebar', false)" xmlns="http://www.w3.org/2000/svg"
@@ -72,15 +71,36 @@
                     Kelola
                     Evaluasi</h1>
             </a>
+            {{-- MENU: KELOLA PERTANYAAN --}}
+            <a href="{{ route('admin.kelola-pertanyaan') }}"
+                class="
+                {{ request()->is('admin/kelola-pertanyaan*') ? $activeMenuClass : false }} {{ $defaultMenuClass }}">
+                <svg class="size-6 min-w-6 fill-white" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24">
+                    <path
+                        d="M4 18h2v4.081L11.101 18H16c1.103 0 2-.897 2-2V8c0-1.103-.897-2-2-2H4c-1.103 0-2 .897-2 2v8c0 1.103.897 2 2 2z">
+                    </path>
+                    <path
+                        d="M20 2H8c-1.103 0-2 .897-2 2h12c1.103 0 2 .897 2 2v8c1.103 0 2-.897 2-2V4c0-1.103-.897-2-2-2z">
+                    </path>
+                </svg>
+                <h1 class="text-xl text-white whitespace-nowrap"
+                    :class="{
+                        'md:relative md:text-sm md:bg-slate-800 md:p-2 md:rounded-md md:left-4 md:shadow md:pointer-events-none md:top-4 md:opacity-0 group-hover:md:opacity-100 group-hover:md:top-0 group-hover:duration-300':
+                            !isOpen
+                    }">
+                    Kelola
+                    Pertanyaan
+                </h1>
+            </a>
             {{-- MENU: KELOLA RESPONDEN --}}
             <a href="{{ route('kelola-responden.index') }}"
                 class="
         {{ request()->is('admin/kelola-responden*') ? $activeMenuClass : false }} {{ $defaultMenuClass }}">
-                <svg class="size-6 min-w-6 fill-white" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                    viewBox="0 0 24 24">
+                <svg class="size-6 min-w-6 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    fill="currentColor">
                     <path
-                        d="M7.5 6.5C7.5 8.981 9.519 11 12 11s4.5-2.019 4.5-4.5S14.481 2 12 2 7.5 4.019 7.5 6.5zM20 21h1v-1c0-3.859-3.141-7-7-7h-4c-3.86 0-7 3.141-7 7v1h17z">
-                    </path>
+                        d="M4.5 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM14.25 8.625a3.375 3.375 0 1 1 6.75 0 3.375 3.375 0 0 1-6.75 0ZM1.5 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM17.25 19.128l-.001.144a2.25 2.25 0 0 1-.233.96 10.088 10.088 0 0 0 5.06-1.01.75.75 0 0 0 .42-.643 4.875 4.875 0 0 0-6.957-4.611 8.586 8.586 0 0 1 1.71 5.157v.003Z" />
                 </svg>
                 <h1 class="text-xl text-white whitespace-nowrap"
                     :class="{
@@ -109,26 +129,24 @@
                     Verifikator
                 </h1>
             </a>
-            {{-- MENU: KELOLA PERTANYAAN --}}
-            <a href="{{ route('admin.kelola-pertanyaan') }}"
+            {{-- MENU: KELOLA ADMIN --}}
+            <a href="{{ null }}"
                 class="
-        {{ request()->is('admin/kelola-pertanyaan*') ? $activeMenuClass : false }} {{ $defaultMenuClass }}">
-                <svg class="size-6 min-w-6 fill-white" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                    viewBox="0 0 24 24">
-                    <path
-                        d="M4 18h2v4.081L11.101 18H16c1.103 0 2-.897 2-2V8c0-1.103-.897-2-2-2H4c-1.103 0-2 .897-2 2v8c0 1.103.897 2 2 2z">
-                    </path>
-                    <path
-                        d="M20 2H8c-1.103 0-2 .897-2 2h12c1.103 0 2 .897 2 2v8c1.103 0 2-.897 2-2V4c0-1.103-.897-2-2-2z">
-                    </path>
+        {{ request()->is('admin/kelola-admin*') ? $activeMenuClass : false }} {{ $defaultMenuClass }}">
+                <svg class="size-6 minw-6 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
+                        clip-rule="evenodd" />
                 </svg>
+
                 <h1 class="text-xl text-white whitespace-nowrap"
                     :class="{
                         'md:relative md:text-sm md:bg-slate-800 md:p-2 md:rounded-md md:left-4 md:shadow md:pointer-events-none md:top-4 md:opacity-0 group-hover:md:opacity-100 group-hover:md:top-0 group-hover:duration-300':
                             !isOpen
                     }">
                     Kelola
-                    Pertanyaan
+                    Admin
                 </h1>
             </a>
             {{-- MENU: PROFIL --}}
@@ -207,7 +225,7 @@
         @endif
     </div>
 
-    <h1 class="text-white/75 absolute bottom-0 border-t-2 border-slate-800 w-full text-center py-4 text-sm"
+    <h1 class="text-white/75 absolute bottom-0 border-t-2 border-slate-800 w-full text-center py-4 text-sm whitespace-nowrap"
         :class="{
             'md:relative md:text-sm md:bg-slate-800 md:p-2 md:rounded-md md:left-4 md:shadow md:pointer-events-none md:top-4 md:opacity-0 group-hover:md:opacity-100 group-hover:md:top-0 group-hover:duration-300':
                 !isOpen

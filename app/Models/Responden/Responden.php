@@ -10,12 +10,7 @@ class Responden extends Model
 {
     protected $table = 'responden';
 
-    protected $fillable = [
-        'user_id',
-        'daerah',
-        'akses_evaluasi',
-        'status_evaluasi'
-    ];
+    protected $guarded = ['id', 'created_at', 'updated_at'];
 
     public function user()
     {
@@ -25,6 +20,25 @@ class Responden extends Model
     public function hasilEvaluasi()
     {
         return $this->hasMany(HasilEvaluasi::class, 'responden_id', 'id');
+    }
+
+    public function statusProgresEvaluasi()
+    {
+        return $this->belongsTo(StatusProgresEvaluasi::class);
+    }
+
+    // Identitas Instansi
+    const IDENTITAS_INSTANSI_SATUAN_KERJA = 'Satuan Kerja';
+    const IDENTITAS_INSTANSI_DIREKTORAT = 'Direktorat';
+    const IDENTITAS_INSTANSI_DEPARTEMEN = 'Departemen';
+
+    public static function getIdentitasInstansiOptions()
+    {
+        return [
+            self::IDENTITAS_INSTANSI_SATUAN_KERJA,
+            self::IDENTITAS_INSTANSI_DIREKTORAT,
+            self::IDENTITAS_INSTANSI_DEPARTEMEN
+        ];
     }
 
     // Status Evaluasi

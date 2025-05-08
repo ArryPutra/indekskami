@@ -17,10 +17,10 @@ class VerifikatorSeeder extends Seeder
      */
     public function run(): void
     {
-        UserFactory::new()
-            ->count(15)
-            ->has(VerifikatorFactory::new()->count(1))
-            ->create();
+        // UserFactory::new()
+        //     ->count(15)
+        //     ->has(VerifikatorFactory::new()->count(1))
+        //     ->create();
 
         $user = User::create([
             'nama' => 'Ahmad Hadi',
@@ -31,10 +31,10 @@ class VerifikatorSeeder extends Seeder
             'password' => Hash::make('password123'),
             'apakah_akun_nonaktif' => false
         ]);
+
         Verifikator::create([
             'user_id' => $user->id,
             'nomor_sk' => '123456789',
-            'akses_verifikasi' => true
         ]);
     }
 }

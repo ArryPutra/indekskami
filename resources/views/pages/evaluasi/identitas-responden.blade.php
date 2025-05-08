@@ -9,13 +9,22 @@
                 {!! session('success') !!}
             </x-alert>
         @endif
-        <x-dropdown name="identitas_instansi" label="Pilih Identitas Instansi">
-            <x-dropdown.option value="Satuan Kerja" :selected="old('identitas-instansi', $identitasResponden->identitas_instansi) == 'Satuan Kerja'">Satuan kerja</x-dropdown.option>
-            <x-dropdown.option value="Direktorat" :selected="old('identitas-instansi', $identitasResponden->identitas_instansi) == 'Direktorat'">Direktorat</x-dropdown.option>
-            <x-dropdown.option value="Departemen" :selected="old('identitas-instansi', $identitasResponden->identitas_instansi) == 'Departemen'">Departemen</x-dropdown.option>
-        </x-dropdown>
-        <x-text-area name="alamat" label="Alamat" placeholder="Alamat 1, Alamat 2, Kota, Kode Pos"
-            value="{{ old('alamat', $identitasResponden->alamat) }}" />
+
+        @if (Auth::user()->nomor_telepon !== $identitasResponden->nomor_telepon ||
+                Auth::user()->email !== $identitasResponden->email)
+            <x-alert :isClosed=true>
+                <b>PERHATIAN:</b>
+                @if (Auth::user()->nomor_telepon !== $identitasResponden->nomor_telepon &&
+                        Auth::user()->email !== $identitasResponden->email)
+                    Nomor telepon dan email Anda tidak sama dengan data akun terdaftar.
+                @elseif (Auth::user()->nomor_telepon !== $identitasResponden->nomor_telepon)
+                    Nomor telepon Anda tidak sama dengan nomor telepon akun.
+                @elseif (Auth::user()->email !== $identitasResponden->email)
+                    Email Anda tidak sama dengan email akun.
+                @endif
+            </x-alert>
+        @endif
+
         <x-text-field name="nomor_telepon" label="Nomor Telepon" placeholder="(Kode Area) Nomor Telpon"
             value="{{ old('nomor_telepon', $identitasResponden->nomor_telepon) }}" />
         <x-text-field name="email" label="Email" placeholder="user@departemen_responden.go.id"

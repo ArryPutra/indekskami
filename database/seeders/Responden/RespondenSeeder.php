@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\Responden;
 
 use App\Models\Responden\Responden;
 use App\Models\User;
@@ -21,14 +21,16 @@ class RespondenSeeder extends Seeder
                 'username' => 'diskominfoprovkalsel',
                 'email' => 'diskominfo.provkalsel@egov.com',
                 'nomor_telepon' => '081234567810',
-                'daerah' => 'Provinsi'
+                'daerah' => 'Provinsi',
+                'alamat' => 'Jl. Dharma Praja II, Cempaka, Kota Banjarbaru, Kalimantan Selatan 70711',
             ],
             [
                 'nama' => 'Disdikbud Prov Kalsel',
                 'username' => 'disdikbudprovkalsel',
                 'email' => 'disdikbud.provkalsel@egov.com',
                 'nomor_telepon' => '081234567811',
-                'daerah' => 'Provinsi'
+                'daerah' => 'Provinsi',
+                'alamat' => 'Jl. Dharma Praja II, Cempaka, Kota Banjarbaru, Kalimantan Selatan 70711',
             ],
             // [
             //     'nama' => 'Disdukcapil Prov Kalsel',
@@ -169,7 +171,9 @@ class RespondenSeeder extends Seeder
             ]);
             Responden::create([
                 'user_id' => $user->id,
+                'status_progres_evaluasi_id' => 1,
                 'daerah' => $responden['daerah'],
+                'alamat' => $responden['alamat'],
                 'akses_evaluasi' => 1
             ]);
         }

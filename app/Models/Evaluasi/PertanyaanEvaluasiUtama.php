@@ -54,14 +54,4 @@ class PertanyaanEvaluasiUtama extends Model
             self::PERTANYAAN_TAHAP_3,
         ];
     }
-
-    public function getJawabanResponden($areaEvaluasiId, $respondenId, $hasilEvaluasiId, $pertanyaanId)
-    {
-        return JawabanEvaluasiUtama::where([
-            'area_evaluasi_id' => $areaEvaluasiId,
-            'responden_id' => $respondenId,
-            'hasil_evaluasi_id' => $hasilEvaluasiId,
-            'pertanyaan_id' => $pertanyaanId
-        ])->first();
-    }
 }

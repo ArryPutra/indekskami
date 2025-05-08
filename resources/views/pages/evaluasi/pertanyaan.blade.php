@@ -85,58 +85,56 @@
                         {{-- Kolom: Pertanyaan --}}
                         <x-table.td class="min-w-56">
                             <x-radio label="{{ $pertanyaanDanJawaban['pertanyaan'] }}">
-                                <x-radio.option :checked="$pertanyaanDanJawaban['status_jawaban'] === 'skor_status_pertama'"
+                                <x-radio.option :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_pertama'"
                                     onclick="pilihOpsiJawaban(
                                     {{ $index }},
                                     {{ $pertanyaanDanJawaban['skor_status_pertama'] }},
                                     )"
                                     name="{{ $pertanyaanDanJawaban['nomor'] }}[status_jawaban]"
                                     id="pertanyaan{{ $pertanyaanDanJawaban['nomor'] }}StatusPertama"
-                                    value="skor_status_pertama">
+                                    value="status_pertama">
                                     {{ $pertanyaanDanJawaban['status_pertama'] }}
                                 </x-radio.option>
-                                <x-radio.option :checked="$pertanyaanDanJawaban['status_jawaban'] === 'skor_status_kedua'"
+                                <x-radio.option :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_kedua'"
                                     onclick="pilihOpsiJawaban(
                                     {{ $index }},
                                     {{ $pertanyaanDanJawaban['skor_status_kedua'] }},
                                     )"
                                     name="{{ $pertanyaanDanJawaban['nomor'] }}[status_jawaban]"
-                                    id="pertanyaan{{ $pertanyaanDanJawaban['nomor'] }}StatusKedua"
-                                    value="skor_status_kedua">
+                                    id="pertanyaan{{ $pertanyaanDanJawaban['nomor'] }}StatusKedua" value="status_kedua">
                                     {{ $pertanyaanDanJawaban['status_kedua'] }}
                                 </x-radio.option>
-                                <x-radio.option :checked="$pertanyaanDanJawaban['status_jawaban'] === 'skor_status_ketiga'"
+                                <x-radio.option :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_ketiga'"
                                     onclick="pilihOpsiJawaban(
                                     {{ $index }},
                                     {{ $pertanyaanDanJawaban['skor_status_ketiga'] }},
                                     )"
                                     name="{{ $pertanyaanDanJawaban['nomor'] }}[status_jawaban]"
-                                    id="pertanyaan{{ $pertanyaanDanJawaban['nomor'] }}StatusKetiga"
-                                    value="skor_status_ketiga">
+                                    id="pertanyaan{{ $pertanyaanDanJawaban['nomor'] }}StatusKetiga" value="status_ketiga">
                                     {{ $pertanyaanDanJawaban['status_ketiga'] }}
                                 </x-radio.option>
                                 {{-- Khusus Evaluasi Utama --}}
                                 @if ($tipeEvaluasi !== 'Kategori Sistem Elektronik')
-                                    <x-radio.option :checked="$pertanyaanDanJawaban['status_jawaban'] === 'skor_status_keempat'"
+                                    <x-radio.option :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_keempat'"
                                         onclick="pilihOpsiJawaban(
                                         {{ $index }},
                                         {{ $pertanyaanDanJawaban['skor_status_keempat'] }},
                                         )"
                                         name="{{ $pertanyaanDanJawaban['nomor'] }}[status_jawaban]"
                                         id="pertanyaan{{ $pertanyaanDanJawaban['nomor'] }}StatusKeempat"
-                                        value="skor_status_keempat">
+                                        value="status_keempat">
                                         {{ $pertanyaanDanJawaban['status_keempat'] }}
                                     </x-radio.option>
                                     {{-- Jika ternyata opsi status kelima --}}
                                     @if ($tipeEvaluasi === 'Evaluasi Utama' && $pertanyaanDanJawaban['status_kelima'])
-                                        <x-radio.option :checked="$pertanyaanDanJawaban['status_jawaban'] === 'skor_status_kelima'"
+                                        <x-radio.option :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_kelima'"
                                             onclick="pilihOpsiJawaban(
                                             {{ $index }},
                                             {{ $pertanyaanDanJawaban['skor_status_kelima'] }},
                                             )"
                                             name="{{ $pertanyaanDanJawaban['nomor'] }}[status_jawaban]"
                                             id="pertanyaan{{ $pertanyaanDanJawaban['nomor'] }}StatusKelima"
-                                            value="skor_status_kelima">
+                                            value="status_kelima">
                                             {{ $pertanyaanDanJawaban['status_kelima'] }}
                                         </x-radio.option>
                                     @endif

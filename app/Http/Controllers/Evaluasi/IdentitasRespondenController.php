@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Evaluasi;
 use App\Http\Controllers\Controller;
 use App\Models\Evaluasi\AreaEvaluasi;
 use App\Models\Evaluasi\HasilEvaluasi;
+use App\Models\Evaluasi\StatusHasilEvaluasi;
 use App\Models\Responden\IdentitasResponden;
 use App\Models\Responden\NilaiEvaluasi;
 use App\Models\Responden\Responden;
+use App\Models\Responden\StatusEvaluasi;
+use App\Models\Responden\StatusProgresEvaluasi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -20,7 +23,11 @@ class IdentitasRespondenController extends Controller
         $user = Auth::user();
         $responden = $user->responden;
 
-        abort_if($responden->status_evaluasi !== Responden::STATUS_BELUM, 403);
+        // Responden dilarang mengakses halaman ini jika bukan memulai evaluasi
+        abort_if(
+            $responden->statusProgresEvaluasi->status_progres_evaluasi !== StatusProgresEvaluasi::BELUM_MEMULAI,
+            403
+        );
 
         return view('pages.evaluasi.identitas-responden', [
             'title' => 'Identitas Responden',
@@ -37,9 +44,7 @@ class IdentitasRespondenController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'identitas_instansi' => ['required', Rule::in(IdentitasResponden::getIdentitasOptions())],
-            'alamat' => ['required'],
+        $validatedData = $request->validate([
             'nomor_telepon' => ['required', 'regex:/^[0-9]+$/', 'min:10', 'max:13'],
             'email' => ['required', 'email'],
             'pengisi_lembar_evaluasi' => ['required', 'max:255'],
@@ -52,30 +57,33 @@ class IdentitasRespondenController extends Controller
 
         $IdentitasResponden = IdentitasResponden::create([
             'responden_id' => $responden->id,
-            'identitas_instansi' => $request->identitas_instansi,
-            'alamat' => $request->alamat,
-            'nomor_telepon' => $user->nomor_telepon,
-            'email' => $user->email,
-            'pengisi_lembar_evaluasi' => $request->pengisi_lembar_evaluasi,
-            'jabatan' => $request->jabatan,
+            'nomor_telepon' => $validatedData['nomor_telepon'],
+            'email' => $validatedData['email'],
+            'pengisi_lembar_evaluasi' => $validatedData['pengisi_lembar_evaluasi'],
+            'jabatan' => $validatedData['jabatan'],
             'tanggal_pengisian' => now(),
             'deskripsi_ruang_lingkup' => $request->deskripsi_ruang_lingkup,
         ]);
 
         $nilaiEvaluasi = NilaiEvaluasi::create([
             'responden_id' => $responden->id,
-            'identitas_responden_id' => $IdentitasResponden->id
         ]);
 
         $hasilEvaluasi = HasilEvaluasi::create([
             'responden_id' => $responden->id,
             'identitas_responden_id' => $IdentitasResponden->id,
             'nilai_evaluasi_id' => $nilaiEvaluasi->id,
-            'status' => HasilEvaluasi::STATUS_DIKERJAKAN
+            'status_hasil_evaluasi_id' => StatusHasilEvaluasi::where(
+                'status_hasil_evaluasi',
+                StatusHasilEvaluasi::STATUS_DIKERJAKAN
+            )->value('id')
         ]);
 
-        $user->responden->update([
-            'status_evaluasi' => Responden::STATUS_MENGERJAKAN
+        $responden->update([
+            'status_progres_evaluasi_id' => StatusProgresEvaluasi::where(
+                'status_progres_evaluasi',
+                StatusProgresEvaluasi::SEDANG_MENGERJAKAN
+            )->value('id')
         ]);
 
         return redirect()->route('responden.evaluasi.pertanyaan', [1, $hasilEvaluasi->id]);
@@ -99,9 +107,7 @@ class IdentitasRespondenController extends Controller
 
     public function update(Request $request, IdentitasResponden $identitasResponden)
     {
-        $request->validate([
-            'identitas_instansi' => ['required', Rule::in(IdentitasResponden::getIdentitasOptions())],
-            'alamat' => ['required'],
+        $validatedData = $request->validate([
             'nomor_telepon' => ['required', 'regex:/^[0-9]+$/', 'min:10', 'max:13'],
             'email' => ['required', 'email'],
             'pengisi_lembar_evaluasi' => ['required', 'max:255'],
@@ -110,11 +116,11 @@ class IdentitasRespondenController extends Controller
         ]);
 
         $identitasResponden->update([
-            'identitas_instansi' => $request->identitas_instansi,
-            'alamat' => $request->alamat,
-            'pengisi_lembar_evaluasi' => $request->pengisi_lembar_evaluasi,
-            'jabatan' => $request->jabatan,
-            'deskripsi_ruang_lingkup' => $request->deskripsi_ruang_lingkup
+            'nomor_telepon' => $validatedData['nomor_telepon'],
+            'email' => $validatedData['email'],
+            'pengisi_lembar_evaluasi' => $validatedData['pengisi_lembar_evaluasi'],
+            'jabatan' => $validatedData['jabatan'],
+            'deskripsi_ruang_lingkup' => $validatedData['deskripsi_ruang_lingkup']
         ]);
 
         return redirect()->back()->with('success', 'Data identitas berhasil diperbarui!');

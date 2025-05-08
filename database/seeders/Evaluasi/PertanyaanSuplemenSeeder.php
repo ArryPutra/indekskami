@@ -2,6 +2,7 @@
 
 namespace Database\Seeders\Evaluasi;
 
+use App\Models\Evaluasi\PertanyaanEvaluasi;
 use App\Models\Evaluasi\PertanyaanSuplemen;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -125,10 +126,23 @@ class PertanyaanSuplemenSeeder extends Seeder
         ];
 
         foreach ($daftarPertanyaan as $pertanyaan) {
-            PertanyaanSuplemen::create([
+            $pertanyaanEvaluasi = PertanyaanEvaluasi::create([
                 'area_evaluasi_id' => 8,
                 'nomor' => $pertanyaan['nomor'],
+                'catatan' => $pertanyaan['catatan'] ?? null,
                 'pertanyaan' => $pertanyaan['pertanyaan'],
+            ]);
+
+            PertanyaanSuplemen::create([
+                'pertanyaan_evaluasi_id' => $pertanyaanEvaluasi->id,
+                'status_pertama' => PertanyaanSuplemen::STATUS_PERTAMA,
+                'status_kedua' => PertanyaanSuplemen::STATUS_KEDUA,
+                'status_ketiga' => PertanyaanSuplemen::STATUS_KETIGA,
+                'status_keempat' => PertanyaanSuplemen::STATUS_KEEMPAT,
+                'skor_status_pertama' => PertanyaanSuplemen::SKOR_STATUS_PERTAMA,
+                'skor_status_kedua' => PertanyaanSuplemen::SKOR_STATUS_KEDUA,
+                'skor_status_ketiga' => PertanyaanSuplemen::SKOR_STATUS_KETIGA,
+                'skor_status_keempat' => PertanyaanSuplemen::SKOR_STATUS_KEEMPAT
             ]);
         }
     }

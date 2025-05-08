@@ -16,5 +16,5 @@ class Peran extends Model
     const PERAN_ADMIN = 'Admin';
     const PERAN_VERIFIKATOR = 'Verifikator';
     const PERAN_RESPONDEN = 'Responden';
-    const PERAN_PENINJAU = 'Peninjau';
+    const PERAN_MANAJEMEN = 'Manajemen';
 }

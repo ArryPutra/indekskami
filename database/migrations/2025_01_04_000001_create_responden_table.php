@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Responden\Responden;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,11 +12,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('verifikator', function (Blueprint $table) {
+        Schema::create('responden', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
-            $table->string('nomor_sk');
-            $table->boolean('akses_verifikasi')->default(false);
+            $table->foreignId('status_progres_evaluasi_id')->constrained('status_progres_evaluasi');
+            $table->enum('daerah', ['Kabupaten/Kota', 'Provinsi']);
+            $table->text('alamat');
+            $table->boolean('akses_evaluasi')->default(true);
             $table->timestamps();
         });
     }
@@ -25,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('verifikator');
+        Schema::dropIfExists('responden');
     }
 };

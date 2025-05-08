@@ -11,28 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pertanyaan_evaluasi_utama', function (Blueprint $table) {
+        Schema::create('pertanyaan_suplemen', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('area_evaluasi_id')->constrained('area_evaluasi');
-            $table->unsignedSmallInteger('nomor');
-            $table->text('catatan')->nullable();
-            $table->tinyText('tingkat_kematangan');
-            $table->unsignedTinyInteger('pertanyaan_tahap');
-            $table->text('pertanyaan');
+            $table->foreignId('pertanyaan_evaluasi_id')->constrained('pertanyaan_evaluasi');
             $table->string('status_pertama');
             $table->string('status_kedua');
             $table->string('status_ketiga');
             $table->string('status_keempat');
-            $table->string('status_kelima')->nullable();
             $table->tinyInteger('skor_status_pertama');
             $table->tinyInteger('skor_status_kedua');
             $table->tinyInteger('skor_status_ketiga');
             $table->tinyInteger('skor_status_keempat');
-            $table->tinyInteger('skor_status_kelima')->nullable();
-            $table->boolean('apakah_tampil')->default(true);
             $table->timestamps();
-
-            $table->unique(['nomor', 'area_evaluasi_id', 'apakah_tampil'], 'nomor_area_evaluasi_apakah_tampil_unique');
         });
     }
 
@@ -41,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pertanyaan_evaluasi_utama');
+        Schema::dropIfExists('pertanyaan_suplemen');
     }
 };

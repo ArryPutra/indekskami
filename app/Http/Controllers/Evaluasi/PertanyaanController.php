@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Evaluasi;
 use App\Http\Controllers\Controller;
 use App\Models\Evaluasi\AreaEvaluasi;
 use App\Models\Evaluasi\HasilEvaluasi;
+use App\Models\Evaluasi\JawabanEvaluasi;
 use App\Models\Evaluasi\JawabanEvaluasiUtama;
 use App\Models\Evaluasi\JawabanIKategoriSE;
 use App\Models\Evaluasi\JawabanSuplemen;
 use App\Models\Evaluasi\JudulTemaPertanyaan;
+use App\Models\Evaluasi\PertanyaanEvaluasi;
 use App\Models\Evaluasi\PertanyaanEvaluasiUtama;
 use App\Models\Evaluasi\PertanyaanIKategoriSE;
 use App\Models\Evaluasi\PertanyaanSuplemen;
@@ -21,99 +23,99 @@ use Illuminate\Support\Facades\Storage;
 
 class PertanyaanController extends Controller
 {
+
     public function index(AreaEvaluasi $areaEvaluasi, HasilEvaluasi $hasilEvaluasi)
     {
         $tipeEvaluasi = $areaEvaluasi->tipeEvaluasi->tipe_evaluasi;
-        // Menyesuaikan daftar pertanyaan berdasarkan tipe evaluasi
-        $daftarPertanyaan = match ($tipeEvaluasi) {
-            TipeEvaluasi::KATEGORI_SISTEM_ELEKTRONIK => PertanyaanIKategoriSE::where('area_evaluasi_id', $areaEvaluasi->id)
-                ->where('apakah_tampil', true)->orderBy('nomor')->get(),
-            TipeEvaluasi::EVALUASI_UTAMA => PertanyaanEvaluasiUtama::where('area_evaluasi_id', $areaEvaluasi->id)
-                ->where('apakah_tampil', true)->orderBy('nomor')->get(),
-            TipeEvaluasi::SUPLEMEN => PertanyaanSuplemen::where('area_evaluasi_id', $areaEvaluasi->id)
-                ->where('apakah_tampil', true)->orderBy('nomor')->get(),
-            default => collect()
-        };
 
-        $daftarJawabanResponden = match ($tipeEvaluasi) {
-            TipeEvaluasi::KATEGORI_SISTEM_ELEKTRONIK => $hasilEvaluasi->jawabanIKategoriSE
-                ->where('area_evaluasi_id', $areaEvaluasi->id)->keyBy('pertanyaan_id'),
-            TipeEvaluasi::EVALUASI_UTAMA => $hasilEvaluasi->jawabanEvaluasiUtama
-                ->where('area_evaluasi_id', $areaEvaluasi->id)->keyBy('pertanyaan_id'),
-            TipeEvaluasi::SUPLEMEN => $hasilEvaluasi->jawabanSuplemen
-                ->where('area_evaluasi_id', $areaEvaluasi->id)->keyBy('pertanyaan_id'),
-            default => collect()
-        };
+        // # Daftar Pertanyaan # //
+        $daftarPertanyaan = PertanyaanEvaluasi::query();
+        switch ($tipeEvaluasi) {
+            case TipeEvaluasi::KATEGORI_SISTEM_ELEKTRONIK:
+                $daftarPertanyaan = $daftarPertanyaan->with('pertanyaanKategoriSe');
+                break;
+            case TipeEvaluasi::EVALUASI_UTAMA:
+                $daftarPertanyaan = $daftarPertanyaan->with('pertanyaanEvaluasiUtama');
+                break;
+            case TipeEvaluasi::EVALUASI_UTAMA:
+                $daftarPertanyaan = $daftarPertanyaan->with('pertanyaanSuplemen');
+                break;
+        }
+        $daftarPertanyaan = $daftarPertanyaan
+            ->where('area_evaluasi_id', $areaEvaluasi->id)
+            ->where('apakah_tampil', true)
+            ->orderBy('nomor')
+            ->get();
+        // # Daftar Pertanyaan # //
+        $daftarJawabanResponden = $hasilEvaluasi->jawabanEvaluasi
+            ->whereIn('pertanyaan_evaluasi_id', $daftarPertanyaan->pluck('id'));
 
         $daftarPertanyaanDanJawaban = [];
 
         foreach ($daftarPertanyaan as $pertanyaan) {
-            $jawaban = $daftarJawabanResponden[$pertanyaan->id] ?? null;
+            $jawaban = $daftarJawabanResponden
+                ->where('pertanyaan_evaluasi_id', $pertanyaan->id)->first() ?? null;
 
+            $pertanyaanDanJawaban = [
+                'pertanyaan_id' => $pertanyaan->id,
+                'nomor' => $pertanyaan->nomor,
+                'catatan' => $pertanyaan->catatan,
+                'pertanyaan' => $pertanyaan->pertanyaan,
+            ];
+
+            $pertanyaanEvaluasi = null;
             if ($tipeEvaluasi == TipeEvaluasi::KATEGORI_SISTEM_ELEKTRONIK) {
-                $daftarPertanyaanDanJawaban[] = [
-                    'pertanyaan_id' => $pertanyaan->id,
-                    'nomor' => $pertanyaan->nomor,
-                    'catatan' => $pertanyaan->catatan,
-                    'pertanyaan' => $pertanyaan->pertanyaan,
-                    'status_pertama' => $pertanyaan->status_pertama,
-                    'status_kedua' => $pertanyaan->status_kedua,
-                    'status_ketiga' => $pertanyaan->status_ketiga,
-                    'skor_status_pertama' => $pertanyaan->skor_status_pertama,
-                    'skor_status_kedua' => $pertanyaan->skor_status_kedua,
-                    'skor_status_ketiga' => $pertanyaan->skor_status_ketiga,
-                    'status_jawaban' => $jawaban?->status_jawaban,
-                    'skor_jawaban' => $jawaban?->status_jawaban ? ($pertanyaan->{$jawaban->status_jawaban} ?? 0) : 0,
-                    'dokumen' => $jawaban?->dokumen,
-                    'keterangan' => $jawaban?->keterangan,
+                $pertanyaanEvaluasi = $pertanyaan->pertanyaanKategoriSe;
+                $pertanyaanDanJawaban += [
+                    'status_pertama' => $pertanyaanEvaluasi->status_pertama,
+                    'status_kedua' => $pertanyaanEvaluasi->status_kedua,
+                    'status_ketiga' => $pertanyaanEvaluasi->status_ketiga,
+                    'skor_status_pertama' => $pertanyaanEvaluasi->skor_status_pertama,
+                    'skor_status_kedua' => $pertanyaanEvaluasi->skor_status_kedua,
+                    'skor_status_ketiga' => $pertanyaanEvaluasi->skor_status_ketiga,
                 ];
             } else if ($tipeEvaluasi == TipeEvaluasi::EVALUASI_UTAMA) {
-                $daftarPertanyaanDanJawaban[] = [
-                    'pertanyaan_id' => $pertanyaan->id,
-                    'nomor' => $pertanyaan->nomor,
-                    'catatan' => $pertanyaan->catatan,
-                    'tingkat_kematangan' => $pertanyaan->tingkat_kematangan,
-                    'pertanyaan_tahap' => $pertanyaan->pertanyaan_tahap,
-                    'pertanyaan' => $pertanyaan->pertanyaan,
-                    'status_pertama' => $pertanyaan->status_pertama,
-                    'status_kedua' => $pertanyaan->status_kedua,
-                    'status_ketiga' => $pertanyaan->status_ketiga,
-                    'status_keempat' => $pertanyaan->status_keempat,
-                    'status_kelima' => $pertanyaan->status_kelima,
-                    'skor_status_pertama' => $pertanyaan->skor_status_pertama,
-                    'skor_status_kedua' => $pertanyaan->skor_status_kedua,
-                    'skor_status_ketiga' => $pertanyaan->skor_status_ketiga,
-                    'skor_status_keempat' => $pertanyaan->skor_status_keempat,
-                    'skor_status_kelima' => $pertanyaan?->skor_status_kelima,
-                    'status_jawaban' => $jawaban?->status_jawaban,
-                    'skor_jawaban' =>  $jawaban?->status_jawaban ? $pertanyaan[$jawaban->status_jawaban] : 0,
-                    'dokumen' => $jawaban?->dokumen,
-                    'keterangan' => $jawaban?->keterangan,
-                    'apakah_terkunci' => $pertanyaan->pertanyaan_tahap === 3
+                $pertanyaanEvaluasi = $pertanyaan->pertanyaanEvaluasiUtama;
+                $pertanyaanDanJawaban += [
+                    'tingkat_kematangan' => $pertanyaanEvaluasi->tingkat_kematangan,
+                    'pertanyaan_tahap' => $pertanyaanEvaluasi->pertanyaan_tahap,
+                    'status_pertama' => $pertanyaanEvaluasi->status_pertama,
+                    'status_kedua' => $pertanyaanEvaluasi->status_kedua,
+                    'status_ketiga' => $pertanyaanEvaluasi->status_ketiga,
+                    'status_keempat' => $pertanyaanEvaluasi->status_keempat,
+                    'status_kelima' => $pertanyaanEvaluasi->status_kelima,
+                    'skor_status_pertama' => $pertanyaanEvaluasi->skor_status_pertama,
+                    'skor_status_kedua' => $pertanyaanEvaluasi->skor_status_kedua,
+                    'skor_status_ketiga' => $pertanyaanEvaluasi->skor_status_ketiga,
+                    'skor_status_keempat' => $pertanyaanEvaluasi->skor_status_keempat,
+                    'skor_status_kelima' => $pertanyaanEvaluasi->skor_status_kelima,
+                    'apakah_terkunci' => $pertanyaanEvaluasi->pertanyaan_tahap === 3,
                 ];
             } else if ($tipeEvaluasi == TipeEvaluasi::SUPLEMEN) {
-                $daftarPertanyaanDanJawaban[] = [
-                    'pertanyaan_id' => $pertanyaan->id,
-                    'nomor' => $pertanyaan->nomor,
-                    'catatan' => $pertanyaan->catatan,
-                    'pertanyaan' => $pertanyaan->pertanyaan,
-                    'status_pertama' => $pertanyaan->status_pertama,
-                    'status_kedua' => $pertanyaan->status_kedua,
-                    'status_ketiga' => $pertanyaan->status_ketiga,
-                    'status_keempat' => $pertanyaan->status_keempat,
-                    'skor_status_pertama' => $pertanyaan->skor_status_pertama,
-                    'skor_status_kedua' => $pertanyaan->skor_status_kedua,
-                    'skor_status_ketiga' => $pertanyaan->skor_status_ketiga,
-                    'skor_status_keempat' => $pertanyaan->skor_status_keempat,
-                    'status_jawaban' => $jawaban?->status_jawaban,
-                    'skor_jawaban' => $jawaban?->status_jawaban ? ($pertanyaan->{$jawaban->status_jawaban} ?? 0) : 0,
-                    'dokumen' => $jawaban?->dokumen,
-                    'keterangan' => $jawaban?->keterangan,
+                $pertanyaanEvaluasi = $pertanyaan->pertanyaanSuplemen;
+                $pertanyaanDanJawaban += [
+                    'status_pertama' => $pertanyaanEvaluasi->status_pertama,
+                    'status_kedua' => $pertanyaanEvaluasi->status_kedua,
+                    'status_ketiga' => $pertanyaanEvaluasi->status_ketiga,
+                    'status_keempat' => $pertanyaanEvaluasi->status_keempat,
+                    'skor_status_pertama' => $pertanyaanEvaluasi->skor_status_pertama,
+                    'skor_status_kedua' => $pertanyaanEvaluasi->skor_status_kedua,
+                    'skor_status_ketiga' => $pertanyaanEvaluasi->skor_status_ketiga,
+                    'skor_status_keempat' => $pertanyaanEvaluasi->skor_status_keempat,
                 ];
             }
+
+            $pertanyaanDanJawaban += [
+                'status_jawaban' => $jawaban?->status_jawaban,
+                'skor_jawaban' => $jawaban?->status_jawaban ?
+                    ($pertanyaanEvaluasi->{'skor_' . $jawaban->status_jawaban} ?? 0) : 0,
+                'dokumen' => $jawaban?->bukti_dokumen,
+                'keterangan' => $jawaban?->keterangan,
+            ];
+            $daftarPertanyaanDanJawaban[] = $pertanyaanDanJawaban;
         }
 
-        $daftarAreaEvaluasi = AreaEvaluasi::all();;
+        $daftarAreaEvaluasi = AreaEvaluasi::all();
 
         $dataScript = [
             'daftarPertanyaanDanJawaban' => collect($daftarPertanyaanDanJawaban)->map(function ($item) use ($tipeEvaluasi) {
@@ -145,6 +147,7 @@ class PertanyaanController extends Controller
 
         switch ($tipeEvaluasi) {
             case TipeEvaluasi::KATEGORI_SISTEM_ELEKTRONIK:
+                // 
                 break;
             case TipeEvaluasi::EVALUASI_UTAMA:
                 $jumlahPertanyaanTahap1 = collect($daftarPertanyaanDanJawaban)->where('pertanyaan_tahap', 1);
@@ -157,7 +160,12 @@ class PertanyaanController extends Controller
                     'daftarSkorJawabanTahap1Dan2Array' => collect($daftarPertanyaanDanJawaban)->whereIn('pertanyaan_tahap', [1, 2])->pluck('skor_jawaban')
                 ];
                 break;
+            case TipeEvaluasi::SUPLEMEN:
+                // 
+                break;
         }
+
+        // return $daftarPertanyaanDanJawaban;
 
         return view('pages.evaluasi.pertanyaan', [
             'title' => 'Evaluasi',
@@ -191,131 +199,99 @@ class PertanyaanController extends Controller
         ];
 
         foreach ($daftarJawaban as $nomor => $jawaban) {
+            $pertanyaanId = $jawaban['pertanyaan_id'] ?? null;
             $statusJawaban = $jawaban['status_jawaban'] ?? null;
             $keterangan = $jawaban['keterangan'] ?? null;
-            $dokumenBaru = $jawaban['unggah_dokumen_baru'] ?? null;
+            $unggahDokumenBaru = $jawaban['unggah_dokumen_baru'] ?? null;
             $pathDokumenLama = $jawaban['path_dokumen_lama'] ?? null;
-            $dokumen = $dokumenBaru ?? $pathDokumenLama;
+            $dokumen = $unggahDokumenBaru ?? $pathDokumenLama;
 
-            $jawabanModel = match ($tipeEvaluasi) {
-                TipeEvaluasi::KATEGORI_SISTEM_ELEKTRONIK => new JawabanIKategoriSE(),
-                TipeEvaluasi::EVALUASI_UTAMA => new JawabanEvaluasiUtama(),
-                TipeEvaluasi::SUPLEMEN => new JawabanSuplemen(),
-                default => null
-            };
-
-            if ($jawabanModel === null) {
-                $errors['pesan_error'] = "Nomor $areaEvaluasiId.$nomor: jawaban model tidak ditemukan.";
-                continue;
-            }
-
-            // Validasi status jawaban
-            if ($statusJawaban && !in_array($statusJawaban, $jawabanModel::getStatusOptions())) {
-                $errors['pesan_error'] = "Nomor $areaEvaluasiId.$nomor: opsi jawaban tidak valid.";
-                continue;
-            }
-
-            $isSkorStatusPertama = $statusJawaban === 'skor_status_pertama' && $tipeEvaluasi !== TipeEvaluasi::KATEGORI_SISTEM_ELEKTRONIK;
-
+            $isSkorStatusPertama = $statusJawaban == 'status_pertama'
+                && $tipeEvaluasi !== TipeEvaluasi::KATEGORI_SISTEM_ELEKTRONIK;
             if ($isSkorStatusPertama) {
                 if ($pathDokumenLama) {
                     Storage::delete($pathDokumenLama);
-
-                    JawabanEvaluasiUtama::getKepemilikanDokumen(
-                        $responden->id,
-                        $hasilEvaluasi->id,
-                        $areaEvaluasiId,
-                        $jawaban['pertanyaan_id']
-                    )->delete();
-
-                    JawabanEvaluasiUtama::where('responden_id', $responden->id)
-                        ->where('area_evaluasi_id', $areaEvaluasiId)
-                        ->where('pertanyaan_id', $jawaban['pertanyaan_id'])
-                        ->where('hasil_evaluasi_id', $hasilEvaluasi->id)
-                        ->first()?->update(['dokumen' => null]);
                 }
                 $dokumen = null;
             }
 
-            // Validasi jawaban kosong
-            if (!$isSkorStatusPertama && (empty($statusJawaban) || empty($dokumen))) {
+            // Jika validasi status jawaban tidak sesuai aturan
+            if ($statusJawaban && !in_array($statusJawaban, JawabanEvaluasi::getStatusOptions())) {
+                $errors['pesan_error'] = "Nomor $areaEvaluasiId.$nomor: opsi jawaban tidak valid.";
+                continue;
+            }
+
+            // Validasi jika status jawaban kosong
+            if (
+                !$isSkorStatusPertama
+                &&
+                (empty($statusJawaban) || empty($dokumen))
+            ) {
+                // Jika dokumen kosong dan status jawaban ada
                 if (empty($dokumen) && $statusJawaban) {
                     $errors['dokumen_kosong'][] = "$areaEvaluasiId.$nomor";
                 }
+                // Jika status jawaban kosong dan dokumen atau keterangan ada
                 if (empty($statusJawaban) && ($dokumen || $keterangan)) {
                     $errors['status_kosong'][] = "$areaEvaluasiId.$nomor";
                 }
                 continue;
             }
 
-            // Proses dokumen baru jika ada
-            if ($dokumenBaru && !$isSkorStatusPertama) {
-                $namaFile = $nomor . ' - ' . $dokumenBaru->getClientOriginalName();
+            // Jika ada unggah dokumen
+            if ($unggahDokumenBaru && !$isSkorStatusPertama) {
+                $namaFile = $nomor . ' - ' . $unggahDokumenBaru->getClientOriginalName();
+                $ukuranFileMb = $unggahDokumenBaru->getSize() / 1048576;
+                $ekstensiFile = $unggahDokumenBaru->getClientOriginalExtension();
 
-                if (strlen($namaFile) > 100) {
-                    // Nama file terlalu panjang, lanjut tanpa simpan
-                    $errors['pesan_error'] = "Nomor $areaEvaluasiId.$nomor: nama file dokumen terlalu panjang (maksimal 100 karakter).";
-                    continue;
-                }
-
-                $ukuranMB = $dokumenBaru->getSize() / 1048576;
-
-                if ($ukuranMB > 10) {
+                // == Validasi File == //
+                // Validasi ukuran file tidak boleh lebih dari 25 MB
+                if ($ukuranFileMb > 25) {
                     $errors['dokumen_terlalu_besar'][] = "$areaEvaluasiId.$nomor";
+                    continue; // Jangan lanjutkan kode di bawah
+                }
+                // Validasi ekstensi file sesuai format
+                $ekstensiValid = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png', 'zip', 'rar', '7z'];
+                if (!in_array($ekstensiFile, $ekstensiValid)) {
+                    $errors['dokumen_tidak_valid'][] = "$areaEvaluasiId.$nomor";
                     continue;
                 }
-
+                // Validasi nama file dokumen tidak boleh lebih dari 100 karakter
+                if (strlen($namaFile) > 100) {
+                    $errors['pesan_error'] = "Nomor $areaEvaluasiId.$nomor: nama file dokumen terlalu panjang (maksimal 100 karakter).";
+                    continue; // Jangan lanjutkan kode di bawah
+                }
+                // Validasi nama file
                 $hurufTidakValid = ['&', '/'];
-                // $hurufTidakValid = ['&', '/', '?', '=', '#', '%', ' ', '"', '<', '>', '{', '}', '\\', '^', '`', '|', '~', '[', ']', ';', ':'];
                 if (strpbrk($namaFile, implode('', $hurufTidakValid))) {
                     $errors['pesan_error'] = "Nomor $areaEvaluasiId.$nomor: nama file dokumen tidak valid.";
                     continue;
                 }
 
-                $ekstensiValid = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png', 'zip', 'rar', '7z'];
-                $ekstensi = $dokumenBaru->getClientOriginalExtension();
-
-                if (!in_array($ekstensi, $ekstensiValid)) {
-                    $errors['dokumen_tidak_valid'][] = "$areaEvaluasiId.$nomor";
-                    continue;
-                }
-
+                // == Unggah File == //
+                // Hapus dokumen lama
                 if ($pathDokumenLama) {
                     Storage::delete($pathDokumenLama);
                 }
-
-                $pathDokumenSaatIni = $dokumenBaru->storeAs(
+                // Unggah file ke storage
+                $pathDokumenSaatIni = $unggahDokumenBaru->storeAs(
                     "Evaluasi/{$responden->daerah}/{$user->username}/Evaluasi " . $responden->hasilEvaluasi->count() . "/$namaAreaEvaluasi",
                     $namaFile
                 );
-
+                // Memperbarui path dokumen dengan yang baru diunggah ke storage
                 $dokumen = $pathDokumenSaatIni;
-
-                // Simpan ke tabel dokumen
-                KepemilikanDokumen::updateOrCreate(
-                    [
-                        'responden_id' => $responden->id,
-                        'hasil_evaluasi_id' => $hasilEvaluasi->id,
-                        'area_evaluasi_id' => $areaEvaluasiId,
-                        'pertanyaan_id' => $jawaban['pertanyaan_id'],
-                    ],
-                    [
-                        'path' => $pathDokumenSaatIni,
-                    ]
-                );
             }
 
-            // Simpan atau update jawaban
-            $jawabanModel::updateOrCreate(
+            // Update atau tambahkan data jawaban evaluasi
+            JawabanEvaluasi::updateOrCreate(
                 [
-                    'area_evaluasi_id' => $areaEvaluasiId,
                     'responden_id' => $responden->id,
-                    'pertanyaan_id' => $jawaban['pertanyaan_id'],
+                    'pertanyaan_evaluasi_id' => $pertanyaanId,
                     'hasil_evaluasi_id' => $hasilEvaluasi->id,
                 ],
                 [
                     'status_jawaban' => $statusJawaban,
-                    'dokumen' => $dokumen,
+                    'bukti_dokumen' => $dokumen,
                     'keterangan' => $keterangan
                 ]
             );
@@ -324,27 +300,45 @@ class PertanyaanController extends Controller
         // Validasi jawaban pertanyaan tahap 3
         // Jika tipe evaluasi adalah evaluasi utama
         if ($tipeEvaluasi === TipeEvaluasi::EVALUASI_UTAMA) {
-            // Mencari pertanyaan ID tahap 1 dan 2
-            $daftarPertanyaanIdTahap1Dan2 =
-                PertanyaanEvaluasiUtama::where('area_evaluasi_id', $areaEvaluasi->id)
-                ->whereIn('pertanyaan_tahap', [1, 2])->pluck('id');
+            $daftarPertanyaanEvaluasi = PertanyaanEvaluasi::where('area_evaluasi_id', $areaEvaluasiId)
+                ->with('pertanyaanEvaluasiUtama')->get();
+
+            // Filter dan ambil ID pertanyaan tahap 1 dan 2 sekaligus
+            $daftarPertanyaanIdTahap1Dan2 = $daftarPertanyaanEvaluasi->filter(
+                fn($pertanyaan) =>
+                in_array($pertanyaan->pertanyaanEvaluasiUtama->pertanyaan_tahap, [1, 2])
+            )->pluck('id');
+
+            // Mengambil semua jawaban sekaligus untuk tahap 1 dan 2
             $daftarJawabanTahap1Dan2 =
-                $hasilEvaluasi->jawabanEvaluasiUtama->whereIn('pertanyaan_id', $daftarPertanyaanIdTahap1Dan2);
+                $hasilEvaluasi->jawabanEvaluasi->whereIn('pertanyaan_evaluasi_id', $daftarPertanyaanIdTahap1Dan2);
 
-            $totalSkorTahap1Dan2 = $daftarJawabanTahap1Dan2
-                ->sum(fn($jawaban) => $jawaban->pertanyaan[$jawaban->status_jawaban]);
+            // Hitung total skor secara langsung dengan Collection
+            $totalSkorTahap1Dan2 = $daftarJawabanTahap1Dan2->sum(
+                fn($jawaban) =>
+                $jawaban->pertanyaanEvaluasi->pertanyaanEvaluasiUtama['skor_' . $jawaban->status_jawaban]
+            );
+            // Hitung jumlah pertanyaan per tahap
+            $jumlahPertanyaan = $daftarPertanyaanEvaluasi->groupBy(
+                fn($pertanyaan) =>
+                $pertanyaan->pertanyaanEvaluasiUtama->pertanyaan_tahap
+            )->map->count();
 
-            $jumlahPertanyaanTahap1 = PertanyaanEvaluasiUtama::where('area_evaluasi_id', $areaEvaluasi->id)
-                ->where('pertanyaan_tahap', 1)->count();
-            $jumlahPertanyaanTahap2 = PertanyaanEvaluasiUtama::where('area_evaluasi_id', $areaEvaluasi->id)
-                ->where('pertanyaan_tahap', 2)->count();
-            $batasSkorMinUntukSkorTahapPenerapan3 = 2 * $jumlahPertanyaanTahap1 + 4 * $jumlahPertanyaanTahap2;
+            // Tentukan batas minimum skor
+            $batasSkorMinUntukSkorTahapPenerapan3 = (2 * ($jumlahPertanyaan[1] ?? 0)) + (4 * ($jumlahPertanyaan[2] ?? 0));
 
+            // Hapus jawaban tahap 3 jika skor tidak memenuhi batas minimum
             if ($totalSkorTahap1Dan2 < $batasSkorMinUntukSkorTahapPenerapan3) {
-                $daftarPertanyaanIdTahap3 = PertanyaanEvaluasiUtama::where('area_evaluasi_id', $areaEvaluasi->id)
-                    ->where('pertanyaan_tahap', 3)->pluck('id');
-                $hasilEvaluasi->jawabanEvaluasiUtama->whereIn('pertanyaan_id', $daftarPertanyaanIdTahap3)
-                    ->each(fn($item) => $item->delete());
+                $daftarPertanyaanIdTahap3 = $daftarPertanyaanEvaluasi->filter(
+                    fn($pertanyaan) =>
+                    $pertanyaan->pertanyaanEvaluasiUtama->pertanyaan_tahap === 3
+                )->pluck('id');
+
+                $hasilEvaluasi->jawabanEvaluasi->whereIn('pertanyaan_evaluasi_id', $daftarPertanyaanIdTahap3)
+                    ->each(function ($item) {
+                        Storage::delete($item->bukti_dokumen);
+                        $item->delete();
+                    });
             }
         }
 

@@ -25,8 +25,8 @@
         </section>
         <section>
             <h1>Status Evaluasi:</h1>
-            <h1 class="font-bold text-lg {{ $responden->responden->status_evaluasi ? 'text-green-500' : 'text-red-500' }}">
-                {{ $responden->responden->status_evaluasi ? 'Aktif' : 'Nonaktif' }}
+            <h1 class="font-bold text-lg {{ $responden->responden->akses_evaluasi ? 'text-green-500' : 'text-red-500' }}">
+                {{ $responden->responden->akses_evaluasi ? 'Aktif' : 'Nonaktif' }}
             </h1>
         </section>
         <section>

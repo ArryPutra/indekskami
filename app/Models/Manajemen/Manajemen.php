@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Manajemen;
 
 use Illuminate\Database\Eloquent\Model;
 
-class KepemilikanDokumen extends Model
+class Manajemen extends Model
 {
-    protected $table = 'kepemilikan_dokumen';
+    protected $table = 'manajemen';
 
     protected $guarded = ['id', 'created_at', 'updated_at'];
 }

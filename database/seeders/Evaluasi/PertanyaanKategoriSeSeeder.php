@@ -2,11 +2,12 @@
 
 namespace Database\Seeders\Evaluasi;
 
-use App\Models\Evaluasi\PertanyaanIKategoriSE;
+use App\Models\Evaluasi\PertanyaanEvaluasi;
+use App\Models\Evaluasi\PertanyaanKategoriSe;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class PertanyaanIKategoriSESeeder extends Seeder
+class PertanyaanKategoriSeSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -87,11 +88,14 @@ class PertanyaanIKategoriSESeeder extends Seeder
         ];
 
         foreach ($daftarPertanyaan as $pertanyaan) {
-            PertanyaanIKategoriSE::create([
+            $pertanyaanEvaluasi = PertanyaanEvaluasi::create([
                 'area_evaluasi_id' => 1,
                 'nomor' => $pertanyaan['nomor'],
                 'catatan' => $pertanyaan['catatan'] ?? null,
                 'pertanyaan' => $pertanyaan['pertanyaan'],
+            ]);
+            PertanyaanKategoriSe::create([
+                'pertanyaan_evaluasi_id' => $pertanyaanEvaluasi->id,
                 'status_pertama' => $pertanyaan['status_pertama'],
                 'status_kedua' => $pertanyaan['status_kedua'],
                 'status_ketiga' => $pertanyaan['status_ketiga'],

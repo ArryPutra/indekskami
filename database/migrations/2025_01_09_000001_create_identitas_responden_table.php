@@ -15,8 +15,6 @@ return new class extends Migration
         Schema::create('identitas_responden', function (Blueprint $table) {
             $table->id();
             $table->foreignId('responden_id')->constrained('responden');
-            $table->string('identitas_instansi');
-            $table->text('alamat');
             $table->string('nomor_telepon');
             $table->string('email');
             $table->string('pengisi_lembar_evaluasi');

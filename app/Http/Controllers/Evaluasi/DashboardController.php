@@ -13,6 +13,7 @@ class DashboardController extends Controller
     {
         return view('pages.evaluasi.dashboard', [
             'title' => 'Dashboard Evaluasi',
+            'responden' => $hasilEvaluasi->responden,
             'hasilEvaluasi' => $hasilEvaluasi,
             'identitasResponden' => $hasilEvaluasi->identitasResponden,
             'daftarAreaEvaluasiUtama' => AreaEvaluasi::all()

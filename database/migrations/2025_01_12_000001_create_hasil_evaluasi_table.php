@@ -17,10 +17,11 @@ return new class extends Migration
             $table->foreignId('responden_id')->constrained('responden');
             $table->foreignId('identitas_responden_id')->constrained('identitas_responden');
             $table->foreignId('nilai_evaluasi_id')->constrained('nilai_evaluasi');
-            $table->string('status')->default(HasilEvaluasi::STATUS_DIKERJAKAN);
+            $table->foreignId('status_hasil_evaluasi_id')->constrained('status_hasil_evaluasi');
             $table->foreignId('verifikator_id')
                 ->nullable()
                 ->constrained('users');
+            $table->string('catatan')->nullable();
             $table->timestamps();
         });
     }

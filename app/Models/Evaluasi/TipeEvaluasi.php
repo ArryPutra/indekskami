@@ -13,4 +13,13 @@ class TipeEvaluasi extends Model
     const KATEGORI_SISTEM_ELEKTRONIK = 'Kategori Sistem Elektronik';
     const EVALUASI_UTAMA = 'Evaluasi Utama';
     const SUPLEMEN = 'Suplemen';
+
+    public static function getTipeEvaluasiOptions()
+    {
+        return [
+            self::KATEGORI_SISTEM_ELEKTRONIK,
+            self::EVALUASI_UTAMA,
+            self::SUPLEMEN
+        ];
+    }
 }

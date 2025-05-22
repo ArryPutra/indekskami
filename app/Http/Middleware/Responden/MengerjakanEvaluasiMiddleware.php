@@ -3,6 +3,7 @@
 namespace App\Http\Middleware\Responden;
 
 use App\Models\Responden\Responden;
+use App\Models\Responden\StatusProgresEvaluasiResponden;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,7 +22,10 @@ class MengerjakanEvaluasiMiddleware
 
         if (!$responden) {
             return abort(403);
-        } else if ($responden->statusProgresEvaluasi->status_progres_evaluasi === Responden::STATUS_MENGERJAKAN) {
+        } else if (
+            $responden->statusProgresEvaluasiResponden->id
+            !== StatusProgresEvaluasiResponden::SEDANG_MENGERJAKAN_ID
+        ) {
             return redirect()->route('responden.redirect-evaluasi');
         }
 

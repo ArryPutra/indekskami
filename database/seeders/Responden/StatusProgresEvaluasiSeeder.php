@@ -2,7 +2,7 @@
 
 namespace Database\Seeders\Responden;
 
-use App\Models\Responden\StatusProgresEvaluasi;
+use App\Models\Responden\StatusProgresEvaluasiResponden;
 use Illuminate\Database\Seeder;
 
 class StatusProgresEvaluasiSeeder extends Seeder
@@ -13,11 +13,11 @@ class StatusProgresEvaluasiSeeder extends Seeder
     public function run(): void
     {
         foreach (
-            StatusProgresEvaluasi::getStatusProgresEvaluasiOptions()
-            as $statusProgresEvaluasi
+            StatusProgresEvaluasiResponden::getStatusProgresEvaluasiRespondenOptions()
+            as $statusProgresEvaluasiResponden
         ) {
-            StatusProgresEvaluasi::create([
-                'status_progres_evaluasi' => $statusProgresEvaluasi
+            StatusProgresEvaluasiResponden::create([
+                'nama_status_progres_evaluasi_responden' => $statusProgresEvaluasiResponden
             ]);
         }
     }

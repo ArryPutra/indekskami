@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Models\Admin\Admin;
 use App\Models\Responden\Responden;
 use App\Models\Verifikator\Verifikator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -48,6 +49,11 @@ class User extends Authenticatable
     public function peran()
     {
         return $this->hasOne(Peran::class, 'id', 'peran_id');
+    }
+
+    public function admin()
+    {
+        return $this->hasOne(Admin::class, 'user_id', 'id');
     }
 
     public function responden()

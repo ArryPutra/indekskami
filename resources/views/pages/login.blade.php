@@ -30,7 +30,7 @@
             @enderror
             <div class="space-y-2">
                 {{-- USERNAME INPUT --}}
-                <x-text-field name="username" label="Username" placeholder="Masukkan username" value="admin" />
+                <x-text-field name="username" label="Username" placeholder="Masukkan username" value="abdulhafizh" />
                 {{-- PASSWORD INPUT --}}
                 <x-text-field name="password" label="Password" placeholder="Masukkan password" type="password"
                     value="password123" />
@@ -44,7 +44,7 @@
             <x-button type="submit" class="mt-6">Login</x-button>
             <div class="flex flex-wrap text-center items-center justify-center pt-4 text-slate-500">
                 <span>Bantuan & Layanan Hubungi:</span>
-                <span>082254249276</span>
+                <b>0822-5424-9276</b>
             </div>
         </form>
         <div class="w-full lg:h-full pl-6 max-lg:pl-4 max-lg:py-5 lg:pb-12 flex flex-col justify-center lg:justify-end text-white"

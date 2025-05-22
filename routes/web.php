@@ -1,38 +1,48 @@
 <?php
 
+// Role: Superadmin [1]
+use App\Http\Controllers\Superadmin\DashboardController as SuperadminDashboardController;
+use App\Http\Controllers\Superadmin\KelolaAreaEvaluasiController;
+use App\Http\Controllers\Superadmin\KelolaPertanyaanEvaluasiController;
+use App\Http\Controllers\Superadmin\KelolaJudulTemaPertanyaanController;
+use App\Http\Controllers\Superadmin\KelolaTingkatKematangan;
+use App\Http\Controllers\Superadmin\KelolaAdminController;
+use App\Http\Controllers\Superadmin\ProfilController as SuperadminProfilController;
+
+// Role: Admin [2]
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\Admin\KelolaEvaluasiController;
-use App\Http\Controllers\Admin\KelolaPertanyaan\KelolaAreaEvaluasi;
-use App\Http\Controllers\Admin\KelolaPertanyaan\KelolaAreaEvaluasiController;
-use App\Http\Controllers\Admin\KelolaPertanyaan\KelolaJudulTemaPertanyaanController;
-use App\Http\Controllers\Admin\KelolaPertanyaan\KelolaPertanyaanController;
-use App\Http\Controllers\Admin\KelolaPertanyaan\KelolaPertanyaanEvaluasiController;
-use App\Http\Controllers\Admin\KelolaRespondenController;
-use App\Http\Controllers\Admin\KelolaVerifikatorController;
-use App\Http\Controllers\Admin\ProfilController;
-use App\Http\Controllers\AdminVerifikator\KelolaEvaluasi\MengerjakanController;
-use App\Http\Controllers\AdminVerifikator\KelolaEvaluasi\SelesaiController;
-use App\Http\Controllers\AdminVerifikator\KelolaEvaluasi\VerifikasiController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Evaluasi\AksesFileController;
-use App\Http\Controllers\Evaluasi\BukaDokumenController;
-use App\Http\Controllers\Evaluasi\DashboardController as EvaluasiDashboardController;
-use App\Http\Controllers\Evaluasi\EvaluasiController;
-use App\Http\Controllers\Evaluasi\EvaluasiUtamaController;
-use App\Http\Controllers\Evaluasi\FileController;
-use App\Http\Controllers\Evaluasi\IKategoriSEController;
+use App\Http\Controllers\Admin\ProfilController as AdminProfilController;
+// Role: Responden [3]
 use App\Http\Controllers\Responden\DashboardController as RespondenDashboardController;
 use App\Http\Controllers\Responden\Evaluasi\RedirectEvaluasiController;
-use App\Http\Controllers\Evaluasi\IdentitasRespondenController;
-use App\Http\Controllers\Evaluasi\IITataKelolaController;
-use App\Http\Controllers\Evaluasi\KepemilikanDokumenController;
-use App\Http\Controllers\Evaluasi\PertanyaanController;
 use App\Http\Controllers\Responden\Evaluasi\NonaktifEvaluasiController;
-use App\Http\Controllers\Responden\ProfilController as RespondenProfilController;
+use App\Http\Controllers\Responden\Evaluasi\SelesaiEvaluasiController;
+use App\Http\Controllers\Responden\Evaluasi\IdentitasRespondenController;
 use App\Http\Controllers\Responden\RiwayatController;
+use App\Http\Controllers\Responden\ProfilController as RespondenProfilController;
+
+// Role: Verifikator [4]
 use App\Http\Controllers\Verifikator\DashboardController as VerifikatorDashboardController;
 use App\Http\Controllers\Verifikator\ProfilController as VerifikatorProfilController;
-use App\Models\KepemilikanDokumen;
+use App\Http\Controllers\Verifikator\KelolaEvaluasiController;
+
+// Role: Manajemen [5]
+use App\Http\Controllers\Manajemen\DashboardController as ManajemenDashboardController;
+
+
+// Role: Superadmin & Admin [1 & 2]
+use App\Http\Controllers\SuperadminAdmin\KelolaRespondenController;
+use App\Http\Controllers\SuperadminAdmin\KelolaVerifikatorController;
+use App\Http\Controllers\SuperadminAdmin\KelolaManajemenController;
+
+// Evaluasi
+use App\Http\Controllers\Evaluasi\PertanyaanController;
+use App\Http\Controllers\Evaluasi\DashboardController as EvaluasiDashboardController;
+use App\Http\Controllers\Evaluasi\BukaDokumenController;
+use App\Http\Controllers\Evaluasi\CetakLaporanEvaluasiController;
+
+// 
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [AuthController::class, 'index']);
@@ -48,75 +58,101 @@ Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout');
 
 Route::middleware(['auth', 'akunAktif'])->group(function () {
-    // # PERAN: Admin #
+    # PERAN: Superadmin [ID: 1] #
+    Route::prefix('superadmin')->middleware('superadmin')->group(function () {
+        Route::get('/dashboard', [SuperadminDashboardController::class, 'index'])->name('superadmin.dashboard');
+
+        Route::resource('/kelola-area-evaluasi', KelolaAreaEvaluasiController::class);
+        Route::resource('/kelola-pertanyaan-evaluasi', KelolaPertanyaanEvaluasiController::class);
+        Route::resource('/kelola-judul-tema-pertanyaan', KelolaJudulTemaPertanyaanController::class);
+        Route::resource('/kelola-tingkat-kematangan', KelolaTingkatKematangan::class);
+
+        Route::resource('/kelola-admin', KelolaAdminController::class);
+
+        Route::get('/profil', [SuperadminProfilController::class, 'index'])->name('superadmin.profil');
+        Route::post('/profil/perbarui-password', [SuperadminProfilController::class, 'perbaruiPassword'])->name('superadmin.profil.perbarui-password');
+    });
+
+    // # PERAN: Admin [ID: 2] #
     Route::prefix('admin')->middleware('admin')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-        // Kelola Evaluasi
-        Route::get('/kelola-evaluasi', [KelolaEvaluasiController::class, 'index'])->name('admin.kelola-evaluasi');
-        // Kelola Responden
-        Route::resource('/kelola-responden', KelolaRespondenController::class);
-        // Kelola Verifikator
-        Route::resource('/kelola-verifikator', KelolaVerifikatorController::class);
-        // Kelola Pertanyaan
-        Route::get('/kelola-pertanyaan', [KelolaPertanyaanController::class, 'index'])->name('admin.kelola-pertanyaan');
-        // --> Kelola Pertanyaan: Kelola Area Evaluasi
-        Route::resource('kelola-pertanyaan/kelola-area-evaluasi', KelolaAreaEvaluasiController::class)->only(['edit', 'update']);
-        Route::middleware('sesiAreaEvaluasiId')->group(function () {
-            // --> Kelola Pertanyaan: Kelola Judul Tema Pertanyaan
-            Route::resource('/kelola-pertanyaan/kelola-judul-tema-pertanyaan', KelolaJudulTemaPertanyaanController::class)->except(['show']);
-            // --> Kelola Pertanyaan: Kelola Pertanyaan
-            Route::resource('/kelola-pertanyaan/kelola-pertanyaan-evaluasi', KelolaPertanyaanEvaluasiController::class)->except(['show']);
-        });
-        // Profil
-        Route::get('/profil', [ProfilController::class, 'index'])->name('admin.profil');
-        Route::post('/profil/perbarui-password', [ProfilController::class, 'perbaruiPassword'])->name('admin.profil.perbarui-password');
-    });
-    // # PERAN: Verifikator #
-    Route::prefix('verifikator')->middleware('verifikator')->group(function () {
-        Route::get('/dashboard', [VerifikatorDashboardController::class, 'index'])->name('verifikator.dashboard');
-        Route::get('/profil', [VerifikatorProfilController::class, 'index'])->name('verifikator.profil');
-    });
-    // # PERAN: Admin atau Verifikator #
-    Route::prefix('admin-verifikator')->middleware('adminVerifikator')->group(function () {
-        Route::prefix('kelola-evaluasi')->group(function () {
-            Route::get('/verifikasi', [VerifikasiController::class, 'index'])->name('admin-verifikator.kelola-evaluasi.verifikasi');
-            Route::get('/mengerjakan', [MengerjakanController::class, 'index'])->name('admin-verifikator.kelola-evaluasi.mengerjakan');
-            Route::get('/selesai', [SelesaiController::class, 'index'])->name('admin-verifikator.kelola-evaluasi.selesai');
 
-            Route::get('/evaluasi-responden', fn() => 1);
-        });
+
+        Route::get('/profil', [AdminProfilController::class, 'index'])->name('admin.profil');
     });
-    // # PERAN: Responden #
+
+    Route::prefix('superadmin-admin')->middleware('role:Superadmin,Admin')->group(function () {
+        Route::resource('/kelola-responden', KelolaRespondenController::class);
+        Route::resource('/kelola-verifikator', KelolaVerifikatorController::class);
+        Route::resource('/kelola-manajemen', KelolaManajemenController::class);
+    });
+
+    // # PERAN: Responden [ID: 3] #
     Route::prefix('responden')->middleware('responden')->group(function () {
+
         Route::get('/dashboard', [RespondenDashboardController::class, 'index'])->name('responden.dashboard');
 
         Route::get('/redirect-evaluasi', [RedirectEvaluasiController::class, 'index'])->name('responden.redirect-evaluasi');
         Route::prefix('evaluasi')->group(function () {
             Route::get('/nonaktif-evaluasi', [NonaktifEvaluasiController::class, 'index'])->name('responden.nonaktif-evaluasi');
+
             Route::middleware('aktifEvaluasi')->group(function () {
                 Route::resource('/identitas-responden', IdentitasRespondenController::class)
                     ->only(['create', 'store', 'edit', 'update'])
-                    ->names('responden.evaluasi.identitas-responden');
+                    ->names('responden.evaluasi.identitas-responden')
+                    ->middleware('statusEvaluasiDikerjakan');
 
-                Route::middleware(['mengerjakanEvaluasi', 'kepemilikanHasilEvaluasi'])->group(function () {
-                    // Route::get('/i-kategori-se/{hasilEvaluasi:id}', [IKategoriSEController::class, 'index'])->name('responden.evaluasi.i-kategori-se');
-                    // Route::post('/i-kategori-se/simpan/{hasilEvaluasi:id}', [IKategoriSEController::class, 'simpan'])
-                    //     ->name('responden.evaluasi.i-kategori-se.simpan');
-
-                    // Route::get('/evaluasi-utama/{hasilEvaluasi}/{areaEvaluasi}', [EvaluasiUtamaController::class, 'index'])->name('responden.evaluasi.evaluasi-utama');
-                    // Route::post('/evaluasi-utama/simpan/{hasilEvaluasi}/{areaEvaluasi}', [EvaluasiUtamaController::class, 'simpan'])->name('responden.evaluasi.evaluasi-utama.simpan');
-
-                    Route::get('/evaluasi/{areaEvaluasi}/{hasilEvaluasi}', [PertanyaanController::class, 'index'])->name('responden.evaluasi.pertanyaan');
-                    Route::post('/evaluasi/simpan/{areaEvaluasi}/{hasilEvaluasi}', [PertanyaanController::class, 'simpan'])->name('responden.evaluasi.pertanyaan.simpan');
-
+                Route::middleware('kepemilikanHasilEvaluasi')->group(function () {
+                    Route::get('/pertanyaan/{areaEvaluasi}/{hasilEvaluasi}', [PertanyaanController::class, 'index'])->name('responden.evaluasi.pertanyaan');
                     Route::get('/dashboard/{hasilEvaluasi:id}', [EvaluasiDashboardController::class, 'index'])->name('responden.evaluasi.dashboard');
+
+                    Route::middleware('statusEvaluasiDikerjakan')->group(function () {
+                        Route::post('/pertanyaan/simpan-jawaban/{areaEvaluasi}/{hasilEvaluasi}', [PertanyaanController::class, 'simpanJawaban'])->name('responden.evaluasi.pertanyaan.simpan-jawaban');
+                        Route::post('/dashboard/kirim-evaluasi/{hasilEvaluasi:id}', [EvaluasiDashboardController::class, 'kirimEvaluasi'])->name('responden.evaluasi.dashboard.kirim-evaluasi');
+                    });
                 });
+
+                Route::middleware('kepemilikanHasilEvaluasi')->group(function () {
+                    Route::get('/cetak-laporan/{hasilEvaluasi:id}', [CetakLaporanEvaluasiController::class, 'index'])->name('responden.evaluasi.dashboard.cetak-laporan');
+                });
+
+                Route::get('/evaluasi/selesai-evaluasi', [SelesaiEvaluasiController::class, 'index'])->name('responden.evaluasi.selesai-evaluasi');
             });
         });
-
         Route::get('/riwayat', [RiwayatController::class, 'index'])->name('responden.riwayat');
         Route::get('/profil', [RespondenProfilController::class, 'index'])->name('responden.profil');
     });
+
+    // # PERAN: Verifikator [ID: 4] #
+    Route::prefix('verifikator')->middleware('verifikator')->group(function () {
+        Route::get('/dashboard', [VerifikatorDashboardController::class, 'index'])->name('verifikator.dashboard');
+
+        Route::prefix('kelola-evaluasi')->group(function () {
+            Route::get('/perlu-ditinjau', [KelolaEvaluasiController::class, 'perluDitinjau'])->name('verifikator.kelola-evaluasi.perlu-ditinjau');
+            Route::get('/sedang-mengerjakan', [KelolaEvaluasiController::class, 'sedangMengerjakan'])->name('verifikator.kelola-evaluasi.sedang-mengerjakan');
+            Route::get('/evaluasi-selesai', [KelolaEvaluasiController::class, 'evaluasiSelesai'])->name('verifikator.kelola-evaluasi.evaluasi-selesai');
+
+            // Detail Evaluasi
+            Route::prefix('detail-evaluasi')->group(function () {
+                Route::get('/pertanyaan/{areaEvaluasi}/{hasilEvaluasi}', [PertanyaanController::class, 'index'])->name('verifikator.evaluasi.pertanyaan');
+                Route::post('/pertanyaan/simpan-jawaban/{areaEvaluasi}/{hasilEvaluasi}', [PertanyaanController::class, 'simpanJawaban'])->name('verifikator.evaluasi.pertanyaan.simpan-jawaban');
+
+                Route::get('/dashboard/{hasilEvaluasi:id}', [EvaluasiDashboardController::class, 'index'])->name('verifikator.evaluasi.dashboard');
+
+                Route::post('verifikasi-evaluasi/{hasilEvaluasi:id}', [EvaluasiDashboardController::class, 'verifikasiEvaluasi'])->name('verifikator.evaluasi.dashboard.verifikasi-evaluasi');
+                Route::post('revisi-evaluasi/{hasilEvaluasi:id}', [EvaluasiDashboardController::class, 'revisiEvaluasi'])->name('verifikator.evaluasi.dashboard.revisi-evaluasi');
+
+                Route::get('/cetak-laporan/{hasilEvaluasi:id}', [CetakLaporanEvaluasiController::class, 'index'])->name('verifikator.evaluasi.dashboard.cetak-laporan');
+            });
+        });
+
+        Route::get('/profil', [VerifikatorProfilController::class, 'index'])->name('verifikator.profil');
+    });
+
+    Route::prefix('manajemen')->middleware('manajemen')->group(function () {
+        Route::get('/dashboard', [ManajemenDashboardController::class, 'index'])->name('manajemen.dashboard');
+    });
+
     // Akses File Evaluasi
     Route::get('/file/{path}', [BukaDokumenController::class, 'index'])->where('path', '.*');
 });

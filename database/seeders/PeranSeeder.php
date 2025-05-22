@@ -13,14 +13,7 @@ class PeranSeeder extends Seeder
      */
     public function run(): void
     {
-        $daftarNamaPeran = [
-            Peran::PERAN_ADMIN,
-            Peran::PERAN_VERIFIKATOR,
-            Peran::PERAN_RESPONDEN,
-            Peran::PERAN_MANAJEMEN
-        ];
-
-        foreach ($daftarNamaPeran as $namaPeran) {
+        foreach (Peran::getPeranOptions() as $namaPeran) {
             Peran::create([
                 'nama_peran' => $namaPeran
             ]);

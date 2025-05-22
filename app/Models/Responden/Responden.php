@@ -2,7 +2,7 @@
 
 namespace App\Models\Responden;
 
-use App\Models\Evaluasi\HasilEvaluasi;
+use App\Models\Responden\StatusHasilEvaluasi;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
@@ -22,9 +22,9 @@ class Responden extends Model
         return $this->hasMany(HasilEvaluasi::class, 'responden_id', 'id');
     }
 
-    public function statusProgresEvaluasi()
+    public function statusProgresEvaluasiResponden()
     {
-        return $this->belongsTo(StatusProgresEvaluasi::class);
+        return $this->belongsTo(StatusProgresEvaluasiResponden::class);
     }
 
     // Identitas Instansi
@@ -41,17 +41,11 @@ class Responden extends Model
         ];
     }
 
-    // Status Evaluasi
-    const STATUS_BELUM = 'Belum';
-    const STATUS_MENGERJAKAN = 'Mengerjakan';
-    const STATUS_SELESAI = 'Selesai';
-
-    public static function getStatusOptions()
+    public static function getHasilEvaluasiDikerjakan($responden)
     {
-        return [
-            self::STATUS_BELUM,
-            self::STATUS_MENGERJAKAN,
-            self::STATUS_SELESAI,
-        ];
+        return $responden->hasilEvaluasi->where(
+            'status_hasil_evaluasi_id',
+            StatusHasilEvaluasi::where('nama_status_hasil_evaluasi', StatusHasilEvaluasi::STATUS_DIKERJAKAN)->value('id')
+        )->first();
     }
 }

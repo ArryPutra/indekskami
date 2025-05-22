@@ -3,14 +3,19 @@
 use App\Http\Middleware\Admin\AdminMiddleware;
 use App\Http\Middleware\Admin\SesiAreaEvaluasiIdMiddleware;
 use App\Http\Middleware\Admin\SesiAreaEvaluasiMiddleware;
-use App\Http\Middleware\AdminVerifikatorMiddleware;
 use App\Http\Middleware\AkunAktifMiddleware;
+use App\Http\Middleware\ManajemenMiddleware;
 use App\Http\Middleware\Responden\AktifEvaluasiMiddleware;
 use App\Http\Middleware\Responden\BelumEvaluasiMiddleware;
+use App\Http\Middleware\Responden\EvaluasiStatusDikerjakanMiddleware;
 use App\Http\Middleware\Responden\KepemilikanHasilEvaluasiMiddleware;
 use App\Http\Middleware\Responden\MengerjakanEvaluasiMiddleware;
 use App\Http\Middleware\Responden\RespondenMiddleware;
-use App\Http\Middleware\Verifikator\VerifikatorMiddleware;
+use App\Http\Middleware\Responden\StatusEvaluasiDikerjakanMiddleware;
+use App\Http\Middleware\RoleMiddleware;
+use App\Http\Middleware\SuperAdminMiddleware;
+use App\Http\Middleware\VerifikatorMiddleware;
+use App\Models\Manajemen\Manajemen;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -24,6 +29,10 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'akunAktif' => AkunAktifMiddleware::class,
+            // Role
+            'role' => RoleMiddleware::class,
+            // Super Admin
+            'superadmin' => SuperAdminMiddleware::class,
             // Admin
             'admin' => AdminMiddleware::class,
             'sesiAreaEvaluasiId' => SesiAreaEvaluasiIdMiddleware::class,
@@ -32,12 +41,12 @@ return Application::configure(basePath: dirname(__DIR__))
             // Responden
             'responden' => RespondenMiddleware::class,
             'aktifEvaluasi' => AktifEvaluasiMiddleware::class,
-            'belumEvaluasi' => BelumEvaluasiMiddleware::class,
             'kepemilikanHasilEvaluasi' => KepemilikanHasilEvaluasiMiddleware::class,
             'mengerjakanEvaluasi' => MengerjakanEvaluasiMiddleware::class,
-            // Pemantau
-            // Costum
-            'adminVerifikator' => AdminVerifikatorMiddleware::class,
+            'statusEvaluasiDikerjakan' => StatusEvaluasiDikerjakanMiddleware::class,
+            // Manajemen
+            'manajemen' => ManajemenMiddleware::class,
+            // Kostum
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

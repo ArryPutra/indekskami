@@ -2,7 +2,7 @@
 
 namespace App\Models\Responden;
 
-use App\Models\Evaluasi\HasilEvaluasi;
+use App\Models\Responden\HasilEvaluasi;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 

@@ -12,7 +12,7 @@ class PertanyaanEvaluasiUtama extends Model
 
     const STATUS_PERTAMA = 'Tidak Dilakukan';
     const STATUS_KEDUA = 'Dalam Perencanaan';
-    const STATUS_KETIGA = 'Dalam Perencanaan / Diterapkan Sebagian';
+    const STATUS_KETIGA = 'Dalam Penerapan / Diterapkan Sebagian';
     const STATUS_KEEMPAT = 'Diterapkan Secara Menyeluruh';
     const STATUS_KELIMA = 'Tidak Berlaku/Relevan';
 
@@ -27,17 +27,27 @@ class PertanyaanEvaluasiUtama extends Model
         ];
     }
 
+    const TINGKAT_KEMATANGAN_I = 'I';
+    const TINGKAT_KEMATANGAN_I_PLUS = 'I+';
     const TINGKAT_KEMATANGAN_II = 'II';
+    const TINGKAT_KEMATANGAN_II_PLUS = 'II+';
     const TINGKAT_KEMATANGAN_III = 'III';
+    const TINGKAT_KEMATANGAN_III_PLUS = 'III+';
     const TINGKAT_KEMATANGAN_IV = 'IV';
+    const TINGKAT_KEMATANGAN_IV_PLUS = 'IV+';
     const TINGKAT_KEMATANGAN_V = 'V';
 
     public static function getTingkatKematanganOptions()
     {
         return [
+            self::TINGKAT_KEMATANGAN_I,
+            self::TINGKAT_KEMATANGAN_I_PLUS,
             self::TINGKAT_KEMATANGAN_II,
+            self::TINGKAT_KEMATANGAN_II_PLUS,
             self::TINGKAT_KEMATANGAN_III,
+            self::TINGKAT_KEMATANGAN_III_PLUS,
             self::TINGKAT_KEMATANGAN_IV,
+            self::TINGKAT_KEMATANGAN_IV_PLUS,
             self::TINGKAT_KEMATANGAN_V
         ];
     }
@@ -53,5 +63,10 @@ class PertanyaanEvaluasiUtama extends Model
             self::PERTANYAAN_TAHAP_2,
             self::PERTANYAAN_TAHAP_3,
         ];
+    }
+
+    public function pertanyaanEvaluasi()
+    {
+        return $this->belongsTo(PertanyaanEvaluasi::class);
     }
 }

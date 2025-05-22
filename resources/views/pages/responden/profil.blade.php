@@ -28,7 +28,8 @@
         </section>
         <section>
             <h1>Status Evaluasi:</h1>
-            <h1 class="font-bold text-lg">{{ $responden->statusProgresEvaluasi->status_progres_evaluasi }}</h1>
+            <h1 class="font-bold text-lg">
+                {{ $responden->statusProgresEvaluasiResponden->nama_status_progres_evaluasi_responden }}</h1>
         </section>
     </div>
 @endsection

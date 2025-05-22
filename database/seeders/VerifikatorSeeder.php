@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Peran;
 use App\Models\User;
 use App\Models\Verifikator\Verifikator;
 use Database\Factories\UserFactory;
@@ -23,18 +24,18 @@ class VerifikatorSeeder extends Seeder
         //     ->create();
 
         $user = User::create([
-            'nama' => 'Ahmad Hadi',
-            'username' => 'ahmadhadi',
-            'email' => 'ahmadhadi@gmail.com',
+            'nama' => fake()->name(),
+            'username' => 'verifikator',
+            'email' => fake()->email(),
             'nomor_telepon' => '08134567899',
-            'peran_id' => 2,
+            'peran_id' => Peran::PERAN_VERIFIKATOR_ID,
             'password' => Hash::make('password123'),
             'apakah_akun_nonaktif' => false
         ]);
 
         Verifikator::create([
             'user_id' => $user->id,
-            'nomor_sk' => '123456789',
+            'nomor_sk' => '045/SK/FTUI/IV/2023',
         ]);
     }
 }

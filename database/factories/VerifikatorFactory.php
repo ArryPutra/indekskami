@@ -20,7 +20,6 @@ class VerifikatorFactory extends Factory
         return [
             'user_id' => UserFactory::new(),
             'nomor_sk' => fake()->unique()->randomNumber(),
-            'akses_verifikasi' => fake()->boolean()
         ];
     }
 }

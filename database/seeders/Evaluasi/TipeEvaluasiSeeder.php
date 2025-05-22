@@ -15,7 +15,7 @@ class TipeEvaluasiSeeder extends Seeder
     {
         foreach (TipeEvaluasi::getTipeEvaluasiOptions() as $tipeEvaluasi) {
             TipeEvaluasi::create([
-                'tipe_evaluasi' => $tipeEvaluasi
+                'nama_tipe_evaluasi' => $tipeEvaluasi
             ]);
         }
     }

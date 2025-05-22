@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware\Admin;
 
+use App\Models\Peran;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,9 +17,7 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = Auth::user();
-
-        if ($user->peran_id !== 1) {
+        if (Auth::user()->peran_id !== Peran::PERAN_ADMIN_ID) {
             return abort(403);
         }
 

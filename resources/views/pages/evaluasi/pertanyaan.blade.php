@@ -1,4 +1,6 @@
-@extends('layouts.layout')
+@extends('layouts.layout', [
+    'class' => 'mb-18',
+])
 
 @section('content')
     <h1 class="font-bold text-2xl">{{ $areaEvaluasi->judul }}</h1>
@@ -20,8 +22,7 @@
         @endforeach
     @endif
 
-    <form onsubmit="formSimpanJawaban(event)"
-        action="{{ route('responden.evaluasi.pertanyaan.simpan', [$areaEvaluasi->id, $hasilEvaluasi->id]) }}" method="post"
+    <form onsubmit="formSimpanJawaban(event)" id="formSimpanJawaban" action="{{ $routeSimpanJawaban }}" method="post"
         enctype="multipart/form-data">
         @csrf
         <x-table class="mt-4">
@@ -47,13 +48,13 @@
                         @endif
                     @endforeach
                     <x-table.tr
-                        class="{{ $pertanyaanDanJawaban['apakah_terkunci'] ?? false ? '!bg-red-50 pointer-events-none' : false }}
-                        {{ $pertanyaanDanJawaban['apakah_terkunci'] ?? false ? 'pertanyaanTahap3' : false }}">
+                        id="{{ isset($pertanyaanDanJawaban['pertanyaan_tahap']) && $pertanyaanDanJawaban['pertanyaan_tahap'] == 3 ? 'pertanyaanTahap3' : false }}"
+                        class="{{ $pertanyaanDanJawaban['apakah_terkunci'] ?? false ? '!bg-red-50 pointer-events-none' : false }}">
                         <input type="hidden" name="{{ $pertanyaanDanJawaban['nomor'] }}[pertanyaan_id]"
                             value="{{ $pertanyaanDanJawaban['pertanyaan_id'] }}">
                         {{-- Kolom: Nomor --}}
                         <x-table.td>
-                            @if ($tipeEvaluasi == 'Evaluasi Utama')
+                            @if ($namaTipeEvaluasi == 'Evaluasi Utama')
                                 <div class="flex gap-1">
                                     <span>{{ $areaEvaluasi->id }}.{{ $pertanyaanDanJawaban['nomor'] }}</span>
                                     <span>{{ $pertanyaanDanJawaban['tingkat_kematangan'] }}</span>
@@ -85,7 +86,7 @@
                         {{-- Kolom: Pertanyaan --}}
                         <x-table.td class="min-w-56">
                             <x-radio label="{{ $pertanyaanDanJawaban['pertanyaan'] }}">
-                                <x-radio.option :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_pertama'"
+                                <x-radio.option :disabled="!$apakahEvaluasiSedangDikerjakan" :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_pertama'"
                                     onclick="pilihOpsiJawaban(
                                     {{ $index }},
                                     {{ $pertanyaanDanJawaban['skor_status_pertama'] }},
@@ -95,7 +96,7 @@
                                     value="status_pertama">
                                     {{ $pertanyaanDanJawaban['status_pertama'] }}
                                 </x-radio.option>
-                                <x-radio.option :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_kedua'"
+                                <x-radio.option :disabled="!$apakahEvaluasiSedangDikerjakan" :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_kedua'"
                                     onclick="pilihOpsiJawaban(
                                     {{ $index }},
                                     {{ $pertanyaanDanJawaban['skor_status_kedua'] }},
@@ -104,7 +105,7 @@
                                     id="pertanyaan{{ $pertanyaanDanJawaban['nomor'] }}StatusKedua" value="status_kedua">
                                     {{ $pertanyaanDanJawaban['status_kedua'] }}
                                 </x-radio.option>
-                                <x-radio.option :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_ketiga'"
+                                <x-radio.option :disabled="!$apakahEvaluasiSedangDikerjakan" :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_ketiga'"
                                     onclick="pilihOpsiJawaban(
                                     {{ $index }},
                                     {{ $pertanyaanDanJawaban['skor_status_ketiga'] }},
@@ -114,8 +115,8 @@
                                     {{ $pertanyaanDanJawaban['status_ketiga'] }}
                                 </x-radio.option>
                                 {{-- Khusus Evaluasi Utama --}}
-                                @if ($tipeEvaluasi !== 'Kategori Sistem Elektronik')
-                                    <x-radio.option :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_keempat'"
+                                @if ($namaTipeEvaluasi !== 'Kategori Sistem Elektronik')
+                                    <x-radio.option :disabled="!$apakahEvaluasiSedangDikerjakan" :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_keempat'"
                                         onclick="pilihOpsiJawaban(
                                         {{ $index }},
                                         {{ $pertanyaanDanJawaban['skor_status_keempat'] }},
@@ -126,8 +127,8 @@
                                         {{ $pertanyaanDanJawaban['status_keempat'] }}
                                     </x-radio.option>
                                     {{-- Jika ternyata opsi status kelima --}}
-                                    @if ($tipeEvaluasi === 'Evaluasi Utama' && $pertanyaanDanJawaban['status_kelima'])
-                                        <x-radio.option :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_kelima'"
+                                    @if ($namaTipeEvaluasi === 'Evaluasi Utama' && $pertanyaanDanJawaban['status_kelima'])
+                                        <x-radio.option :disabled="!$apakahEvaluasiSedangDikerjakan" :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_kelima'"
                                             onclick="pilihOpsiJawaban(
                                             {{ $index }},
                                             {{ $pertanyaanDanJawaban['skor_status_kelima'] }},
@@ -148,9 +149,15 @@
                         </x-table.td>
                         {{-- Kolom: Dokumen --}}
                         <x-table.td>
-                            <x-file-upload name="{{ $pertanyaanDanJawaban['nomor'] }}[unggah_dokumen_baru]"
-                                oninput="tampilkanSaveButton()" />
+                            @if ($isResponden)
+                                @if ($apakahEvaluasiSedangDikerjakan)
+                                    <x-file-upload :disabled="!$apakahEvaluasiSedangDikerjakan"
+                                        name="{{ $pertanyaanDanJawaban['nomor'] }}[unggah_dokumen_baru]"
+                                        oninput="tampilkanSaveButton()" />
+                                @endif
+                            @endif
                             @if ($pertanyaanDanJawaban['dokumen'])
+                                {{-- Dokumen Lama (hanya berupa hidden untuk keperluan menghapus dokumen lama di database) --}}
                                 <input type="hidden" name="{{ $pertanyaanDanJawaban['nomor'] }}[path_dokumen_lama]"
                                     value="{{ $pertanyaanDanJawaban['dokumen'] }}">
                                 <x-button href="/file/{{ $pertanyaanDanJawaban['dokumen'] }}" target="_blank"
@@ -161,7 +168,8 @@
                         </x-table.td>
                         {{-- Kolom: Keterangan --}}
                         <x-table.td>
-                            <x-text-area name="{{ $pertanyaanDanJawaban['nomor'] }}[keterangan]" placeholder="Keterangan"
+                            <x-text-area :disabled="!$apakahEvaluasiSedangDikerjakan" type="hidden"
+                                name="{{ $pertanyaanDanJawaban['nomor'] }}[keterangan]" placeholder="Keterangan"
                                 :required=false oninput="tampilkanSaveButton()"
                                 value="{{ $pertanyaanDanJawaban['keterangan'] }}" />
                         </x-table.td>
@@ -181,22 +189,24 @@
         </x-button>
     </form>
 
-    <div class="fixed bottom-0 left-0 w-full" x-data="{ isOpen: (localStorage.getItem('isOpenHasilNilaiEvaluasiPanel') ?? 'true') === 'true' ? true : false }">
+    <div class="fixed bottom-0 left-0 w-full duration-300"
+        @if (!$isResponden) :class="{ 'md:pl-[16rem]': isOpenSidebar, 'md:pl-[4rem]': !isOpenSidebar }" @endif
+        x-data="{ isOpenHasilNilaiEvaluasiPanel: (localStorage.getItem('isOpenHasilNilaiEvaluasiPanel') ?? 'true') === 'true' ? true : false }">
         {{-- Tombol Hasil Nilai Evaluasi Panel --}}
         <x-button
             @click="
-            isOpen = !isOpen,
-            localStorage.setItem('isOpenHasilNilaiEvaluasiPanel', isOpen)"
+            isOpenHasilNilaiEvaluasiPanel = !isOpenHasilNilaiEvaluasiPanel,
+            localStorage.setItem('isOpenHasilNilaiEvaluasiPanel', isOpenHasilNilaiEvaluasiPanel)"
             color="gray" class="bg-white rounded-b-none border border-gray-200 ml-10">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="size-6 duration-300"
-                x-bind:class="{ 'rotate-180': isOpen, 'rotate-0': !isOpen }">
+                x-bind:class="{ 'rotate-180': isOpenHasilNilaiEvaluasiPanel, 'rotate-0': !isOpenHasilNilaiEvaluasiPanel }">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
             </svg>
         </x-button>
         {{-- Hasil Nilai Evaluasi Panel --}}
-        <div x-cloak class="bg-white border-t border-gray-200 px-6 max-md:px-4 pt-4 overflow-hidden"
-            :class="{ 'block shadow-2xl': isOpen, 'hidden': !isOpen }">
+        <div x-cloak class="bg-white border-t border-gray-200 px-6 max-md:px-4 pt-4"
+            :class="{ 'block shadow-2xl': isOpenHasilNilaiEvaluasiPanel, 'hidden': !isOpenHasilNilaiEvaluasiPanel }">
             <h1 class="font-bold mb-1.5">Hasil Nilai Evaluasi</h1>
             <x-table class="-mx-6">
                 <x-table.tbody>
@@ -209,12 +219,12 @@
                         <x-table.td><strong id="totalSkor"></strong></x-table.td>
                     </x-table.tr>
                     {{-- TIPE EVALUASI: Kategori Sistem Elektronik --}}
-                    @if ($tipeEvaluasi == 'Kategori Sistem Elektronik')
+                    @if ($namaTipeEvaluasi == 'Kategori Sistem Elektronik')
                         <x-table.tr class="!border-b-0">
                             <x-table.td>Tingkat Ketergantungan</x-table.td>
                             <x-table.td><strong id="tingkatKetergantungan"></strong></x-table.td>
                         </x-table.tr>
-                    @elseif ($tipeEvaluasi == 'Evaluasi Utama')
+                    @elseif ($namaTipeEvaluasi == 'Evaluasi Utama')
                         <x-table.tr>
                             <x-table.td>Batas Skor Min untuk Skor Tahap Penerapan 3</x-table.td>
                             <x-table.td><strong id="batasSkorMinUntukSkorTahapPenerapan3"></strong></x-table.td>
@@ -224,10 +234,14 @@
                             <x-table.td><strong id="totalSkorTahapPenerapan1Dan2"></strong></x-table.td>
                         </x-table.tr>
                         <x-table.tr>
+                            <x-table.td>Status Validitas Seluruh Tahap</x-table.td>
+                            <x-table.td><strong id="statusValiditasTahap"></strong></x-table.td>
+                        </x-table.tr>
+                        <x-table.tr>
                             <x-table.td>Status Peniliaian Tahap Penerapan 3</x-table.td>
                             <x-table.td><strong id="statusPeniliaianTahapPenerapan3"></strong></x-table.td>
                         </x-table.tr>
-                    @elseif ($tipeEvaluasi == 'Suplemen')
+                    @elseif ($namaTipeEvaluasi == 'Suplemen')
                         <x-table.tr>
                             <x-table.td>Total Skor Suplemen</x-table.td>
                             <x-table.td><strong id="totalSkorSuplemen"></strong><strong>%</strong></x-table.td>
@@ -237,19 +251,35 @@
             </x-table>
         </div>
         {{-- Daftar Area Evaluasi --}}
-        <footer class="bg-white px-6 max-md:px-4 py-4 border-t border-gray-200 flex gap-2 overflow-x-auto">
-            <x-button color="gray"
-                href="{{ route('responden.evaluasi.identitas-responden.edit', $hasilEvaluasi->identitas_responden_id) }}">Identitas</x-button>
-            @foreach ($daftarAreaEvaluasiUtama as $areaEvaluasiUtama)
-                <x-button
-                    href="{{ route('responden.evaluasi.pertanyaan', [$areaEvaluasiUtama->id, $hasilEvaluasi->id]) }}"
-                    color="{{ $areaEvaluasiUtama->id === $areaEvaluasi->id ? 'primary' : 'gray' }}">
-                    {{ $areaEvaluasiUtama->nama_evaluasi }}
-                </x-button>
-            @endforeach
-            <x-button color="gray"
-                href="{{ route('responden.evaluasi.dashboard', $hasilEvaluasi->id) }}">Dashboard</x-button>
-        </footer>
+        @if ($isResponden)
+            <footer class="bg-white px-6 max-md:px-4 py-4 border-t border-gray-200 flex gap-2 overflow-x-auto">
+                @if (!$apakahEvaluasiSedangDikerjakan)
+                    <x-button color="gray"
+                        href="{{ route('responden.evaluasi.identitas-responden.edit', $hasilEvaluasi->identitas_responden_id) }}">Identitas</x-button>
+                @endif
+                @foreach ($daftarAreaEvaluasiUtama as $areaEvaluasiUtama)
+                    <x-button
+                        href="{{ route('responden.evaluasi.pertanyaan', [$areaEvaluasiUtama->id, $hasilEvaluasi->id]) }}"
+                        color="{{ $areaEvaluasiUtama->id === $areaEvaluasi->id ? 'primary' : 'gray' }}">
+                        {{ $areaEvaluasiUtama->nama_area_evaluasi }}
+                    </x-button>
+                @endforeach
+                <x-button color="gray"
+                    href="{{ route('responden.evaluasi.dashboard', $hasilEvaluasi->id) }}">Dashboard</x-button>
+            </footer>
+        @else
+            <footer class="bg-white px-6 max-md:px-4 py-4 border-t border-gray-200 flex gap-2 overflow-x-auto">
+                @foreach ($daftarAreaEvaluasiUtama as $areaEvaluasiUtama)
+                    <x-button
+                        href="{{ route('verifikator.evaluasi.pertanyaan', [$areaEvaluasiUtama->id, $hasilEvaluasi->id]) }}"
+                        color="{{ $areaEvaluasiUtama->id === $areaEvaluasi->id ? 'primary' : 'gray' }}">
+                        {{ $areaEvaluasiUtama->nama_area_evaluasi }}
+                    </x-button>
+                @endforeach
+                <x-button color="gray"
+                    href="{{ route('verifikator.evaluasi.dashboard', $hasilEvaluasi->id) }}">Dashboard</x-button>
+            </footer>
+        @endif
     </div>
 @endsection
 @push('script')
@@ -257,26 +287,49 @@
     <script>
         let daftarPertanyaanDanJawaban = {!! json_encode($dataScript['daftarPertanyaanDanJawaban']) !!};
         let totalSkor = daftarPertanyaanDanJawaban.reduce((total, item) => total + item['skor_jawaban'], 0);
-        @if ($tipeEvaluasi == 'Evaluasi Utama')
-            let batasSkorMinUntukSkorTahap3 = 0;
-            let totalSkorTahapPenerapan1Dan2 = daftarPertanyaanDanJawaban
-                .filter(item => item['pertanyaan_tahap'] === 1 || item['pertanyaan_tahap'] === 2)
-                .reduce((total, item) => total + item['skor_jawaban'], 0);
-        @elseif ($tipeEvaluasi == 'Suplemen')
-            let totalSkorSuplemen = ((totalSkor / 27 * 3) / 9 * 100).toFixed(2);
-        @endif
 
         perbaruiScrollPosisi();
 
         hitungTotalPertanyaanDijawab();
         hitungTotalSkor();
-        @if ($tipeEvaluasi == 'Kategori Sistem Elektronik')
+
+        @if ($namaTipeEvaluasi == 'Kategori Sistem Elektronik')
             hitungTingkatKeterangantungan();
-        @elseif ($tipeEvaluasi == 'Evaluasi Utama')
+        @elseif ($namaTipeEvaluasi == 'Evaluasi Utama')
+            let batasSkorMinUntukSkorTahap3 = 0;
             hitungBatasSkorMinUntukSkorTahap3();
+
+            let totalSkorTahapPenerapan1Dan2 = daftarPertanyaanDanJawaban
+                .filter(item => item['pertanyaan_tahap'] === 1 || item['pertanyaan_tahap'] === 2)
+                .reduce((total, item) => total + item['skor_jawaban'], 0);
+
+            // Proses validitas seluruh tahap
+            let totalSkorJawabanTahapPenerapan1 = 0;
+            hitungTotalSkorJawabanTahapPenerapan1()
+
+            const totalJawabanTahap1 = {
+                statusPertama: 0, // Tidak Diterapkan
+                statusKedua: 0, // Dalam Perencanaan
+                statusKetiga: 0, // Diterapkan Sebagian,
+                statusKeempat: 0 // Diterapkan Secara Menyeluruh
+            };
+            hitungTotalJawabanTahap1();
+
+            let totalSkorJawabanTahapPenerapan1StatusKeempat =
+                daftarPertanyaanDanJawaban
+                .filter(item => item['pertanyaan_tahap'] === 1)
+                .length * 3;
+
+            let statusValiditasSeluruhTahap = false;
+            perbaruiStatusValiditasSeluruhTahap();
+            // End Proses validitas seluruh tahap
+
             hitungTotalSkorTahap1Dan2();
-            hitungStatusPenilaianTahapPenerapan3();
-        @elseif ($tipeEvaluasi == 'Suplemen')
+
+            let statusPenilaianTahapPenerapan3 = false;
+            perbaruiStatusPenilaianTahapPenerapan3();
+        @elseif ($namaTipeEvaluasi == 'Suplemen')
+            let totalSkorSuplemen = ((totalSkor / 27 * 3) / 9 * 100).toFixed(2);
             hitungTotalSkorSuplemen();
         @endif
 
@@ -285,12 +338,18 @@
 
             perbaruiPertanyaanDijawab(pertanyaanObject);
             perbaruiPertanyaanSkor(pertanyaanObject, pertanyaanIndex, skorBaru);
-            @if ($tipeEvaluasi == 'Kategori Sistem Elektronik')
+            @if ($namaTipeEvaluasi == 'Kategori Sistem Elektronik')
                 hitungTingkatKeterangantungan();
-            @elseif ($tipeEvaluasi == 'Evaluasi Utama')
+            @elseif ($namaTipeEvaluasi == 'Evaluasi Utama')
                 hitungTotalSkorTahap1Dan2();
-                hitungStatusPenilaianTahapPenerapan3();
-            @elseif ($tipeEvaluasi == 'Suplemen')
+                // biru
+                hitungTotalSkorJawabanTahapPenerapan1();
+                hitungTotalJawabanTahap1();
+                perbaruiStatusValiditasSeluruhTahap();
+                // end biru
+                perbaruiStatusPenilaianTahapPenerapan3();
+                console.log('<< ============= >>')
+            @elseif ($namaTipeEvaluasi == 'Suplemen')
                 hitungTotalSkorSuplemen();
             @endif
 
@@ -340,7 +399,7 @@
             totalSkorElement.textContent = totalSkor;
         }
 
-        @if ($tipeEvaluasi == 'Kategori Sistem Elektronik')
+        @if ($namaTipeEvaluasi == 'Kategori Sistem Elektronik')
             function hitungTingkatKeterangantungan() {
                 let tingkatKeterangantunganElement = document.getElementById('tingkatKetergantungan');
 
@@ -352,7 +411,7 @@
                     tingkatKeterangantunganElement.textContent = 'Strategis';
                 }
             }
-        @elseif ($tipeEvaluasi == 'Evaluasi Utama')
+        @elseif ($namaTipeEvaluasi == 'Evaluasi Utama')
 
             function hitungBatasSkorMinUntukSkorTahap3() {
                 const totalPertanyaanTahap1 = daftarPertanyaanDanJawaban.filter(item => item['pertanyaan_tahap'] === 1)
@@ -367,6 +426,73 @@
                 batasSkorMinUntukSkorTahapPenerapan3Element.textContent = batasSkorMinUntukSkorTahap3;
             }
 
+            // BIRU
+            function hitungTotalSkorJawabanTahapPenerapan1() {
+
+                totalSkorJawabanTahapPenerapan1 = daftarPertanyaanDanJawaban
+                    .filter(item => item['pertanyaan_tahap'] === 1)
+                    .reduce((total, item) => total + item['skor_jawaban'], 0);
+                console.log(
+                    'Total Skor Tahap Penerapan 1: ' +
+                    totalSkorJawabanTahapPenerapan1
+                );
+            }
+
+            function hitungTotalJawabanTahap1() {
+                // Reset nilai
+                totalJawabanTahap1.statusPertama = 0;
+                totalJawabanTahap1.statusKedua = 0;
+                totalJawabanTahap1.statusKetiga = 0;
+                totalJawabanTahap1.statusKeempat = 0;
+
+                // Loop sekali saja dan hitung berdasarkan skor
+                daftarPertanyaanDanJawaban.forEach(item => {
+                    if (item.pertanyaan_tahap === 1) {
+                        switch (item.skor_jawaban) {
+                            case 0:
+                                totalJawabanTahap1.statusPertama++;
+                                break;
+                            case 1:
+                                totalJawabanTahap1.statusKedua++;
+                                break;
+                            case 2:
+                                totalJawabanTahap1.statusKetiga++;
+                                break;
+                            case 3:
+                                totalJawabanTahap1.statusKeempat++;
+                                break;
+                        }
+                    }
+                });
+
+                // Logging hasil
+                console.log(
+                    totalJawabanTahap1
+                );
+            }
+
+            function perbaruiStatusValiditasSeluruhTahap() {
+                const statusValiditasTahapElement = document.getElementById('statusValiditasTahap');
+
+                if (totalJawabanTahap1.statusKedua == 0 &&
+                    totalSkorJawabanTahapPenerapan1 >= (totalSkorJawabanTahapPenerapan1StatusKeempat - 2) &&
+                    totalJawabanTahap1.statusKetiga <= 2
+                ) {
+                    statusValiditasSeluruhTahap = true;
+
+                    statusValiditasTahapElement.textContent = 'Valid';
+                    statusValiditasTahapElement.classList.add('text-primary');
+                    statusValiditasTahapElement.classList.remove('text-red-600');
+                } else {
+                    statusValiditasSeluruhTahap = false;
+
+                    statusValiditasTahapElement.textContent = 'Tidak Valid';
+                    statusValiditasTahapElement.classList.add('text-red-600');
+                    statusValiditasTahapElement.classList.remove('text-primary');
+                }
+            }
+            // END BIRU
+
             function hitungTotalSkorTahap1Dan2() {
                 totalSkorTahapPenerapan1Dan2 = daftarPertanyaanDanJawaban
                     .filter(item => item['pertanyaan_tahap'] === 1 || item['pertanyaan_tahap'] === 2)
@@ -376,23 +502,25 @@
                 totalSkorTahapPenerapan1Dan2Element.textContent = totalSkorTahapPenerapan1Dan2;
             }
 
-            function hitungStatusPenilaianTahapPenerapan3() {
-                const statusPeniliaianTahapPenerapan3Element = document.getElementById('statusPeniliaianTahapPenerapan3');
+            function perbaruiStatusPenilaianTahapPenerapan3() {
+                const statusPenilaianTahapPenerapan3Element = document.getElementById('statusPeniliaianTahapPenerapan3');
 
-                if (totalSkorTahapPenerapan1Dan2 >= batasSkorMinUntukSkorTahap3) {
-                    statusPenilaianTahapPenerapan3 = 'Valid';
+                if ((totalSkorTahapPenerapan1Dan2 >= batasSkorMinUntukSkorTahap3) && statusValiditasSeluruhTahap) {
+                    statusPenilaianTahapPenerapan3 = true;
 
-                    statusPeniliaianTahapPenerapan3Element.textContent = statusPenilaianTahapPenerapan3;
-                    statusPeniliaianTahapPenerapan3Element.classList.add('text-primary');
-                    statusPeniliaianTahapPenerapan3Element.classList.remove('text-red-600');
+                    statusPenilaianTahapPenerapan3Element.textContent = statusPenilaianTahapPenerapan3 ? 'Valid' :
+                        'Tidak Valid';
+                    statusPenilaianTahapPenerapan3Element.classList.add('text-primary');
+                    statusPenilaianTahapPenerapan3Element.classList.remove('text-red-600');
 
                     apakahBukaKunciPertanyaanTahap3(true);
                 } else {
-                    statusPenilaianTahapPenerapan3 = 'Tidak Valid';
+                    statusPenilaianTahapPenerapan3 = false;
 
-                    statusPeniliaianTahapPenerapan3Element.textContent = statusPenilaianTahapPenerapan3;
-                    statusPeniliaianTahapPenerapan3Element.classList.add('text-red-600');
-                    statusPeniliaianTahapPenerapan3Element.classList.remove('text-primary');
+                    statusPenilaianTahapPenerapan3Element.textContent = statusPenilaianTahapPenerapan3 ? 'Tidak Valid' :
+                        'Valid';
+                    statusPenilaianTahapPenerapan3Element.classList.add('text-red-600');
+                    statusPenilaianTahapPenerapan3Element.classList.remove('text-primary');
 
                     apakahBukaKunciPertanyaanTahap3(false);
                 }
@@ -400,7 +528,7 @@
 
             function apakahBukaKunciPertanyaanTahap3(apakahBukaKunci) {
                 // Ambil semua elemen pertanyaan tahap 3
-                const pertanyaanTahap3 = document.querySelectorAll('.pertanyaanTahap3');
+                const pertanyaanTahap3 = document.querySelectorAll('#pertanyaanTahap3');
 
                 // Jika buka kunci
                 if (apakahBukaKunci) {
@@ -419,11 +547,11 @@
                     });
                 }
             }
-        @elseif ($tipeEvaluasi == 'Suplemen')
+        @elseif ($namaTipeEvaluasi == 'Suplemen')
 
             function hitungTotalSkorSuplemen() {
                 const totalSkorSuplemenElement = document.getElementById('totalSkorSuplemen');
-                totalSkorSuplemen = ((totalSkor / 27 * 3) / 9 * 100).toFixed(2);
+                totalSkorSuplemen = ((totalSkor / 27 * 3) / 9 * 100).toFixed();
                 totalSkorSuplemenElement.textContent = totalSkorSuplemen;
             }
         @endif
@@ -453,19 +581,48 @@
             localStorage.removeItem('scrollPosition');
         }
 
-        function tampilkanSaveButton() {
-            // Mengambil elemen tombol simpan
-            const saveButtonElement = document.getElementById('saveButton');
-            // Modifikasi menampilkan elemen tombol simpan
-            saveButtonElement.classList.remove('opacity-0');
-            saveButtonElement.classList.remove('pointer-events-none');
-            saveButtonElement.classList.add('scale-100');
-        }
+        @if ($apakahEvaluasiSedangDikerjakan)
+            function tampilkanSaveButton() {
+                // Mengambil elemen tombol simpan
+                const saveButtonElement = document.getElementById('saveButton');
+                // Modifikasi menampilkan elemen tombol simpan
+                saveButtonElement.classList.remove('opacity-0');
+                saveButtonElement.classList.remove('pointer-events-none');
+                saveButtonElement.classList.add('scale-100');
+            }
 
-        // Fungsi ketika menyimpan jawaban
-        function formSimpanJawaban(event) {
-            // Simpan data posisi scroll di local storage
-            localStorage.setItem('scrollPosition', window.scrollY);
-        }
+            // Fungsi ketika menyimpan jawaban
+            function formSimpanJawaban(event) {
+                // Mengecek apakah ada jawaban tahap 3
+                $apakahAdaSkorLebihDari0Tahap3 =
+                    daftarPertanyaanDanJawaban.filter(item => item['pertanyaan_tahap'] === 3)
+                    .reduce((total, item) => total + item['skor_jawaban'], 0) > 0;
+
+                // Jika status penilaian tahap 3 adalah valid
+                if (!statusPenilaianTahapPenerapan3 && $apakahAdaSkorLebihDari0Tahap3) {
+                    window.event.preventDefault();
+                    // Menampilkan pesan pertanyaan tahap 3 akan dihapus semua
+                    Swal.fire({
+                        title: "Apakah Anda yakin?",
+                        text: "Jawaban pada pertanyaan tahap penerapan 3 akan dihapus semua",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#d33",
+                        cancelButtonColor: "{{ config('app.primary_color') }}",
+                        confirmButtonText: "Simpan",
+                        cancelButtonText: "Batal"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            localStorage.setItem('scrollPosition', window.scrollY);
+                            const form = document.getElementById('formSimpanJawaban');
+                            form.submit();
+                        }
+                    });
+                } else {
+                    // Simpan data posisi scroll di local storage
+                    localStorage.setItem('scrollPosition', window.scrollY);
+                }
+            }
+        @endif
     </script>
 @endpush

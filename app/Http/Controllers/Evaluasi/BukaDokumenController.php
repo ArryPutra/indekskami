@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Evaluasi;
 
 use App\Http\Controllers\Controller;
-use App\Models\Evaluasi\JawabanEvaluasi;
+use App\Models\Responden\JawabanEvaluasi;
 use App\Models\KepemilikanDokumen;
+use App\Models\Peran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,7 +24,7 @@ class BukaDokumenController extends Controller
         if (
             ($responden && $dokumenRespondenId === $responden->id)
             ||
-            $user->peran_id !== 3
+            $user->peran_id !== Peran::PERAN_RESPONDEN_ID
         ) {
             // Menampilkan file
             return response()->file(storage_path("app/private/$path"));

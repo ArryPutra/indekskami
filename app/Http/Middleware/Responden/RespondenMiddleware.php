@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware\Responden;
 
+use App\Models\Peran;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +19,7 @@ class RespondenMiddleware
     {
         $user = Auth::user();
 
-        if ($user->peran_id !== 3) {
+        if ($user->peran_id !== Peran::PERAN_RESPONDEN_ID) {
             return abort(403);
         }
 

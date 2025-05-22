@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Peran;
 use App\Rules\Recaptcha;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -53,16 +54,23 @@ class AuthController extends Controller
     // Metode untuk mengalihkan pengguna berdasarkan peran_id
     function redirectUser()
     {
+        $peranIdList = Peran::whereIn('nama_peran', ['Superadmin', 'Admin', 'Responden', 'Verifikator', 'Manajemen'])
+            ->pluck('id', 'nama_peran')
+            ->toArray();
         // Jika pengguna sudah login
         if (Auth::check()) {
             // Lakukan pengecekan setiap peran id
             switch (Auth::user()->peran_id) {
-                case 1:
+                case $peranIdList['Superadmin']:
+                    return redirect()->route('superadmin.dashboard');
+                case $peranIdList['Admin']:
                     return redirect()->route('admin.dashboard');
-                case 2:
-                    return redirect()->route('verifikator.dashboard');
-                case 3:
+                case $peranIdList['Responden']:
                     return redirect()->route('responden.dashboard');
+                case $peranIdList['Verifikator']:
+                    return redirect()->route('verifikator.dashboard');
+                case $peranIdList['Manajemen']:
+                    return redirect()->route('manajemen.dashboard');
                 default:
                     break;
             }

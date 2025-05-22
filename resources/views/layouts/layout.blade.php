@@ -30,36 +30,54 @@
         @php
             $peranId = Auth::user()->peran_id;
         @endphp
-        @switch($peranId)
-            {{-- Admin --}}
-            @case(1)
-                <div x-data="{ isOpen: localStorage.getItem('isOpenSidebar') === 'true' ? true : false }">
-                    @include('layouts.admin-verifikator.header')
-                    @include('layouts.admin-verifikator.sidebar')
-                    <x-content>
+        <div x-data="{ isOpenSidebar: localStorage.getItem('isOpenSidebar') === 'true' ? true : false }">
+            @switch($peranId)
+                {{-- Super Admin --}}
+                @case(App\Models\Peran::PERAN_SUPERADMIN_ID)
+                    @include('layouts.internal.header')
+                    @include('layouts.internal.sidebar.index')
+                    <x-content class="{{ $class ?? null }}">
                         @yield('content')
                     </x-content>
-                </div>
-            @break
+                @break
 
-            {{-- Verifikator --}}
-            @case(2)
-                @include('layouts.admin-verifikator.header')
-                @include('layouts.admin-verifikator.sidebar')
-                <x-content>
-                    @yield('content')
-                </x-content>
-            @break
+                {{-- Admin --}}
+                @case(App\Models\Peran::PERAN_ADMIN_ID)
+                    @include('layouts.internal.header')
+                    @include('layouts.internal.sidebar.index')
+                    <x-content class="{{ $class ?? null }}">
+                        @yield('content')
+                    </x-content>
+                @break
 
-            {{-- Responden --}}
-            @case(3)
-                @include('layouts.responden.header')
-                @include('layouts.responden.sidebar')
-                <x-content>
-                    @yield('content')
-                </x-content>
-            @break
-        @endswitch
+                {{-- Responden --}}
+                @case(App\Models\Peran::PERAN_RESPONDEN_ID)
+                    @include('layouts.responden.header')
+                    @include('layouts.responden.sidebar')
+                    <x-content class="{{ $class ?? null }}">
+                        @yield('content')
+                    </x-content>
+                @break
+
+                {{-- Verifikator --}}
+                @case(App\Models\Peran::PERAN_VERIFIKATOR_ID)
+                    @include('layouts.internal.header')
+                    @include('layouts.internal.sidebar.index')
+                    <x-content class="{{ $class ?? null }}">
+                        @yield('content')
+                    </x-content>
+                @break
+
+                {{-- Verifikator --}}
+                @case(App\Models\Peran::PERAN_MANAJEMEN_ID)
+                    @include('layouts.internal.header')
+                    @include('layouts.internal.sidebar.index')
+                    <x-content class="{{ $class ?? null }}">
+                        @yield('content')
+                    </x-content>
+                @break
+            @endswitch
+        </div>
     @else
         {{-- Untuk user yang belum autentikasi --}}
         @yield('content')

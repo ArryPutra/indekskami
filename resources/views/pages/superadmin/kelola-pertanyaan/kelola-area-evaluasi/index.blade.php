@@ -1,6 +1,11 @@
 @extends('layouts.layout')
 
 @section('content')
+    <div class="flex gap-3 mb-5 flex-wrap">
+        <x-button>Kelola Pertanyaan</x-button>
+        <x-button href="{{ route('pengaturan-evaluasi.index') }}" color="gray">Pengaturan</x-button>
+    </div>
+
     <x-table>
         <x-table.thead>
             <x-table.th>No.</x-table.th>

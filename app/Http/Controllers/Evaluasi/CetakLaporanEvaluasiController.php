@@ -19,6 +19,7 @@ class CetakLaporanEvaluasiController extends Controller
             'title' => 'Cetak Laporan Evaluasi',
             'responden' => $hasilEvaluasi->responden,
             'hasilEvaluasi' => $hasilEvaluasi,
+            'statusHasilEvaluasiSaatIni' => $hasilEvaluasi->statusHasilEvaluasi->nama_status_hasil_evaluasi,
             'hasilEvaluasiId' => $hasilEvaluasi->id,
             'identitasResponden' => $hasilEvaluasi->identitasResponden,
             'nilaiEvaluasi' => $nilaiEvaluasi->load('nilaiEvaluasiUtamaResponden.nilaiEvaluasiUtama'),

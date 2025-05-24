@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Middleware\Responden;
+namespace App\Http\Middleware\Evaluasi;
 
 use App\Models\Responden\StatusHasilEvaluasi;
 use Closure;

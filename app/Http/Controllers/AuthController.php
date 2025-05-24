@@ -54,22 +54,22 @@ class AuthController extends Controller
     // Metode untuk mengalihkan pengguna berdasarkan peran_id
     function redirectUser()
     {
-        $peranIdList = Peran::whereIn('nama_peran', ['Superadmin', 'Admin', 'Responden', 'Verifikator', 'Manajemen'])
-            ->pluck('id', 'nama_peran')
-            ->toArray();
         // Jika pengguna sudah login
         if (Auth::check()) {
+            $peranIdList = Peran::pluck('id', 'nama_peran')->toArray();
+
             // Lakukan pengecekan setiap peran id
+            // Lalu navigasi ke halaman dashboard sesuai peran
             switch (Auth::user()->peran_id) {
-                case $peranIdList['Superadmin']:
+                case $peranIdList[Peran::PERAN_SUPERADMIN]:
                     return redirect()->route('superadmin.dashboard');
-                case $peranIdList['Admin']:
+                case $peranIdList[Peran::PERAN_ADMIN]:
                     return redirect()->route('admin.dashboard');
-                case $peranIdList['Responden']:
+                case $peranIdList[Peran::PERAN_RESPONDEN]:
                     return redirect()->route('responden.dashboard');
-                case $peranIdList['Verifikator']:
+                case $peranIdList[Peran::PERAN_VERIFIKATOR]:
                     return redirect()->route('verifikator.dashboard');
-                case $peranIdList['Manajemen']:
+                case $peranIdList[Peran::PERAN_MANAJEMEN]:
                     return redirect()->route('manajemen.dashboard');
                 default:
                     break;

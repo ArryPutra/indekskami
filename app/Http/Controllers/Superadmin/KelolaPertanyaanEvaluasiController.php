@@ -117,7 +117,7 @@ class KelolaPertanyaanEvaluasiController extends Controller
         ];
 
         // Tambahkan aturan khusus jika tipe evaluasi adalah 'pertanyaan_evaluasi_utama'
-        if ($this->getAreaEvaluasi()->tipeEvaluasi->tipe_evaluasi === TipeEvaluasi::EVALUASI_UTAMA) {
+        if ($this->getAreaEvaluasi()->tipeEvaluasi->nama_tipe_evaluasi === TipeEvaluasi::EVALUASI_UTAMA) {
             $pertanyaanBaruRequest += [
                 'tingkat_kematangan' => [
                     'required',
@@ -130,11 +130,12 @@ class KelolaPertanyaanEvaluasiController extends Controller
                     Rule::in(PertanyaanEvaluasiUtama::getPertanyaanTahapOptions()),
                 ],
                 'status_keempat' => ['required', 'max:255'],
-                'status_kelima' => ['nullable', 'max:255'],
+                'status_kelima' => ['required_with:skor_status_kelima', 'nullable', 'max:255'],
                 'skor_status_keempat' => ['required', 'integer'],
-                'skor_status_kelima' => ['nullable', 'integer'],
+                'skor_status_kelima' => ['required_with:status_kelima', 'nullable', 'integer'],
+
             ];
-        } else if ($this->getAreaEvaluasi()->tipeEvaluasi->tipe_evaluasi === TipeEvaluasi::SUPLEMEN) {
+        } else if ($this->getAreaEvaluasi()->tipeEvaluasi->nama_tipe_evaluasi === TipeEvaluasi::SUPLEMEN) {
             $pertanyaanBaruRequest += [
                 'status_keempat' => ['required', 'max:255'],
                 'skor_status_keempat' => ['required', 'integer'],
@@ -214,7 +215,7 @@ class KelolaPertanyaanEvaluasiController extends Controller
         ];
 
         // Tambahkan aturan khusus jika tipe evaluasi adalah 'pertanyaan_evaluasi_utama'
-        if ($this->getAreaEvaluasi()->tipeEvaluasi->tipe_evaluasi === TipeEvaluasi::EVALUASI_UTAMA) {
+        if ($this->getAreaEvaluasi()->tipeEvaluasi->nama_tipe_evaluasi === TipeEvaluasi::EVALUASI_UTAMA) {
             $pertanyaanBaruRequest += [
                 'tingkat_kematangan' => [
                     'required',
@@ -227,11 +228,12 @@ class KelolaPertanyaanEvaluasiController extends Controller
                     Rule::in(PertanyaanEvaluasiUtama::getPertanyaanTahapOptions()),
                 ],
                 'status_keempat' => ['required', 'max:255'],
-                'status_kelima' => ['nullable', 'max:255'],
+                'status_kelima' => ['required_with:skor_status_kelima', 'nullable', 'max:255'],
                 'skor_status_keempat' => ['required', 'integer'],
-                'skor_status_kelima' => ['nullable', 'integer'],
+                'skor_status_kelima' => ['required_with:status_kelima', 'nullable', 'integer'],
+
             ];
-        } else if ($this->getAreaEvaluasi()->tipeEvaluasi->tipe_evaluasi === TipeEvaluasi::SUPLEMEN) {
+        } else if ($this->getAreaEvaluasi()->tipeEvaluasi->nama_tipe_evaluasi === TipeEvaluasi::SUPLEMEN) {
             $pertanyaanBaruRequest += [
                 'status_keempat' => ['required', 'max:255'],
                 'skor_status_keempat' => ['required', 'integer'],

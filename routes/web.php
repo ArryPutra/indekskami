@@ -43,6 +43,8 @@ use App\Http\Controllers\Evaluasi\CetakLaporanEvaluasiController;
 
 // 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Responden\Evaluasi\PesanEvaluasiController;
+use App\Http\Controllers\Superadmin\PengaturanEvaluasiController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [AuthController::class, 'index']);
@@ -62,6 +64,8 @@ Route::middleware(['auth', 'akunAktif'])->group(function () {
     Route::prefix('superadmin')->middleware('superadmin')->group(function () {
         Route::get('/dashboard', [SuperadminDashboardController::class, 'index'])->name('superadmin.dashboard');
 
+        Route::resource('/pengaturan-evaluasi', PengaturanEvaluasiController::class)
+            ->only('index', 'store');
         Route::resource('/kelola-area-evaluasi', KelolaAreaEvaluasiController::class);
         Route::resource('/kelola-pertanyaan-evaluasi', KelolaPertanyaanEvaluasiController::class);
         Route::resource('/kelola-judul-tema-pertanyaan', KelolaJudulTemaPertanyaanController::class);
@@ -94,7 +98,7 @@ Route::middleware(['auth', 'akunAktif'])->group(function () {
 
         Route::get('/redirect-evaluasi', [RedirectEvaluasiController::class, 'index'])->name('responden.redirect-evaluasi');
         Route::prefix('evaluasi')->group(function () {
-            Route::get('/nonaktif-evaluasi', [NonaktifEvaluasiController::class, 'index'])->name('responden.nonaktif-evaluasi');
+            Route::get('/pesan-evaluasi', [PesanEvaluasiController::class, 'index'])->name('responden.pesan-evaluasi');
 
             Route::middleware('aktifEvaluasi')->group(function () {
                 Route::resource('/identitas-responden', IdentitasRespondenController::class)
@@ -115,8 +119,6 @@ Route::middleware(['auth', 'akunAktif'])->group(function () {
                 Route::middleware('kepemilikanHasilEvaluasi')->group(function () {
                     Route::get('/cetak-laporan/{hasilEvaluasi:id}', [CetakLaporanEvaluasiController::class, 'index'])->name('responden.evaluasi.dashboard.cetak-laporan');
                 });
-
-                Route::get('/evaluasi/selesai-evaluasi', [SelesaiEvaluasiController::class, 'index'])->name('responden.evaluasi.selesai-evaluasi');
             });
         });
         Route::get('/riwayat', [RiwayatController::class, 'index'])->name('responden.riwayat');
@@ -135,7 +137,10 @@ Route::middleware(['auth', 'akunAktif'])->group(function () {
             // Detail Evaluasi
             Route::prefix('detail-evaluasi')->group(function () {
                 Route::get('/pertanyaan/{areaEvaluasi}/{hasilEvaluasi}', [PertanyaanController::class, 'index'])->name('verifikator.evaluasi.pertanyaan');
-                Route::post('/pertanyaan/simpan-jawaban/{areaEvaluasi}/{hasilEvaluasi}', [PertanyaanController::class, 'simpanJawaban'])->name('verifikator.evaluasi.pertanyaan.simpan-jawaban');
+
+                Route::middleware('statusEvaluasiDitinjau')->group(function () {
+                    Route::post('/pertanyaan/simpan-jawaban/{areaEvaluasi}/{hasilEvaluasi}', [PertanyaanController::class, 'simpanJawaban'])->name('verifikator.evaluasi.pertanyaan.simpan-jawaban');
+                });
 
                 Route::get('/dashboard/{hasilEvaluasi:id}', [EvaluasiDashboardController::class, 'index'])->name('verifikator.evaluasi.dashboard');
 

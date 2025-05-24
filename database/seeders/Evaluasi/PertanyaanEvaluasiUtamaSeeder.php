@@ -222,7 +222,7 @@ class PertanyaanEvaluasiUtamaSeeder extends Seeder
                         'nomor' => 19,
                         'tingkat_kematangan' => 'IV',
                         'pertanyaan_tahap' => 3,
-                        'pertanyaan' => 'Apakah instansi/perusahaan anda sudah menerapkan program penilaian kinerja pengelolaan keamanan informasi bagi individu (pejabat & petugas) pelaksananya?',
+                        'pertanyaan' => 'Apakah instansi/perusahaan anda sudah menerapkan program penilaian kinerja pengelolaan keamanan informasi bagi individu (pejabat dan petugas) pelaksananya?',
                         'skor_pertama' => 0,
                         'skor_kedua' => 3,
                         'skor_ketiga' => 6,

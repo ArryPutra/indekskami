@@ -25,8 +25,8 @@
             <div class="p-3 pr-8 border border-gray-200 rounded-lg flex max-md:flex-col gap-3">
                 <img class="h-44 w-fit" src="{{ asset('images/ilustrasi/mulai-evaluasi.png') }}"
                     alt="Gambar Mulai Evaluasi Ilustrasi">
-                <div class="w-full flex flex-col justify-between gap-4">
-                    <div>
+                <div class="flex flex-col justify-between w-full">
+                    <div class="w-full flex flex-col justify-between">
                         <h1 class="text-xl font-semibold mb-1">Mulai Mengerjakan Evaluasi</h1>
                         <h1>Mulai mengerjakan evaluasi dengan mengisi identitas responden terlebih dahulu.</h1>
                     </div>
@@ -44,8 +44,8 @@
         @case(App\Models\Responden\StatusProgresEvaluasiResponden::SEDANG_MENGERJAKAN)
             <div class="p-3 pr-8 border border-gray-200 rounded-lg flex max-md:flex-col gap-3">
                 <img class="h-44 w-fit" src="{{ asset('images/ilustrasi/evaluasi.png') }}" alt="Gambar Evaluasi Ilustrasi">
-                <div class="w-full flex flex-col justify-between">
-                    <div>
+                <div class="flex flex-col w-full justify-between">
+                    <div class="w-full flex flex-col justify-between">
                         <h1 class="text-xl font-semibold mb-2">Progres Evaluasi Terjawab</h1>
                         <div class="w-full h-9 bg-gray-100 border border-gray-300 rounded-md overflow-hidden mb-2">
                             <div x-data="{ width: 0 }" x-init="setTimeout(() => {
@@ -74,19 +74,17 @@
                     <div>
                         <h1 class="text-xl font-semibold mb-1">Evaluasi Anda Sedang Ditinjau</h1>
                         <p>
-                            <span>
-                                Saat ini, evaluasi Anda sedang dalam proses peninjauan oleh tim kami. Proses ini bertujuan untuk
-                                memastikan bahwa semua informasi telah diverifikasi dan sesuai dengan ketentuan yang berlaku.
-                            </span>
-                            <br>
-                            <span>
-                                Kami akan menginformasikan hasil peninjauan ini secepat mungkin.
-                            </span>
-                            <br>
-                            <br>
-                            <span>Untuk informasi lebih lanjut, hubungi tim kami: <b>0822-5424-9276</b></span>
+                            Saat ini, evaluasi Anda sedang dalam proses peninjauan oleh tim kami. Proses ini bertujuan untuk
+                            memastikan bahwa semua informasi telah diverifikasi dan sesuai dengan ketentuan yang berlaku.
                         </p>
                     </div>
+                    <x-button href="{{ route('responden.evaluasi.dashboard', $hasilEvaluasiDitinjau->id) }}" class="w-fit">
+                        Detail Evaluasi
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                        </svg>
+                    </x-button>
                 </div>
             @break
         @endswitch

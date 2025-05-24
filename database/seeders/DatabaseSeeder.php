@@ -12,6 +12,7 @@ use Database\Seeders\Evaluasi\AreaEvaluasiSeeder;
 use Database\Seeders\Evaluasi\JudulTemaEvaluasiPertanyaanSeeder;
 use Database\Seeders\Evaluasi\JudulTemaPertanyaanSeeder;
 use Database\Seeders\Evaluasi\NilaiEvaluasiUtamaSeeder;
+use Database\Seeders\Evaluasi\PeraturanEvaluasiSeeder;
 use Database\Seeders\Evaluasi\PertanyaanEvaluasiUtamaSeeder;
 use Database\Seeders\Evaluasi\PertanyaanIKategoriSESeeder;
 use Database\Seeders\Evaluasi\PertanyaanKategoriSeSeeder;
@@ -47,7 +48,8 @@ class DatabaseSeeder extends Seeder
             JudulTemaPertanyaanSeeder::class,
             StatusHasilEvaluasiSeeder::class,
             SkorEvaluasiUtamaTingkatKematanganSeeder::class,
-            NilaiEvaluasiUtamaSeeder::class
+            NilaiEvaluasiUtamaSeeder::class,
+            PeraturanEvaluasiSeeder::class
         ]);
     }
 }

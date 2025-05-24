@@ -19,6 +19,15 @@ class AreaEvaluasi extends Model
     const AREA_EVALUASI_VII_PDP = 'VII PDP';
     const AREA_EVALUASI_VIII_SUPLEMEN = 'VIII Suplemen';
 
+    const AREA_EVALUASI_I_KATEGORI_SE_ID = 1;
+    const AREA_EVALUASI_II_TATA_KELOLA_ID = 2;
+    const AREA_EVALUASI_III_RISIKO_ID = 3;
+    const AREA_EVALUASI_IV_KERANGKA_KERJA_ID = 4;
+    const AREA_EVALUASI_V_PENGELOLAAN_ASET_ID = 5;
+    const AREA_EVALUASI_VI_TEKNOLOGI_ID = 6;
+    const AREA_EVALUASI_VII_PDP_ID = 7;
+    const AREA_EVALUASI_VIII_SUPLEMEN_ID = 8;
+
     public static function getAreaEvaluasiOptions()
     {
         return [

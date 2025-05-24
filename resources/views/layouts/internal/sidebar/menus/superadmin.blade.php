@@ -23,6 +23,7 @@
                 'superadmin/kelola-pertanyaan-evaluasi*',
                 'superadmin/kelola-judul-tema-pertanyaan*',
                 'superadmin/kelola-tingkat-kematangan*',
+                'superadmin/pengaturan-evaluasi',
             ])
                 ? $activeMenuClass
                 : false }} {{ $defaultMenuClass }}">

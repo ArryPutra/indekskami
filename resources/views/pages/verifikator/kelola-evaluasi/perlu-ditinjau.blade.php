@@ -13,14 +13,20 @@
         </x-button>
     </div>
 
+    @if (session('success'))
+        <x-alert class="mb-4" type="success" isClosed="true">
+            {!! session('success') !!}
+        </x-alert>
+    @endif
+
     <x-table>
         <x-table.thead>
             <x-table.th>No.</x-table.th>
             <x-table.th>Nama Instansi</x-table.th>
             <x-table.th>Pengisi Lembar Evaluasi</x-table.th>
+            <x-table.th>Evaluasi Ke</x-table.th>
             <x-table.th>Kategori Sistem Elektronik</x-table.th>
             <x-table.th>Hasil Evaluasi Akhir</x-table.th>
-            <x-table.th>Evaluasi Ke</x-table.th>
             <x-table.th>Tanggal Mulai</x-table.th>
             <x-table.th>Tanggal Diserahkan</x-table.th>
             <x-table.th>Aksi</x-table.th>
@@ -32,17 +38,17 @@
                         <x-table.td>{{ ($daftarHasilEvaluasi->currentPage() - 1) * $daftarHasilEvaluasi->perPage() + $index + 1 }}</x-table.td>
                         <x-table.td class="font-bold">{{ $hasilEvaluasi->responden->user->nama }}</x-table.td>
                         <x-table.td>{{ $hasilEvaluasi->identitasResponden->pengisi_lembar_evaluasi }}</x-table.td>
+                        <x-table.td>{{ $hasilEvaluasi->evaluasi_ke }}</x-table.td>
                         <x-table.td>{{ $hasilEvaluasi->nilaiEvaluasi->kategori_se }}</x-table.td>
                         <x-table.td>{{ $hasilEvaluasi->nilaiEvaluasi->hasil_evaluasi_akhir }}</x-table.td>
-                        <x-table.td>{{ $hasilEvaluasi->evaluasi_ke }}</x-table.td>
                         <x-table.td>{{ Carbon\Carbon::parse($hasilEvaluasi->created_at)->translatedFormat('l, d F Y, H:i:s') }}</x-table.td>
-                        <x-table.td>{{ Carbon\Carbon::parse($hasilEvaluasi->tanggal_mulai)->translatedFormat('l, d F Y, H:i:s') }}</x-table.td>
+                        <x-table.td>{{ Carbon\Carbon::parse($hasilEvaluasi->tanggal_diserahkan)->translatedFormat('l, d F Y, H:i:s') }}</x-table.td>
                         <x-table.td>
                             <div class="flex gap-2">
                                 <x-button class="w-fit"
                                     href="{{ route('verifikator.evaluasi.pertanyaan', [1, $hasilEvaluasi->id]) }}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                                        viewBox="0 0 24 24">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                        fill="currentColor" viewBox="0 0 24 24">
                                         <path
                                             d="M14.71 2.29A1 1 0 0 0 14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-.27-.11-.52-.29-.71zM7 7h4v2H7zm10 10H7v-2h10zm0-4H7v-2h10zm-4-4V3.5L18.5 9z">
                                         </path>
@@ -71,4 +77,8 @@
             @endif
         </x-table.tbody>
     </x-table>
+
+    <div class="mt-4">
+        {{ $daftarHasilEvaluasi->links() }}
+    </div>
 @endsection

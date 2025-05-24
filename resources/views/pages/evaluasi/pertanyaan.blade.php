@@ -2,6 +2,10 @@
     'class' => 'mb-18',
 ])
 
+@php
+    use App\Models\Responden\StatusHasilEvaluasi;
+@endphp
+
 @section('content')
     <h1 class="font-bold text-2xl">{{ $areaEvaluasi->judul }}</h1>
     <p>{{ $areaEvaluasi->deskripsi }}</p>
@@ -86,7 +90,7 @@
                         {{-- Kolom: Pertanyaan --}}
                         <x-table.td class="min-w-56">
                             <x-radio label="{{ $pertanyaanDanJawaban['pertanyaan'] }}">
-                                <x-radio.option :disabled="!$apakahEvaluasiSedangDikerjakan" :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_pertama'"
+                                <x-radio.option :disabled="!$apakahEvaluasiDapatDikerjakan" :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_pertama'"
                                     onclick="pilihOpsiJawaban(
                                     {{ $index }},
                                     {{ $pertanyaanDanJawaban['skor_status_pertama'] }},
@@ -96,7 +100,7 @@
                                     value="status_pertama">
                                     {{ $pertanyaanDanJawaban['status_pertama'] }}
                                 </x-radio.option>
-                                <x-radio.option :disabled="!$apakahEvaluasiSedangDikerjakan" :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_kedua'"
+                                <x-radio.option :disabled="!$apakahEvaluasiDapatDikerjakan" :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_kedua'"
                                     onclick="pilihOpsiJawaban(
                                     {{ $index }},
                                     {{ $pertanyaanDanJawaban['skor_status_kedua'] }},
@@ -105,7 +109,7 @@
                                     id="pertanyaan{{ $pertanyaanDanJawaban['nomor'] }}StatusKedua" value="status_kedua">
                                     {{ $pertanyaanDanJawaban['status_kedua'] }}
                                 </x-radio.option>
-                                <x-radio.option :disabled="!$apakahEvaluasiSedangDikerjakan" :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_ketiga'"
+                                <x-radio.option :disabled="!$apakahEvaluasiDapatDikerjakan" :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_ketiga'"
                                     onclick="pilihOpsiJawaban(
                                     {{ $index }},
                                     {{ $pertanyaanDanJawaban['skor_status_ketiga'] }},
@@ -116,7 +120,7 @@
                                 </x-radio.option>
                                 {{-- Khusus Evaluasi Utama --}}
                                 @if ($namaTipeEvaluasi !== 'Kategori Sistem Elektronik')
-                                    <x-radio.option :disabled="!$apakahEvaluasiSedangDikerjakan" :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_keempat'"
+                                    <x-radio.option :disabled="!$apakahEvaluasiDapatDikerjakan" :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_keempat'"
                                         onclick="pilihOpsiJawaban(
                                         {{ $index }},
                                         {{ $pertanyaanDanJawaban['skor_status_keempat'] }},
@@ -128,7 +132,7 @@
                                     </x-radio.option>
                                     {{-- Jika ternyata opsi status kelima --}}
                                     @if ($namaTipeEvaluasi === 'Evaluasi Utama' && $pertanyaanDanJawaban['status_kelima'])
-                                        <x-radio.option :disabled="!$apakahEvaluasiSedangDikerjakan" :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_kelima'"
+                                        <x-radio.option :disabled="!$apakahEvaluasiDapatDikerjakan" :checked="$pertanyaanDanJawaban['status_jawaban'] === 'status_kelima'"
                                             onclick="pilihOpsiJawaban(
                                             {{ $index }},
                                             {{ $pertanyaanDanJawaban['skor_status_kelima'] }},
@@ -150,8 +154,8 @@
                         {{-- Kolom: Dokumen --}}
                         <x-table.td>
                             @if ($isResponden)
-                                @if ($apakahEvaluasiSedangDikerjakan)
-                                    <x-file-upload :disabled="!$apakahEvaluasiSedangDikerjakan"
+                                @if ($statusHasilEvaluasiSaatIni === StatusHasilEvaluasi::STATUS_DIKERJAKAN)
+                                    <x-file-upload :disabled="$statusHasilEvaluasiSaatIni !== StatusHasilEvaluasi::STATUS_DIKERJAKAN"
                                         name="{{ $pertanyaanDanJawaban['nomor'] }}[unggah_dokumen_baru]"
                                         oninput="tampilkanSaveButton()" />
                                 @endif
@@ -168,10 +172,15 @@
                         </x-table.td>
                         {{-- Kolom: Keterangan --}}
                         <x-table.td>
-                            <x-text-area :disabled="!$apakahEvaluasiSedangDikerjakan" type="hidden"
-                                name="{{ $pertanyaanDanJawaban['nomor'] }}[keterangan]" placeholder="Keterangan"
-                                :required=false oninput="tampilkanSaveButton()"
-                                value="{{ $pertanyaanDanJawaban['keterangan'] }}" />
+                            @if ($isResponden)
+                                <x-text-area :readonly="!$apakahEvaluasiDapatDikerjakan" name="{{ $pertanyaanDanJawaban['nomor'] }}[keterangan]"
+                                    placeholder="Keterangan" :required=false oninput="tampilkanSaveButton()"
+                                    value="{{ $pertanyaanDanJawaban['keterangan'] }}" />
+                            @else
+                                <x-text-area :readonly="true" name="{{ $pertanyaanDanJawaban['nomor'] }}[keterangan]"
+                                    placeholder="Keterangan" :required=false
+                                    value="{{ $pertanyaanDanJawaban['keterangan'] }}" />
+                            @endif
                         </x-table.td>
                     </x-table.tr>
                 @endforeach
@@ -253,7 +262,7 @@
         {{-- Daftar Area Evaluasi --}}
         @if ($isResponden)
             <footer class="bg-white px-6 max-md:px-4 py-4 border-t border-gray-200 flex gap-2 overflow-x-auto">
-                @if (!$apakahEvaluasiSedangDikerjakan)
+                @if ($statusHasilEvaluasiSaatIni === StatusHasilEvaluasi::STATUS_DIKERJAKAN)
                     <x-button color="gray"
                         href="{{ route('responden.evaluasi.identitas-responden.edit', $hasilEvaluasi->identitas_responden_id) }}">Identitas</x-button>
                 @endif
@@ -581,7 +590,7 @@
             localStorage.removeItem('scrollPosition');
         }
 
-        @if ($apakahEvaluasiSedangDikerjakan)
+        @if ($apakahEvaluasiDapatDikerjakan)
             function tampilkanSaveButton() {
                 // Mengambil elemen tombol simpan
                 const saveButtonElement = document.getElementById('saveButton');

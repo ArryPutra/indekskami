@@ -41,8 +41,7 @@
         @endif
 
         <x-alert class="mb-4" type="error" isClosed="true">
-            <b>PERINGATAN:</b> Perubahan pada data pertanyaan dapat menyebabkan ketidakkonsistenan data evaluasi hasil
-            evaluasi
+            <b>PERINGATAN:</b> Perubahan pada data pertanyaan dapat menyebabkan ketidakkonsistenan data evaluasi pada
             responden.
         </x-alert>
 

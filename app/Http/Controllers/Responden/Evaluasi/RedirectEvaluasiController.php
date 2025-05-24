@@ -17,7 +17,11 @@ class RedirectEvaluasiController extends Controller
         $responden = Auth::user()->responden;
         // jika responden tidak memiliki akses evaluasi
         if (!$responden->akses_evaluasi) {
-            return redirect()->route('responden.nonaktif-evaluasi');
+            return redirect()->route('responden.pesan-evaluasi')
+                ->with([
+                    'title' => 'Nonaktif Evaluasi',
+                    'pesanEvaluasi' => 'Anda belum memiliki akses untuk mengikuti evaluasi'
+                ]);
         }
 
         $statusProgreEvaluasiResponden = $responden->statusProgresEvaluasiResponden->nama_status_progres_evaluasi_responden;
@@ -34,8 +38,18 @@ class RedirectEvaluasiController extends Controller
                 return redirect()->route('responden.evaluasi.pertanyaan', [1, $hasilEvaluasiRespondenDikerjakan->id]);
                 break;
             case StatusProgresEvaluasiResponden::SELESAI_MENGERJAKAN:
-                return redirect()->route('responden.evaluasi.selesai-evaluasi');
+                return redirect()->route('responden.pesan-evaluasi')
+                    ->with([
+                        'title' => 'Selesai Evaluasi',
+                        'pesanEvaluasi' => 'Terima kasih telah menyelesaikan evaluasi. Evaluasi Anda saat ini sedang dalam proses peninjauan.'
+                    ]);
                 break;
+            default:
+                return redirect()->route('responden.pesan-evaluasi')
+                    ->with([
+                        'title' => 'Kesalahan Halaman Evaluasi',
+                        'pesanEvaluasi' => 'Mohon segera hubungi pihak tim kami untuk memperbaiki, terima kasih.'
+                    ]);
         }
     }
 }

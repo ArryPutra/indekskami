@@ -8,8 +8,9 @@ use App\Models\Responden\HasilEvaluasi;
 use App\Models\Responden\JawabanEvaluasi;
 use App\Models\Evaluasi\JudulTemaPertanyaan;
 use App\Models\Evaluasi\NilaiEvaluasiUtama;
+use App\Models\Evaluasi\NilaiEvaluasiUtamaResponden;
+use App\Models\Evaluasi\PeraturanEvaluasi;
 use App\Models\Evaluasi\PertanyaanEvaluasi;
-use App\Models\Evaluasi\PertanyaanEvaluasiUtama;
 use App\Models\Evaluasi\TipeEvaluasi;
 use App\Models\Peran;
 use App\Models\Responden\NilaiEvaluasi;
@@ -18,27 +19,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class PertanyaanController extends Controller
 {
 
     public function index(AreaEvaluasi $areaEvaluasi, HasilEvaluasi $hasilEvaluasi)
     {
-        // Jika evaluasi sedang dikerjakan atau sudah selesai, verifikator tidak boleh melihat
-        if (
-            in_array($hasilEvaluasi->statusHasilEvaluasi->id, [
-                StatusHasilEvaluasi::STATUS_DIKERJAKAN_ID,
-                StatusHasilEvaluasi::STATUS_DIVERIFIKASI_ID
-            ])
-            && Auth::user()->peran->id === Peran::PERAN_VERIFIKATOR_ID
-        ) {
-            abort(403);
-        }
-
         $namaTipeEvaluasi = $areaEvaluasi->tipeEvaluasi->nama_tipe_evaluasi;
-
-        $daftarAreaEvaluasi = AreaEvaluasi::all();
 
         $daftarPertanyaanDanJawaban = $this->getDaftarPertanyaanDanJawaban(
             $namaTipeEvaluasi,
@@ -96,34 +83,41 @@ class PertanyaanController extends Controller
 
         $isResponden = Auth::user()->peran_id === Peran::PERAN_RESPONDEN_ID;
 
-        $apakahEvaluasiSedangDikerjakan = false;
+        $apakahEvaluasiDapatDikerjakan = false;
         $statusHasilEvaluasiId = $hasilEvaluasi->statusHasilEvaluasi->id;
         // Jika evaluasi sedang dikerjakan oleh responden
         if (
             $statusHasilEvaluasiId === StatusHasilEvaluasi::STATUS_DIKERJAKAN_ID
-            && Auth::user()->peran_id === Peran::PERAN_RESPONDEN_ID
+            && $isResponden
         ) {
-            $apakahEvaluasiSedangDikerjakan = true;
+            $apakahEvaluasiDapatDikerjakan = true;
         } // Jika evaluasi diperiksa oleh verifikator maka buat dapat evaluasi bisa dikerjakan
         else if (
             $statusHasilEvaluasiId === StatusHasilEvaluasi::STATUS_DITINJAU_ID
-            && Auth::user()->peran_id === Peran::PERAN_VERIFIKATOR_ID
+            && !$isResponden
         ) {
-            $apakahEvaluasiSedangDikerjakan = true;
+            $apakahEvaluasiDapatDikerjakan = true;
         }
 
         return view('pages.evaluasi.pertanyaan', [
             'title' => 'Evaluasi',
             'daftarPertanyaanDanJawaban' => $daftarPertanyaanDanJawaban,
-            'daftarAreaEvaluasiUtama' => $daftarAreaEvaluasi,
+            'daftarAreaEvaluasiUtama' => AreaEvaluasi::all(),
             'areaEvaluasi' => $areaEvaluasi,
             'hasilEvaluasi' => $hasilEvaluasi,
+            'statusHasilEvaluasiSaatIni' => $hasilEvaluasi->statusHasilEvaluasi->nama_status_hasil_evaluasi,
             'daftarJudulTemaPertanyaan' => JudulTemaPertanyaan::where('area_evaluasi_id', $areaEvaluasi->id)->get(),
             'namaTipeEvaluasi' => $areaEvaluasi->tipeEvaluasi->nama_tipe_evaluasi,
             'dataScript' => $dataScript,
             'isResponden' => $isResponden,
-            'apakahEvaluasiSedangDikerjakan' => $apakahEvaluasiSedangDikerjakan,
-            'routeSimpanJawaban' => route($isResponden ? 'responden.evaluasi.pertanyaan.simpan-jawaban' : 'verifikator.evaluasi.pertanyaan.simpan-jawaban', [$areaEvaluasi->id, $hasilEvaluasi->id])
+            'apakahEvaluasiDapatDikerjakan' => $apakahEvaluasiDapatDikerjakan,
+            'routeSimpanJawaban' =>
+            route(
+                $isResponden ?
+                    'responden.evaluasi.pertanyaan.simpan-jawaban'
+                    : 'verifikator.evaluasi.pertanyaan.simpan-jawaban',
+                [$areaEvaluasi->id, $hasilEvaluasi->id]
+            )
         ]);
     }
 
@@ -155,18 +149,18 @@ class PertanyaanController extends Controller
             $dokumen = $unggahDokumenBaru ?? $pathDokumenLama;
 
             $dokumen = 'dokumen.pdf';
-            // JawabanEvaluasi::updateOrCreate(
-            //     [
-            //         'responden_id' => $responden->id,
-            //         'pertanyaan_evaluasi_id' => $pertanyaanId,
-            //         'hasil_evaluasi_id' => $hasilEvaluasi->id,
-            //     ],
-            //     [
-            //         'status_jawaban' => 'status_keempat',
-            //         'bukti_dokumen' => $dokumen,
-            //         'keterangan' => $keterangan
-            //     ]
-            // );
+            JawabanEvaluasi::updateOrCreate(
+                [
+                    'responden_id' => $responden->id,
+                    'pertanyaan_evaluasi_id' => $pertanyaanId,
+                    'hasil_evaluasi_id' => $hasilEvaluasi->id,
+                ],
+                [
+                    'status_jawaban' => 'status_keempat',
+                    'bukti_dokumen' => $dokumen,
+                    'keterangan' => $keterangan
+                ]
+            );
 
             $isSkorStatusPertama = $statusJawaban == 'status_pertama'
                 && $namaTipeEvaluasi !== TipeEvaluasi::KATEGORI_SISTEM_ELEKTRONIK;
@@ -183,7 +177,7 @@ class PertanyaanController extends Controller
                 continue;
             }
 
-            // Validasi jika status jawaban kosong
+            // Validasi jika status jawaban atau dokumen kosong
             if (
                 !$isSkorStatusPertama
                 &&
@@ -199,7 +193,6 @@ class PertanyaanController extends Controller
                 }
                 continue;
             }
-
             // Jika ada unggah dokumen
             if ($unggahDokumenBaru && !$isSkorStatusPertama) {
                 $namaFile = $nomor . ' - ' . $unggahDokumenBaru->getClientOriginalName();
@@ -207,13 +200,15 @@ class PertanyaanController extends Controller
                 $ekstensiFile = $unggahDokumenBaru->getClientOriginalExtension();
 
                 // == Validasi File == //
-                // Validasi ukuran file tidak boleh lebih dari 25 MB
-                if ($ukuranFileMb > 25) {
+                $peraturanEvaluasi = PeraturanEvaluasi::first();
+                // Validasi ukuran file tidak boleh lebih dari 10 MB
+                $maksimalUkuranDokumen = $peraturanEvaluasi->maksimal_ukuran_dokumen;
+                if ($ukuranFileMb > $maksimalUkuranDokumen) {
                     $errors['dokumen_terlalu_besar'][] = "$areaEvaluasiId.$nomor";
                     continue; // Jangan lanjutkan kode di bawah
                 }
                 // Validasi ekstensi file sesuai format
-                $ekstensiValid = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png', 'zip', 'rar', '7z'];
+                $ekstensiValid = json_decode($peraturanEvaluasi->daftar_ekstensi_dokumen_valid);
                 if (!in_array($ekstensiFile, $ekstensiValid)) {
                     $errors['dokumen_tidak_valid'][] = "$areaEvaluasiId.$nomor";
                     continue;
@@ -236,14 +231,10 @@ class PertanyaanController extends Controller
                     Storage::delete($pathDokumenLama);
                 }
                 // Unggah file ke storage
-                try {
-                    $pathDokumenSaatIni = $unggahDokumenBaru->storeAs(
-                        "Evaluasi/{$responden->daerah}/{$responden->user->username}/Evaluasi " . $responden->hasilEvaluasi->count() . "/$namaAreaEvaluasi",
-                        $namaFile
-                    );
-                } catch (\Exception $e) {
-                    dd(1);
-                }
+                $pathDokumenSaatIni = $unggahDokumenBaru->storeAs(
+                    "Evaluasi/{$responden->daerah}/{$responden->user->username}/Evaluasi " . $responden->hasilEvaluasi->count() . "/$namaAreaEvaluasi",
+                    $namaFile
+                );
                 // Memperbarui path dokumen dengan yang baru diunggah ke storage
                 $dokumen = $pathDokumenSaatIni;
             }
@@ -272,21 +263,23 @@ class PertanyaanController extends Controller
         // Validasi jawaban pertanyaan tahap 3
         // Jika tipe evaluasi adalah evaluasi utama
         if ($namaTipeEvaluasi === TipeEvaluasi::EVALUASI_UTAMA) {
-            if (!NilaiEvaluasi::getStatusPenilaianTahapPenerapan3($daftarPertanyaanDanJawaban)) {
-                $daftarPertanyaanIdTahap3 = $daftarPertanyaanDanJawaban->where('pertanyaan_tahap', 3)->pluck('pertanyaan_id');
+            // Jika status penilaian tahap 3 tida valid
+            if (!NilaiEvaluasiUtamaResponden::getStatusPenilaianTahapPenerapan3($daftarPertanyaanDanJawaban, $areaEvaluasiId)) {
+                $daftarPertanyaanTahap3Id = $daftarPertanyaanDanJawaban->where('pertanyaan_tahap', 3)->pluck('pertanyaan_id');
 
-                $hasilEvaluasi->jawabanEvaluasi->whereIn('pertanyaan_evaluasi_id', $daftarPertanyaanIdTahap3)
-                    ->each(function ($item) {
-                        if ($item->bukti_dokumen) {
-                            Storage::delete($item->bukti_dokumen);
+                // Menghapus semua jawaban pertanyaan tahap 3
+                $hasilEvaluasi->jawabanEvaluasi->whereIn('pertanyaan_evaluasi_id', $daftarPertanyaanTahap3Id)
+                    ->each(function ($jawaban) {
+                        if ($jawaban->bukti_dokumen) {
+                            Storage::delete($jawaban->bukti_dokumen);
                         }
-                        $item->delete();
+                        $jawaban->delete();
                     });
             }
         }
 
-        // Update nilai evaluasi ke database berdasarkan tipe evaluasi .
-        $nilaiEvaluasi = $hasilEvaluasi->nilaiEvaluasi->with('nilaiEvaluasiUtamaResponden')->first();
+        // Update nilai evaluasi ke database berdasarkan tipe evaluasi.
+        $nilaiEvaluasi = $hasilEvaluasi->nilaiEvaluasi()->with('nilaiEvaluasiUtamaResponden')->first();
         $totalSkorEvaluasi = $daftarPertanyaanDanJawaban->sum('skor_jawaban');
 
         switch ($namaTipeEvaluasi) {
@@ -303,7 +296,7 @@ class PertanyaanController extends Controller
                 $nilaiEvaluasiUtamaResponden = $nilaiEvaluasi->nilaiEvaluasiUtamaResponden
                     ->where('nilai_evaluasi_utama_id', $nilaiEvaluasiUtamaId)->first();
 
-                $daftarTingkatKematangan = $daftarPertanyaanDanJawaban
+                $daftarTingkatKematanganTersedia = $daftarPertanyaanDanJawaban
                     ->unique('tingkat_kematangan')
                     ->pluck('tingkat_kematangan');
 
@@ -311,7 +304,7 @@ class PertanyaanController extends Controller
                     $areaEvaluasi->skorEvaluasiUtamaTingkatKematangan;
 
                 $daftarSkorTingkatKematangan =
-                    $daftarTingkatKematangan->map(function ($tingkatKematangan)
+                    $daftarTingkatKematanganTersedia->map(function ($tingkatKematangan)
                     use ($daftarPertanyaanDanJawaban, $skorEvaluasiUtamaTingkatKematangan) {
                         $key = strtolower($tingkatKematangan);
 
@@ -320,8 +313,8 @@ class PertanyaanController extends Controller
                             'totalSkor' => $daftarPertanyaanDanJawaban
                                 ->where('tingkat_kematangan', $tingkatKematangan)
                                 ->sum('skor_jawaban'),
-                            'skorMinimum' => $skorEvaluasiUtamaTingkatKematangan["skor_minimum_tingkat_kematangan_{$key}"],
-                            'skorPencapaian' => $skorEvaluasiUtamaTingkatKematangan["skor_pencapaian_tingkat_kematangan_{$key}"],
+                            'skorMinimum' => $skorEvaluasiUtamaTingkatKematangan["skor_minimum_tingkat_kematangan_{$key}"] ?? 0,
+                            'skorPencapaian' => $skorEvaluasiUtamaTingkatKematangan["skor_pencapaian_tingkat_kematangan_{$key}"] ?? 0,
                         ];
                     })->all();
 
@@ -331,17 +324,19 @@ class PertanyaanController extends Controller
                     $daftarSkorTingkatKematangan,
                     $nilaiEvaluasi,
                     $skorEvaluasiUtamaTingkatKematangan,
-                    $daftarPertanyaanDanJawaban
+                    $daftarPertanyaanDanJawaban,
+                    $areaEvaluasiId
                 ) {
                     // # Update nilai evaluasi utama responden ke database
                     $nilaiEvaluasiUtamaResponden->update([
                         'total_skor' =>
                         $totalSkorEvaluasi,
                         'status_tingkat_kematangan'
-                        => NilaiEvaluasi::getStatusTingkatKematangan(
+                        => NilaiEvaluasiUtamaResponden::getStatusTingkatKematangan(
                             $daftarPertanyaanDanJawaban,
                             $skorEvaluasiUtamaTingkatKematangan,
-                            $daftarSkorTingkatKematangan
+                            $daftarSkorTingkatKematangan,
+                            $areaEvaluasiId,
                         )
                     ]);
 
@@ -364,7 +359,7 @@ class PertanyaanController extends Controller
                 // # Update nilai evaluasi ke database
                 $nilaiEvaluasi->update([
                     'pengamanan_keterlibatan_pihak_ketiga'
-                    =>  round($totalSkorEvaluasi / 27 * 100 / 3)
+                    =>  NilaiEvaluasi::getPengamananKeterlibatanPihakKetiga($totalSkorEvaluasi)
                 ]);
                 break;
         }
@@ -372,8 +367,8 @@ class PertanyaanController extends Controller
         $daftarInformasiPertanyaanKesalahan = array_filter([
             ['daftarNomor' => implode(', ', $errors['dokumen_kosong']), 'pesan' => 'Mohon isi pertanyaan dengan dokumen.'],
             ['daftarNomor' => implode(', ', $errors['status_kosong']), 'pesan' => 'Mohon isi pertanyaan dengan status.'],
-            ['daftarNomor' => implode(', ', $errors['dokumen_terlalu_besar']), 'pesan' => 'Mohon isi pertanyaan dengan maksimal ukuran dokumen 10 MB.'],
-            ['daftarNomor' => implode(', ', $errors['dokumen_tidak_valid']), 'pesan' => 'Mohon isi pertanyaan dengan dokumen yang valid.']
+            ['daftarNomor' => implode(', ', $errors['dokumen_terlalu_besar']), 'pesan' => "Mohon isi pertanyaan dengan maksimal ukuran dokumen " . ($maksimalUkuranDokumen ?? '') . " MB."],
+            ['daftarNomor' => implode(', ', $errors['dokumen_tidak_valid']), 'pesan' => "Mohon isi pertanyaan dengan dokumen yang valid (" . implode(', ', $ekstensiValid ?? []) . ').']
         ], fn($item) => !empty($item['daftarNomor']));
 
         return redirect()->route(
@@ -389,33 +384,40 @@ class PertanyaanController extends Controller
         int $areaEvaluasiId,
         HasilEvaluasi $hasilEvaluasi
     ) {
-        // # Daftar Pertanyaan # //
-        $daftarPertanyaan = PertanyaanEvaluasi::query();
+        // # Daftar Pertanyaan Query # //
+        $daftarPertanyaanQuery = PertanyaanEvaluasi::query();
+
+        // Menyesuaikan pertanyaan evaluasi berdasarkan tipe evaluasi sehingga
+        // mendapatkan relasi tabel pertanyaan sesuai dengan tipe evaluasi
         switch ($namaTipeEvaluasi) {
             case TipeEvaluasi::KATEGORI_SISTEM_ELEKTRONIK:
-                $daftarPertanyaan = $daftarPertanyaan->with('pertanyaanKategoriSe');
+                $daftarPertanyaanQuery = $daftarPertanyaanQuery->with('pertanyaanKategoriSe');
                 break;
             case TipeEvaluasi::EVALUASI_UTAMA:
-                $daftarPertanyaan = $daftarPertanyaan->with('pertanyaanEvaluasiUtama');
+                $daftarPertanyaanQuery = $daftarPertanyaanQuery->with('pertanyaanEvaluasiUtama');
                 break;
-            case TipeEvaluasi::EVALUASI_UTAMA:
-                $daftarPertanyaan = $daftarPertanyaan->with('pertanyaanSuplemen');
+            case TipeEvaluasi::SUPLEMEN:
+                $daftarPertanyaanQuery = $daftarPertanyaanQuery->with('pertanyaanSuplemen');
                 break;
         }
-        $daftarPertanyaan = $daftarPertanyaan
+
+        // Mendapatkan data pertanyaan evaluasi dalam bentuk array
+        $daftarPertanyaanQuery = $daftarPertanyaanQuery
             ->where('area_evaluasi_id', $areaEvaluasiId)
             ->where('apakah_tampil', true)
             ->orderBy('nomor')
             ->get();
-        // # Daftar Pertanyaan # //
+
+        // Mendapatkan daftar jawaban responden (menyesuaikan berdasarkan pertanyaan evaluasi yang telah diquery) # //
         $daftarJawabanResponden = $hasilEvaluasi->jawabanEvaluasi
-            ->whereIn('pertanyaan_evaluasi_id', $daftarPertanyaan->pluck('id'));
+            ->whereIn('pertanyaan_evaluasi_id', $daftarPertanyaanQuery->pluck('id'));
 
         $daftarPertanyaanDanJawaban = [];
 
-        foreach ($daftarPertanyaan as $pertanyaan) {
+        foreach ($daftarPertanyaanQuery as $pertanyaan) {
+            // Mencari jawaban sesuai pertanyaanId
             $jawaban = $daftarJawabanResponden
-                ->where('pertanyaan_evaluasi_id', $pertanyaan->id)->first() ?? null;
+                ->firstWhere('pertanyaan_evaluasi_id', $pertanyaan->id);
 
             $pertanyaanDanJawaban = [
                 'pertanyaan_id' => $pertanyaan->id,
@@ -473,11 +475,15 @@ class PertanyaanController extends Controller
                 'dokumen' => $jawaban?->bukti_dokumen,
                 'keterangan' => $jawaban?->keterangan,
             ];
+
             $daftarPertanyaanDanJawaban[] = $pertanyaanDanJawaban;
         }
 
         if (
-            NilaiEvaluasi::getStatusPenilaianTahapPenerapan3(collect($daftarPertanyaanDanJawaban))
+            NilaiEvaluasiUtamaResponden::getStatusPenilaianTahapPenerapan3(
+                collect($daftarPertanyaanDanJawaban),
+                $areaEvaluasiId
+            )
             && $namaTipeEvaluasi == TipeEvaluasi::EVALUASI_UTAMA
         ) {
             $daftarPertanyaanDanJawaban = collect($daftarPertanyaanDanJawaban)->map(function ($item) {

@@ -7,6 +7,7 @@
             <x-table.th>Hasil Evaluasi Akhir</x-table.th>
             <x-table.th>Pengisi Lembar Evaluasi</x-table.th>
             <x-table.th>Kategori Sistem Elektronik</x-table.th>
+            <x-table.th>Hasil Evaluasi Akhir</x-table.th>
             <x-table.th>Evaluasi Ke</x-table.th>
             <x-table.th>Tanggal Mulai</x-table.th>
             <x-table.th>Tanggal Diserahkan</x-table.th>
@@ -30,6 +31,9 @@
                             {{ $hasilEvaluasi->nilaiEvaluasi->kategori_se }}
                         </x-table.td>
                         <x-table.td>
+                            {{ $hasilEvaluasi->nilaiEvaluasi->hasil_evaluasi_akhir }}
+                        </x-table.td>
+                        <x-table.td>
                             {{ $hasilEvaluasi->evaluasi_ke }}
                         </x-table.td>
                         <x-table.td>
@@ -39,14 +43,16 @@
                             @if ($hasilEvaluasi->tanggal_diserahkan)
                                 {{ Carbon\Carbon::parse($hasilEvaluasi->tanggal_diserahkan)->translatedFormat('l, d F Y, H:i:s') }}
                             @else
-                                <span class="text-red-600">Belum Diserahkan</span>
+                                <b class="text-red-600">Belum Diserahkan</b>
                             @endif
                         </x-table.td>
                         <x-table.td>
                             @if ($hasilEvaluasi->tanggal_diverifikasi)
                                 {{ Carbon\Carbon::parse($hasilEvaluasi->tanggal_diverifikasi)->translatedFormat('l, d F Y, H:i:s') }}
+                            @elseif($hasilEvaluasi->tanggal_diserahkan)
+                                <b class="text-blue-600">Dalam Proses Peninjauan</b>
                             @else
-                                <span class="text-red-600">Belum Diserahkan</span>
+                                <b class="text-red-600">Belum Diverifikasi</b>
                             @endif
                         </x-table.td>
                         <x-table.td>

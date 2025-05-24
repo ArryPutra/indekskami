@@ -17,7 +17,8 @@ class KelolaTingkatKematangan extends Controller
         $areaEvaluasi = AreaEvaluasi::findOrFail($areaEvaluasiId);
 
         $daftarPertanyaanEvaluasiUtamaId =
-            PertanyaanEvaluasi::where('area_evaluasi_id', $areaEvaluasiId)->pluck('id');
+            PertanyaanEvaluasi::where('apakah_tampil', true)
+            ->where('area_evaluasi_id', $areaEvaluasiId)->pluck('id');
 
         $daftarTingkatKematangan = PertanyaanEvaluasiUtama::whereIn('pertanyaan_evaluasi_id', $daftarPertanyaanEvaluasiUtamaId)
             ->distinct()

@@ -17,7 +17,7 @@ class KelolaEvaluasiController extends Controller
             HasilEvaluasi::where(
                 'status_hasil_evaluasi_id',
                 StatusHasilEvaluasi::where('nama_status_hasil_evaluasi', StatusHasilEvaluasi::STATUS_DITINJAU)->value('id')
-            )->latest()->with(['identitasResponden', 'responden.user', 'nilaiEvaluasi'])->paginate(10)
+            )->with(['identitasResponden', 'responden.user', 'nilaiEvaluasi'])->paginate(10)
         ]);
     }
 
@@ -41,7 +41,7 @@ class KelolaEvaluasiController extends Controller
             HasilEvaluasi::where(
                 'status_hasil_evaluasi_id',
                 StatusHasilEvaluasi::where('nama_status_hasil_evaluasi', StatusHasilEvaluasi::STATUS_DIVERIFIKASI)->value('id')
-            )->latest()->with(['identitasResponden', 'responden.user', 'nilaiEvaluasi'])->paginate(10)
+            )->latest()->with(['identitasResponden', 'responden.user', 'nilaiEvaluasi', 'verifikator.user'])->paginate(10)
         ]);
     }
 }

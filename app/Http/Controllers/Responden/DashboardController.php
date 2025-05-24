@@ -33,6 +33,7 @@ class DashboardController extends Controller
                 'totalEvaluasiDikerjakan' => Auth::user()->responden->hasilEvaluasi()->count(),
             ],
             'statusProgresEvaluasiResponden' => $statusProgresEvaluasiResponden,
+            'hasilEvaluasiDitinjau' => $responden->hasilEvaluasi()->where('status_hasil_evaluasi_id', StatusHasilEvaluasi::STATUS_DITINJAU_ID)->first(),
             'progresEvaluasiTerjawab' => $isMengerjakanEvaluasi ?
                 HasilEvaluasi::getProgresEvaluasiTerjawab($hasilEvaluasiDikerjakan) : false,
         ]);

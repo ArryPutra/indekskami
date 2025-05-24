@@ -31,6 +31,11 @@
     }
 </style>
 
+@php
+    use App\Models\Responden\StatusHasilEvaluasi;
+    use App\Models\Responden\NilaiEvaluasi;
+@endphp
+
 <body>
     <header id="header"
         class="border-b border-gray-200 flex items-center justify-between md:px-8 max-md:px-4 py-4 mb-8 flex-wrap gap-4">
@@ -75,6 +80,7 @@
                 <h1>Tanggal Mulai Evaluasi</h1>
                 <h1>Tanggal Diserahkan</h1>
                 <h1>Tanggal Diverifikasi</h1>
+                <h1>Ditinjau Oleh:</h1>
             </div>
 
             <div>
@@ -85,6 +91,8 @@
                 <h1>:
                     @if ($hasilEvaluasi->tanggal_diserahkan)
                         <b>{{ Carbon\Carbon::parse($hasilEvaluasi->tanggal_diserahkan)->translatedFormat('l, d F Y, H:i:s') }}</b>
+                    @elseif ($hasilEvaluasi->tanggal_diserahkan)
+                        <b class="text-blue-600">Dalam Proses Peninjauan</b>
                     @else
                         <b class="text-red-600">Belum Diserahkan</b>
                     @endif
@@ -94,6 +102,13 @@
                         <b>{{ Carbon\Carbon::parse($hasilEvaluasi->tanggal_diverifikasi)->translatedFormat('l, d F Y, H:i:s') }}</b>
                     @else
                         <b class="text-red-600">Belum Diverifikasi</b>
+                    @endif
+                </h1>
+                <h1>:
+                    @if ($hasilEvaluasi->verifikator)
+                        <b>{{ $hasilEvaluasi->verifikator->user->nama }}</b>
+                    @else
+                        <b class="text-red-600">Belum Ditinjau</b>
                     @endif
                 </h1>
             </div>
@@ -130,7 +145,7 @@
 
         {{-- NILAI EVALUASI --}}
         <div>
-            <section class="bg-black text-white grid grid-cols-2 p-2 px-4">
+            <section class="bg-black text-white grid grid-cols-2 gap-2 p-2 px-4">
                 <div class="flex">
                     <h1>Skor Kategori SE</h1>
                     <h1 class="font-bold">: <span>{{ $nilaiEvaluasi->skor_kategori_se }}</span></h1>
@@ -147,30 +162,31 @@
                     <b>{{ $hasilEvaluasiAkhir['label'] }}</b>
                 </div>
             </section>
-            <section class="grid grid-cols-2 items-center border-b border-gray-200 py-4">
+            <section class="grid grid-cols-2 gap-2 items-center border-b border-gray-200 py-4">
                 <h1>Tingkat Kelengkapan Penerapan Standar ISO27001 sesuai Kategori SE:</h1>
                 <div class="flex gap-2 items-center">
                     <div class="h-10 flex w-full relative">
                         @switch($nilaiEvaluasi->kategori_se)
-                            @case(App\Models\Responden\NilaiEvaluasi::SKOR_KATEGORI_SE_RENDAH)
+                            @case(NilaiEvaluasi::SKOR_KATEGORI_SE_RENDAH)
                                 <div class="bg-red-600 w-[26.67%] h-full"></div>
                                 <div class="bg-yellow-500 w-[20%] h-full"></div>
                                 <div class="bg-lime-400 w-[33.33%] h-full"></div>
                                 <div class="bg-lime-600 w-[20%] h-full"></div>
                             @break
 
-                            @case(App\Models\Responden\NilaiEvaluasi::SKOR_KATEGORI_SE_TINGGI)
+                            @case(NilaiEvaluasi::SKOR_KATEGORI_SE_TINGGI)
                                 <div class="bg-red-600 w-[40%] h-full"></div>
                                 <div class="bg-yellow-500 w-[30%] h-full"></div>
                                 <div class="bg-lime-400 w-[20%] h-full"></div>
                                 <div class="bg-lime-600 w-[10%] h-full"></div>
                             @break
 
-                            @default
-                                <div class="bg-red-600 w-[50%] h-full"></div>
+                            @case(NilaiEvaluasi::SKOR_KATEGORI_SE_STRATEGIS)
+                                <div class="bg-red-600 w-[40%] h-full"></div>
                                 <div class="bg-yellow-500 w-[30%] h-full"></div>
-                                <div class="bg-lime-400 w-[13.33%] h-full"></div>
-                                <div class="bg-lime-600 w-[6.67%] h-full"></div>
+                                <div class="bg-lime-400 w-[20%] h-full"></div>
+                                <div class="bg-lime-600 w-[10%] h-full"></div>
+                            @break
                         @endswitch
                         <div style="width: {{ $tingkatKelengkapanIso['persentase'] }}%;"
                             class="bg-black left-0 h-3 absolute top-1/2 -translate-y-1/2 duration-[3s] ease-in-out">
@@ -182,7 +198,7 @@
                 </div>
             </section>
             @foreach ($nilaiEvaluasi->nilaiEvaluasiUtamaResponden as $nilaiEvaluasiUtamaResponden)
-                <section class="grid grid-cols-2 items-center border-b border-gray-200 py-4">
+                <section class="grid grid-cols-2 gap-2 items-center border-b border-gray-200 py-4">
                     <h1>{{ $nilaiEvaluasiUtamaResponden->nilaiEvaluasiUtama->nama_nilai_evaluasi_utama }}:
                         <b>{{ $nilaiEvaluasiUtamaResponden->total_skor }}</b>
                     </h1>
@@ -191,7 +207,7 @@
                 </section>
             @endforeach
 
-            <section class="grid grid-cols-2 items-center border-b border-gray-200 py-4">
+            <section class="grid grid-cols-2 gap-2 items-center border-b border-gray-200 py-4">
                 <h1>Pengamanan Keterlibatan Pihak Ketiga:
                     <b>{{ $nilaiEvaluasi->pengamanan_keterlibatan_pihak_ketiga }}%</b>
                 </h1>

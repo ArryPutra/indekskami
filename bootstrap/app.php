@@ -11,7 +11,8 @@ use App\Http\Middleware\Responden\EvaluasiStatusDikerjakanMiddleware;
 use App\Http\Middleware\Responden\KepemilikanHasilEvaluasiMiddleware;
 use App\Http\Middleware\Responden\MengerjakanEvaluasiMiddleware;
 use App\Http\Middleware\Responden\RespondenMiddleware;
-use App\Http\Middleware\Responden\StatusEvaluasiDikerjakanMiddleware;
+use App\Http\Middleware\Evaluasi\StatusEvaluasiDikerjakanMiddleware;
+use App\Http\Middleware\Evaluasi\StatusEvaluasiDitinjauMiddleware;
 use App\Http\Middleware\RoleMiddleware;
 use App\Http\Middleware\SuperAdminMiddleware;
 use App\Http\Middleware\VerifikatorMiddleware;
@@ -44,6 +45,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'kepemilikanHasilEvaluasi' => KepemilikanHasilEvaluasiMiddleware::class,
             'mengerjakanEvaluasi' => MengerjakanEvaluasiMiddleware::class,
             'statusEvaluasiDikerjakan' => StatusEvaluasiDikerjakanMiddleware::class,
+            'statusEvaluasiDitinjau' => StatusEvaluasiDitinjauMiddleware::class,
             // Manajemen
             'manajemen' => ManajemenMiddleware::class,
             // Kostum

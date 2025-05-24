@@ -23,26 +23,45 @@ class DashboardController extends Controller
 {
     public function index(HasilEvaluasi $hasilEvaluasi)
     {
-        $responden = $hasilEvaluasi->responden->with('user')->first();
+        $hasilEvaluasi->load([
+            'statusHasilEvaluasi',
+            'responden.user',
+            'identitasResponden',
+            'nilaiEvaluasi.nilaiEvaluasiUtamaResponden.nilaiEvaluasiUtama'
+        ]);
 
-        $nilaiEvaluasi =
-            $hasilEvaluasi->nilaiEvaluasi->with('nilaiEvaluasiUtamaResponden.nilaiEvaluasiUtama')->first();
+        $nilaiEvaluasi = $hasilEvaluasi->nilaiEvaluasi;
+
+        $apakahEvaluasiDapatDikerjakan = false;
+        $statusHasilEvaluasiId = $hasilEvaluasi->statusHasilEvaluasi->id;
+        // Jika evaluasi sedang dikerjakan oleh responden
+        if (
+            $statusHasilEvaluasiId === StatusHasilEvaluasi::STATUS_DIKERJAKAN_ID
+            && Auth::user()->peran_id === Peran::PERAN_RESPONDEN_ID
+        ) {
+            $apakahEvaluasiDapatDikerjakan = true;
+        } // Jika evaluasi diperiksa oleh verifikator maka buat dapat evaluasi bisa dikerjakan
+        else if (
+            $statusHasilEvaluasiId === StatusHasilEvaluasi::STATUS_DITINJAU_ID
+            && Auth::user()->peran_id === Peran::PERAN_VERIFIKATOR_ID
+        ) {
+            $apakahEvaluasiDapatDikerjakan = true;
+        }
 
         return view('pages.evaluasi.dashboard.dashboard', [
             'title' => 'Dashboard Evaluasi',
-            'responden' => $responden,
+            'responden' => $hasilEvaluasi->responden,
             'daftarAreaEvaluasi' => AreaEvaluasi::all(),
             'hasilEvaluasi' => $hasilEvaluasi,
             'hasilEvaluasiId' => $hasilEvaluasi->id,
             'statusHasilEvaluasiSaatIni' => $hasilEvaluasi->statusHasilEvaluasi->nama_status_hasil_evaluasi,
             'identitasResponden' => $hasilEvaluasi->identitasResponden,
-            'nilaiEvaluasi' => $nilaiEvaluasi->load('nilaiEvaluasiUtamaResponden.nilaiEvaluasiUtama'),
+            'nilaiEvaluasi' => $nilaiEvaluasi,
             'hasilEvaluasiAkhir' => $this->getHasilEvaluasiAkhir($nilaiEvaluasi->hasil_evaluasi_akhir),
             'tingkatKelengkapanIso' => NilaiEvaluasi::getTingkatKelengkapanIso($nilaiEvaluasi->tingkat_kelengkapan_iso),
             'daftarNilaiEvaluasiUtama' => NilaiEvaluasiUtamaResponden::getNilaiEvaluasiUtama($nilaiEvaluasi->nilaiEvaluasiUtamaResponden),
             'isResponden' => Auth::user()->peran->nama_peran === Peran::PERAN_RESPONDEN,
-            'apakahEvaluasiSedangDikerjakan' => ($hasilEvaluasi->statusHasilEvaluasi->id === StatusHasilEvaluasi::STATUS_DIKERJAKAN_ID)
-                && (Auth::user()->peran_id === Peran::PERAN_RESPONDEN_ID),
+            'apakahEvaluasiDapatDikerjakan' => $apakahEvaluasiDapatDikerjakan,
             'progresEvaluasiTerjawab' => HasilEvaluasi::getProgresEvaluasiTerjawab($hasilEvaluasi),
         ]);
     }
@@ -64,19 +83,25 @@ class DashboardController extends Controller
             ]);
         });
 
-        return redirect()->route('responden.evaluasi.selesai-evaluasi');
+        return redirect()->route('responden.redirect-evaluasi');
     }
 
     // Fungsi Milik -> Admin & Verifikator
-    public function verifikasiEvaluasi(HasilEvaluasi $hasilEvaluasi)
+    public function verifikasiEvaluasi(Request $request, HasilEvaluasi $hasilEvaluasi)
     {
-        DB::transaction(function () use ($hasilEvaluasi) {
+        // Memastikan bahwa verifikasi tidak dapat dilakukan jika status evaluasi bukan "ditinjau"
+        abort_if($hasilEvaluasi->statusHasilEvaluasi->id
+            !== StatusHasilEvaluasi::STATUS_DITINJAU_ID, 403);
+
+        DB::transaction(function () use ($request, $hasilEvaluasi) {
             $hasilEvaluasi->update([
                 'status_hasil_evaluasi_id' => StatusHasilEvaluasi::where(
                     'nama_status_hasil_evaluasi',
                     StatusHasilEvaluasi::STATUS_DIVERIFIKASI
                 )->value('id'),
-                'tanggal_diverifikasi' => Carbon::now()
+                'verifikator_id' => Auth::user()->verifikator->id,
+                'tanggal_diverifikasi' => Carbon::now(),
+                'catatan' => $request->catatan
             ]);
 
             $hasilEvaluasi->responden->update([
@@ -87,18 +112,26 @@ class DashboardController extends Controller
             ]);
         });
 
-        return redirect()->route('verifikator.kelola-evaluasi.perlu-ditinjau');
+        $namaResponden = $hasilEvaluasi->responden->user->nama;
+        return redirect()->route('verifikator.kelola-evaluasi.perlu-ditinjau')
+            ->with('success', "Evaluasi $namaResponden berhasil diverifikasi.");
     }
 
     public function revisiEvaluasi(Request $request, HasilEvaluasi $hasilEvaluasi)
     {
+        // Revisi tidak dapat dilakukan jika status evaluasi "dikerjakan"
+        abort_if($hasilEvaluasi->statusHasilEvaluasi->id
+            === StatusHasilEvaluasi::STATUS_DIKERJAKAN_ID, 403);
+
         DB::transaction(function () use ($request, $hasilEvaluasi) {
             $hasilEvaluasi->update([
                 'status_hasil_evaluasi_id' => StatusHasilEvaluasi::where(
                     'nama_status_hasil_evaluasi',
                     StatusHasilEvaluasi::STATUS_DIKERJAKAN
                 )->value('id'),
-                'tanggal_diverifikasi' => Carbon::now(),
+                'verifikator_id' => Auth::user()->verifikator->id,
+                'tanggal_diserahkan' => null,
+                'tanggal_diverifikasi' => null,
                 'catatan' => $request->catatan
             ]);
 
@@ -111,7 +144,9 @@ class DashboardController extends Controller
             ]);
         });
 
-        return redirect()->route('verifikator.kelola-evaluasi.perlu-ditinjau');
+        $namaResponden = $hasilEvaluasi->responden->user->nama;
+        return redirect()->route('verifikator.kelola-evaluasi.perlu-ditinjau')
+            ->with('success', "Evaluasi $namaResponden berhasil direvisi.");
     }
 
     private function getHasilEvaluasiAkhir($hasilEvaluasiAkhir)

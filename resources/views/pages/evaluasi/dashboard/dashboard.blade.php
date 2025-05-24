@@ -2,6 +2,11 @@
     'class' => 'mb-18',
 ])
 
+@php
+    use App\Models\Responden\StatusHasilEvaluasi;
+    use App\Models\Responden\NilaiEvaluasi;
+@endphp
+
 @section('content')
     <section class="md:flex gap-2">
         <h1>Tanggal Waktu Mulai Evaluasi:</h1>
@@ -11,15 +16,15 @@
     <section class="md:flex gap-2 mb-4">
         <h1>Status Evaluasi Anda Saat Ini:</h1>
         @switch($statusHasilEvaluasiSaatIni)
-            @case(App\Models\Responden\StatusHasilEvaluasi::STATUS_DIKERJAKAN)
+            @case(StatusHasilEvaluasi::STATUS_DIKERJAKAN)
                 <b class="text-blue-600">Sedang {{ $statusHasilEvaluasiSaatIni }}</b>
             @break
 
-            @case(App\Models\Responden\StatusHasilEvaluasi::STATUS_DITINJAU)
+            @case(StatusHasilEvaluasi::STATUS_DITINJAU)
                 <b class="text-yellow-600">Sedang {{ $statusHasilEvaluasiSaatIni }}</b>
             @break
 
-            @case(App\Models\Responden\StatusHasilEvaluasi::STATUS_DIVERIFIKASI)
+            @case(StatusHasilEvaluasi::STATUS_DIVERIFIKASI)
                 <b class="text-primary">Telah {{ $statusHasilEvaluasiSaatIni }}</b>
             @break
         @endswitch
@@ -27,7 +32,7 @@
 
     @if ($hasilEvaluasi->catatan)
         @switch($hasilEvaluasi->status_hasil_evaluasi_id)
-            @case(App\Models\Responden\StatusHasilEvaluasi::STATUS_DIKERJAKAN_ID)
+            @case(StatusHasilEvaluasi::STATUS_DIKERJAKAN_ID)
                 <x-alert type="error" class="mb-4">
                     <b>Catatan revisi dari verifikator:</b>
                     <br>
@@ -35,7 +40,7 @@
                 </x-alert>
             @break
 
-            @case(App\Models\Responden\StatusHasilEvaluasi::STATUS_DIVERIFIKASI_ID)
+            @case(StatusHasilEvaluasi::STATUS_DIVERIFIKASI_ID)
                 <x-alert type="success" class="mb-4">
                     <b>Catatan verifikasi dari verifikator:</b>
                     <br>
@@ -44,7 +49,7 @@
             @break
 
             @default
-                <x-alert type="success" class="mb-4">
+                <x-alert type="warning" class="mb-4">
                     <b>Catatan terakhir dari verifikator:</b>
                     <br>
                     <span>{{ $hasilEvaluasi->catatan }}</span>
@@ -57,11 +62,11 @@
         <div class="gap-3 grid md:grid-cols-2">
             <section>
                 <h1>Nomor Telepon:</h1>
-                <b>{{ $responden->user->nomor_telepon }}</b>
+                <b>{{ $identitasResponden->nomor_telepon }}</b>
             </section>
             <section>
                 <h1>Email:</h1>
-                <b>{{ $responden->user->email }}</b>
+                <b>{{ $identitasResponden->email }}</b>
             </section>
             <section>
                 <h1>Pengisi Lembar Evaluasi:</h1>
@@ -119,14 +124,14 @@
             <div class="flex gap-2 items-center">
                 <div class="h-12 flex w-full relative">
                     @switch($nilaiEvaluasi->kategori_se)
-                        @case(App\Models\Responden\NilaiEvaluasi::SKOR_KATEGORI_SE_RENDAH)
+                        @case(NilaiEvaluasi::SKOR_KATEGORI_SE_RENDAH)
                             <div class="bg-red-600 w-[26.67%] h-full"></div>
                             <div class="bg-yellow-500 w-[20%] h-full"></div>
                             <div class="bg-lime-400 w-[33.33%] h-full"></div>
                             <div class="bg-lime-600 w-[20%] h-full"></div>
                         @break
 
-                        @case(App\Models\Responden\NilaiEvaluasi::SKOR_KATEGORI_SE_TINGGI)
+                        @case(NilaiEvaluasi::SKOR_KATEGORI_SE_TINGGI)
                             <div class="bg-red-600 w-[40%] h-full"></div>
                             <div class="bg-yellow-500 w-[30%] h-full"></div>
                             <div class="bg-lime-400 w-[20%] h-full"></div>
@@ -169,7 +174,7 @@
         </section>
     </div>
 
-    <div class="flex gap-4 flex-wrap">
+    <div class="flex gap-3 flex-wrap">
         <x-button color="gray"
             href="{{ $isResponden
                 ? route('responden.evaluasi.dashboard.cetak-laporan', $hasilEvaluasiId)
@@ -182,7 +187,7 @@
             Cetak Laporan Evaluasi
         </x-button>
         @if ($isResponden)
-            @if ($apakahEvaluasiSedangDikerjakan)
+            @if ($apakahEvaluasiDapatDikerjakan)
                 <form action="{{ route('responden.evaluasi.dashboard.kirim-evaluasi', $hasilEvaluasiId) }}"
                     id="formKirimEvaluasi" method="post">
                     @csrf
@@ -198,41 +203,48 @@
                 </form>
             @endif
         @else
-            <form action="{{ route('verifikator.evaluasi.dashboard.verifikasi-evaluasi', $hasilEvaluasiId) }}"
-                id="formVerifikasiEvaluasi" method="post">
-                @csrf
-                <x-button type="submit" onclick="verifikasiEvaluasi()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                        viewBox="0 0 24 24">
-                        <path
-                            d="M9 15.59 4.71 11.3 3.3 12.71l5 5c.2.2.45.29.71.29s.51-.1.71-.29l11-11-1.41-1.41L9.02 15.59Z">
-                        </path>
-                    </svg>
-                    Verifikasi Evaluasi
-                </x-button>
-            </form>
-            <form action="{{ route('verifikator.evaluasi.dashboard.revisi-evaluasi', $hasilEvaluasiId) }}"
-                id="formRevisiEvaluasi" method="post">
-                @csrf
-                <input type="hidden" name="catatan" id="formRevisiEvaluasi-catatan">
-                <x-button color="red" onclick="revisiEvaluasi()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                        viewBox="0 0 24 24">
-                        <path
-                            d="M19.07 4.93a9.9 9.9 0 0 0-3.18-2.14 10.12 10.12 0 0 0-7.79 0c-1.19.5-2.26 1.23-3.18 2.14S3.28 6.92 2.78 8.11A9.95 9.95 0 0 0 1.99 12h2c0-1.08.21-2.13.63-3.11.4-.95.98-1.81 1.72-2.54.73-.74 1.59-1.31 2.54-1.71 1.97-.83 4.26-.83 6.23 0 .95.4 1.81.98 2.54 1.72.17.17.33.34.48.52L16 9.01h6V3l-2.45 2.45c-.15-.18-.31-.36-.48-.52M19.37 15.11c-.4.95-.98 1.81-1.72 2.54-.73.74-1.59 1.31-2.54 1.71-1.97.83-4.26.83-6.23 0-.95-.4-1.81-.98-2.54-1.72-.17-.17-.33-.34-.48-.52l2.13-2.13H2v6l2.45-2.45c.15.18.31.36.48.52.92.92 1.99 1.64 3.18 2.14 1.23.52 2.54.79 3.89.79s2.66-.26 3.89-.79c1.19-.5 2.26-1.23 3.18-2.14s1.64-1.99 2.14-3.18c.52-1.23.79-2.54.79-3.89h-2c0 1.08-.21 2.13-.63 3.11Z">
-                        </path>
-                    </svg>
-                    Revisi Evaluasi
-                </x-button>
-            </form>
+            @if ($statusHasilEvaluasiSaatIni === StatusHasilEvaluasi::STATUS_DITINJAU)
+                <form action="{{ route('verifikator.evaluasi.dashboard.verifikasi-evaluasi', $hasilEvaluasiId) }}"
+                    id="formVerifikasiEvaluasi" method="post">
+                    @csrf
+                    <input type="hidden" name="catatan" id="formVerifikasiEvaluasi-catatan">
+                    <x-button type="submit" onclick="verifikasiEvaluasi()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                            viewBox="0 0 24 24">
+                            <path
+                                d="M9 15.59 4.71 11.3 3.3 12.71l5 5c.2.2.45.29.71.29s.51-.1.71-.29l11-11-1.41-1.41L9.02 15.59Z">
+                            </path>
+                        </svg>
+                        Verifikasi Evaluasi
+                    </x-button>
+                </form>
+            @endif
+            @if ($statusHasilEvaluasiSaatIni !== StatusHasilEvaluasi::STATUS_DIKERJAKAN)
+                <form action="{{ route('verifikator.evaluasi.dashboard.revisi-evaluasi', $hasilEvaluasiId) }}"
+                    id="formRevisiEvaluasi" method="post">
+                    @csrf
+                    <input type="hidden" name="catatan" id="formRevisiEvaluasi-catatan">
+                    <x-button color="red" onclick="revisiEvaluasi()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                            viewBox="0 0 24 24">
+                            <path
+                                d="M19.07 4.93a9.9 9.9 0 0 0-3.18-2.14 10.12 10.12 0 0 0-7.79 0c-1.19.5-2.26 1.23-3.18 2.14S3.28 6.92 2.78 8.11A9.95 9.95 0 0 0 1.99 12h2c0-1.08.21-2.13.63-3.11.4-.95.98-1.81 1.72-2.54.73-.74 1.59-1.31 2.54-1.71 1.97-.83 4.26-.83 6.23 0 .95.4 1.81.98 2.54 1.72.17.17.33.34.48.52L16 9.01h6V3l-2.45 2.45c-.15-.18-.31-.36-.48-.52M19.37 15.11c-.4.95-.98 1.81-1.72 2.54-.73.74-1.59 1.31-2.54 1.71-1.97.83-4.26.83-6.23 0-.95-.4-1.81-.98-2.54-1.72-.17-.17-.33-.34-.48-.52l2.13-2.13H2v6l2.45-2.45c.15.18.31.36.48.52.92.92 1.99 1.64 3.18 2.14 1.23.52 2.54.79 3.89.79s2.66-.26 3.89-.79c1.19-.5 2.26-1.23 3.18-2.14s1.64-1.99 2.14-3.18c.52-1.23.79-2.54.79-3.89h-2c0 1.08-.21 2.13-.63 3.11Z">
+                            </path>
+                        </svg>
+                        Revisi Evaluasi
+                    </x-button>
+                </form>
+            @endif
         @endif
     </div>
 
     @if ($isResponden)
         <footer
             class="fixed bottom-0 left-0 w-full bg-white px-6 max-md:px-4 py-4 border-t border-gray-200 flex gap-2 overflow-x-auto">
-            <x-button color="gray"
-                href="{{ route('responden.evaluasi.identitas-responden.edit', $hasilEvaluasi->identitas_responden_id) }}">Identitas</x-button>
+            @if ($apakahEvaluasiDapatDikerjakan)
+                <x-button color="gray"
+                    href="{{ route('responden.evaluasi.identitas-responden.edit', $hasilEvaluasi->identitas_responden_id) }}">Identitas</x-button>
+            @endif
             @foreach ($daftarAreaEvaluasi as $areaEvaluasi)
                 <x-button href="{{ route('responden.evaluasi.pertanyaan', [$areaEvaluasi->id, $hasilEvaluasiId]) }}"
                     color="gray">
@@ -259,7 +271,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         @can('responden')
-            @if ($apakahEvaluasiSedangDikerjakan)
+            @if ($apakahEvaluasiDapatDikerjakan)
                 function kirimEvaluasi() {
                     window.event.preventDefault();
 
@@ -307,65 +319,108 @@
         @endcan
 
         @can('verifikator')
-            function verifikasiEvaluasi() {
-                window.event.preventDefault();
+            @if ($statusHasilEvaluasiSaatIni === StatusHasilEvaluasi::STATUS_DITINJAU)
+                function verifikasiEvaluasi() {
+                    window.event.preventDefault();
 
-                Swal.fire({
-                    title: "Verifikasi Evaluasi",
-                    html: "Verifikasi evaluasi responden <b>{{ $responden->user->nama }}</b>?",
-                    icon: "question",
-                    showCancelButton: true,
-                    confirmButtonColor: "{{ config('app.primary_color') }}",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "Ya, verifikasi!",
-                    cancelButtonText: "Batal"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        const form = document.getElementById('formVerifikasiEvaluasi');
-                        form.submit();
-                    }
-                });
-            }
+                    Swal.fire({
+                        title: "Verifikasi Evaluasi",
+                        html: "Verifikasi evaluasi responden <b>{{ $responden->user->nama }}</b>?",
+                        icon: "success",
+                        showCancelButton: true,
+                        confirmButtonColor: "{{ config('app.primary_color') }}",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Ya, verifikasi!",
+                        cancelButtonText: "Batal"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: "Pesan catatan verifikasi untuk responden (opsional)",
+                                input: "text",
+                                inputAttributes: {
+                                    autocapitalize: "off"
+                                },
+                                showCancelButton: true,
+                                confirmButtonText: "Konfirmasi & Kirim",
+                                confirmButtonColor: "{{ config('app.primary_color') }}",
+                                cancelButtonColor: "#d33",
+                                cancelButtonText: "Batal",
+                                allowOutsideClick: () => !Swal.isLoading()
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    if (result.value.length > 255) {
+                                        Swal.fire({
+                                            title: "Catatan Verifikasi Gagal",
+                                            text: "Catatan evaluasi berisikan maksimal 255 karakter! Verifikasi dibatalkan.",
+                                            icon: "error",
+                                            confirmButtonColor: "{{ config('app.primary_color') }}",
+                                        });
+                                    } else {
+                                        const form = document.getElementById('formVerifikasiEvaluasi');
 
-            function revisiEvaluasi() {
-                window.event.preventDefault();
+                                        const catatanInput = document.getElementById(
+                                            'formVerifikasiEvaluasi-catatan');
+                                        catatanInput.value = result.value;
 
-                Swal.fire({
-                    title: "Revisi Evaluasi",
-                    html: "Revisi evaluasi responden <b>{{ $responden->user->nama }}</b>?",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "{{ config('app.primary_color') }}",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "Ya, revisi!",
-                    cancelButtonText: "Batal"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        Swal.fire({
-                            title: "Pesan catatan revisi untuk responden (opsional)",
-                            input: "text",
-                            inputAttributes: {
-                                autocapitalize: "off"
-                            },
-                            showCancelButton: true,
-                            confirmButtonText: "Konfirmasi & Kirim",
-                            confirmButtonColor: "{{ config('app.primary_color') }}",
-                            cancelButtonColor: "#d33",
-                            cancelButtonText: "Batal",
-                            allowOutsideClick: () => !Swal.isLoading()
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                const form = document.getElementById('formRevisiEvaluasi');
+                                        form.submit();
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            @endif
+            @if ($statusHasilEvaluasiSaatIni !== StatusHasilEvaluasi::STATUS_DIKERJAKAN)
+                function revisiEvaluasi() {
+                    window.event.preventDefault();
 
-                                const catatanInput = document.getElementById('formRevisiEvaluasi-catatan');
-                                catatanInput.value = result.value;
+                    Swal.fire({
+                        title: "Revisi Evaluasi",
+                        html: "Revisi evaluasi responden <b>{{ $responden->user->nama }}</b>?",
+                        icon: "warning",
+                        showCancelButton: true,
+                        cancelButtonColor: "{{ config('app.primary_color') }}",
+                        confirmButtonColor: "#d33",
+                        confirmButtonText: "Ya, revisi!",
+                        cancelButtonText: "Batal"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: "Pesan catatan revisi untuk responden (opsional)",
+                                input: "text",
+                                inputAttributes: {
+                                    autocapitalize: "off"
+                                },
+                                showCancelButton: true,
+                                confirmButtonText: "Konfirmasi & Kirim",
+                                cancelButtonColor: "{{ config('app.primary_color') }}",
+                                confirmButtonColor: "#d33",
+                                cancelButtonText: "Batal",
+                                allowOutsideClick: () => !Swal.isLoading()
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    if (result.value.length > 255) {
+                                        Swal.fire({
+                                            title: "Catatan Revisi Gagal",
+                                            text: "Catatan revisi berisikan maksimal 255 karakter! Revisi dibatalkan.",
+                                            icon: "error",
+                                            confirmButtonColor: "{{ config('app.primary_color') }}",
+                                        });
+                                    } else {
+                                        const form = document.getElementById('formRevisiEvaluasi');
 
-                                form.submit();
-                            }
-                        });
-                    }
-                });
-            }
+                                        const catatanInput = document.getElementById(
+                                            'formRevisiEvaluasi-catatan');
+                                        catatanInput.value = result.value;
+
+                                        form.submit();
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            @endif
         @endcan
     </script>
 

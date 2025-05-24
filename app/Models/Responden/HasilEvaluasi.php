@@ -7,6 +7,7 @@ use App\Models\Responden\JawabanEvaluasi;
 use App\Models\Responden\IdentitasResponden;
 use App\Models\Responden\NilaiEvaluasi;
 use App\Models\Responden\Responden;
+use App\Models\Verifikator\Verifikator;
 use Illuminate\Database\Eloquent\Model;
 
 class HasilEvaluasi extends Model
@@ -40,6 +41,11 @@ class HasilEvaluasi extends Model
         return $this->belongsTo(StatusHasilEvaluasi::class);
     }
 
+    public function verifikator()
+    {
+        return $this->belongsTo(Verifikator::class);
+    }
+
     public static function verifikasiHasilEvaluasi(HasilEvaluasi $hasilEvaluasi)
     {
         // Memperbarui status Hasil Evaluasi
@@ -56,8 +62,12 @@ class HasilEvaluasi extends Model
     public static function getProgresEvaluasiTerjawab(
         HasilEvaluasi $hasilEvaluasi
     ) {
-        $jumlahJawabanResponden = JawabanEvaluasi::where('hasil_evaluasi_id', $hasilEvaluasi->id)->count();
-        $jumlahPertanyaanEvaluasi = PertanyaanEvaluasi::count();
+        $hasilEvaluasi->load('jawabanEvaluasi.pertanyaanEvaluasi');
+
+        $jumlahJawabanResponden = $hasilEvaluasi->jawabanEvaluasi->filter(
+            fn($jawaban) => $jawaban->pertanyaanEvaluasi->apakah_tampil === 1
+        )->count();
+        $jumlahPertanyaanEvaluasi = PertanyaanEvaluasi::where('apakah_tampil', true)->count();
 
         $persentaseJawabanResponden = round($jumlahJawabanResponden / $jumlahPertanyaanEvaluasi * 100, 2);
 

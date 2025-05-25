@@ -9,10 +9,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <style>
-    #headerPrint {
-        width: 42rem;
-    }
-
+    #headerPrint,
     #mainPrint {
         width: 42rem;
     }
@@ -28,6 +25,9 @@
             width: 100%;
         }
 
+        #pageBreak {
+            page-break-before: always
+        }
     }
 </style>
 
@@ -212,10 +212,90 @@
                     <b>{{ $nilaiEvaluasi->pengamanan_keterlibatan_pihak_ketiga }}%</b>
                 </h1>
             </section>
-            <section class="border-b border-gray-200 py-4">
+            <section class="border-b border-gray-200 py-4 mb-6">
                 <div id="container"></div>
             </section>
         </div>
+
+        <div id="pageBreak"></div>
+
+        <h1 class="font-bold text-2xl mb-6">Hasil Jawaban Evaluasi</h1>
+
+        <div class="flex gap-2 mb-6">
+            <div>
+                <h1>Total Seluruh Pertanyaan</h1>
+                <h1>Jumlah Pertanyaan yang Terjawab</h1>
+                <h1 class="mt-2">I Kategori SE</h1>
+                <h1>II Tata Kelola</h1>
+                <h1>III Risiko</h1>
+            </div>
+            <div>
+                <h1>: <strong>212</strong></h1>
+                <h1>: <strong>212</strong></h1>
+                <h1 class="mt-2">: <strong>Semua pertanyaan telah dijawab</strong></h1>
+                <h1>: <strong>Pertanyaan wajib telah dijawab</strong></h1>
+                <h1>: <strong>Pertanyaan wajib belum seluruhnya dijawab</strong></h1>
+            </div>
+        </div>
+
+        <div id="pageBreak"></div>
+
+        @foreach ([1, 2] as $item)
+            <div class="mb-3">
+                <h1 class="text-xl font-bold mb-1">I Tata Kelola</h1>
+                <div class="flex gap-2">
+                    <div>
+                        <h1>Total Pertanyaan</h1>
+                        <h1>Jumlah Pertanyaan Terjawab</h1>
+                    </div>
+                    <div>
+                        <h1>: <b>22</b></h1>
+                        <h1>: <b>22</b></h1>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gray-100 px-4 py-2 mb-4">
+                <h1 class="font-bold uppercase text-sm">Karakteristik Instansi/Perusahaan </h1>
+            </div>
+
+            <section class="mb-4 border-b pb-4 border-gray-200">
+                <div class="flex gap-2">
+                    <h1 class="w-6">1.1</h1>
+                    <h1>Nilai investasi sistem elektronik yang terpasang</h1>
+                </div>
+                <div class="ml-8">
+                    <h1 class="font-bold">A. Lebih dari Rp.30 Miliar</h1>
+                    <div class="mt-2">
+                        <h1>Skor: <b>8</b></h1>
+                        <div>
+                            <h1>Keterangan:</h1>
+                            <span>Nilai investasi sistem elektronik yang terpasang adalah lebih dari Rp.30
+                                miliar, sesuai dengan dokumen pendukung yang dilampirkan sebagai bukti investasi
+                                tersebut.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        @endforeach
+
+        <x-table>
+            <x-table.tbody>
+                <x-table.tr class="!text-base">
+                    <x-table.td>Pertanyaan Dijawab</x-table.td>
+                    <x-table.td class="font-bold">22/22</x-table.td>
+                </x-table.tr>
+                <x-table.tr class="!text-base">
+                    <x-table.td>Total Skor</x-table.td>
+                    <x-table.td class="font-bold">14</x-table.td>
+                </x-table.tr>
+                <x-table.tr class="!text-base">
+                    <x-table.td>Tingkat Ketergantungan</x-table.td>
+                    <x-table.td class="font-bold">14</x-table.td>
+                </x-table.tr>
+            </x-table.tbody>
+        </x-table>
     </main>
 
     <script>

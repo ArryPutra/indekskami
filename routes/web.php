@@ -140,11 +140,11 @@ Route::middleware(['auth', 'akunAktif'])->group(function () {
 
                 Route::middleware('statusEvaluasiDitinjau')->group(function () {
                     Route::post('/pertanyaan/simpan-jawaban/{areaEvaluasi}/{hasilEvaluasi}', [PertanyaanController::class, 'simpanJawaban'])->name('verifikator.evaluasi.pertanyaan.simpan-jawaban');
+                    Route::post('verifikasi-evaluasi/{hasilEvaluasi:id}', [EvaluasiDashboardController::class, 'verifikasiEvaluasi'])->name('verifikator.evaluasi.dashboard.verifikasi-evaluasi');
                 });
 
                 Route::get('/dashboard/{hasilEvaluasi:id}', [EvaluasiDashboardController::class, 'index'])->name('verifikator.evaluasi.dashboard');
 
-                Route::post('verifikasi-evaluasi/{hasilEvaluasi:id}', [EvaluasiDashboardController::class, 'verifikasiEvaluasi'])->name('verifikator.evaluasi.dashboard.verifikasi-evaluasi');
                 Route::post('revisi-evaluasi/{hasilEvaluasi:id}', [EvaluasiDashboardController::class, 'revisiEvaluasi'])->name('verifikator.evaluasi.dashboard.revisi-evaluasi');
 
                 Route::get('/cetak-laporan/{hasilEvaluasi:id}', [CetakLaporanEvaluasiController::class, 'index'])->name('verifikator.evaluasi.dashboard.cetak-laporan');

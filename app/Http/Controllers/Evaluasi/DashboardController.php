@@ -89,10 +89,6 @@ class DashboardController extends Controller
     // Fungsi Milik -> Admin & Verifikator
     public function verifikasiEvaluasi(Request $request, HasilEvaluasi $hasilEvaluasi)
     {
-        // Memastikan bahwa verifikasi tidak dapat dilakukan jika status evaluasi bukan "ditinjau"
-        abort_if($hasilEvaluasi->statusHasilEvaluasi->id
-            !== StatusHasilEvaluasi::STATUS_DITINJAU_ID, 403);
-
         DB::transaction(function () use ($request, $hasilEvaluasi) {
             $hasilEvaluasi->update([
                 'status_hasil_evaluasi_id' => StatusHasilEvaluasi::where(

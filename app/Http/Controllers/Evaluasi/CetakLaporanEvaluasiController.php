@@ -13,7 +13,7 @@ class CetakLaporanEvaluasiController extends Controller
     public function index(HasilEvaluasi $hasilEvaluasi)
     {
         $nilaiEvaluasi =
-            $hasilEvaluasi->nilaiEvaluasi->with('nilaiEvaluasiUtamaResponden.nilaiEvaluasiUtama')->first();
+            $hasilEvaluasi->nilaiEvaluasi->load('nilaiEvaluasiUtamaResponden.nilaiEvaluasiUtama');
 
         return view('pages.evaluasi.dashboard.cetak', [
             'title' => 'Cetak Laporan Evaluasi',

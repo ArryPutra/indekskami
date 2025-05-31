@@ -92,10 +92,7 @@ class IdentitasRespondenController extends Controller
             ]);
 
             $responden->update([
-                'status_progres_evaluasi_responden_id' => StatusProgresEvaluasiResponden::where(
-                    'nama_status_progres_evaluasi_responden',
-                    StatusProgresEvaluasiResponden::SEDANG_MENGERJAKAN
-                )->value('id')
+                'status_progres_evaluasi_responden_id' => StatusProgresEvaluasiResponden::SEDANG_MENGERJAKAN_ID
             ]);
 
             return $hasilEvaluasi;

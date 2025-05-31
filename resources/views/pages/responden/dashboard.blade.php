@@ -25,7 +25,7 @@
             <div class="p-3 pr-8 border border-gray-200 rounded-lg flex max-md:flex-col gap-3">
                 <img class="h-44 w-fit" src="{{ asset('images/ilustrasi/mulai-evaluasi.png') }}"
                     alt="Gambar Mulai Evaluasi Ilustrasi">
-                <div class="flex flex-col justify-between w-full">
+                <div class="flex flex-col justify-between w-full gap-3">
                     <div class="w-full flex flex-col justify-between">
                         <h1 class="text-xl font-semibold mb-1">Mulai Mengerjakan Evaluasi</h1>
                         <h1>Mulai mengerjakan evaluasi dengan mengisi identitas responden terlebih dahulu.</h1>
@@ -44,14 +44,14 @@
         @case(App\Models\Responden\StatusProgresEvaluasiResponden::SEDANG_MENGERJAKAN)
             <div class="p-3 pr-8 border border-gray-200 rounded-lg flex max-md:flex-col gap-3">
                 <img class="h-44 w-fit" src="{{ asset('images/ilustrasi/evaluasi.png') }}" alt="Gambar Evaluasi Ilustrasi">
-                <div class="flex flex-col w-full justify-between">
+                <div class="flex flex-col w-full justify-between gap-3">
                     <div class="w-full flex flex-col justify-between">
                         <h1 class="text-xl font-semibold mb-2">Progres Evaluasi Terjawab</h1>
                         <div class="w-full h-9 bg-gray-100 border border-gray-300 rounded-md overflow-hidden mb-2">
-                            <div x-data="{ width: 0 }" x-init="setTimeout(() => {
+                            <div x-cloak x-data="{ width: 0 }" x-init="setTimeout(() => {
                                 width = {{ $progresEvaluasiTerjawab['persen'] }};
-                            }, 150)" class="bg-primary h-full duration-[2s] ease-in-out"
-                                :style="`width: ${width}%;`">
+                            }, 150)"
+                                class="bg-primary h-full duration-[2s] ease-in-out" :style="`width: ${width}%;`">
                             </div>
                         </div>
                         <h1 class="mb-3 bg-white">{!! $progresEvaluasiTerjawab['label'] !!}</h1>
@@ -70,7 +70,7 @@
         @case(App\Models\Responden\StatusProgresEvaluasiResponden::SELESAI_MENGERJAKAN)
             <div class="p-3 pr-8 border border-gray-200 rounded-lg flex max-md:flex-col gap-3">
                 <img class="h-44 w-fit" src="{{ asset('images/ilustrasi/tinjau-evaluasi.png') }}" alt="Gambar Evaluasi Ilustrasi">
-                <div class="w-full flex flex-col justify-between">
+                <div class="w-full flex flex-col justify-between gap-3">
                     <div>
                         <h1 class="text-xl font-semibold mb-1">Evaluasi Anda Sedang Ditinjau</h1>
                         <p>

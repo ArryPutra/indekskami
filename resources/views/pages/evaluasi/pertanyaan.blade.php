@@ -175,7 +175,7 @@
                             @if ($isResponden)
                                 <x-text-area :readonly="!$apakahEvaluasiDapatDikerjakan" name="{{ $pertanyaanDanJawaban['nomor'] }}[keterangan]"
                                     placeholder="Keterangan" :required=false oninput="tampilkanSaveButton()"
-                                    value="{{ $pertanyaanDanJawaban['keterangan'] }}" />
+                                    :value="$pertanyaanDanJawaban['keterangan']" />
                             @else
                                 <x-text-area :readonly="true" name="{{ $pertanyaanDanJawaban['nomor'] }}[keterangan]"
                                     placeholder="Keterangan" :required=false

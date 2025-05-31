@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Models\Admin\Admin;
+use App\Models\Manajemen\Manajemen;
 use App\Models\Responden\Responden;
 use App\Models\Verifikator\Verifikator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -64,5 +65,10 @@ class User extends Authenticatable
     public function verifikator()
     {
         return $this->hasOne(Verifikator::class, 'user_id', 'id');
+    }
+
+    public function manajemen()
+    {
+        return $this->hasOne(Manajemen::class, 'user_id', 'id');
     }
 }

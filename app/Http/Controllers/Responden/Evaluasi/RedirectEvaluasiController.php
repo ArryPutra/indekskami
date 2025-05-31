@@ -20,7 +20,7 @@ class RedirectEvaluasiController extends Controller
             return redirect()->route('responden.pesan-evaluasi')
                 ->with([
                     'title' => 'Nonaktif Evaluasi',
-                    'pesanEvaluasi' => 'Anda belum memiliki akses untuk mengikuti evaluasi'
+                    'pesanEvaluasi' => 'Anda tidak memiliki hak akses untuk melakukan evaluasi. Silakan hubungi admin untuk mendapatkan akses.'
                 ]);
         }
 

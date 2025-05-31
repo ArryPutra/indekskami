@@ -27,25 +27,29 @@ class AuthController extends Controller
         // Lakukan credentials hanya untuk username dan password (abaikan captcha)
         $credentials = $request->only('username', 'password');
 
-        // Coba login
+        // Jika login berhasil
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
             // Jika akun nonaktif
             if (Auth::user()->apakah_akun_nonaktif === 1) {
+                // Langsung buat pengguna tidak bisa masuk/logout paksa
                 Auth::logout();
 
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
 
+                // Kembalikan ke halaman login dengan pesan kesalahan
                 return back()->withErrors([
                     'failedLogin' => 'Akun Anda telah dinonaktifkan.'
                 ]);
             }
 
+            // Jika akun aktif arahkan ke halaman sesuai peran
             return $this->redirectUser();
         }
 
+        // Jika login gagal berikan pesan kesalahan
         return back()->withErrors([
             'failedLogin' => 'Username atau password yang Anda masukkan salah.'
         ])->withInput();

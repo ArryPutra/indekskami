@@ -1,13 +1,49 @@
 @extends('layouts.layout')
 
+@php
+    use App\Models\Responden\NilaiEvaluasi;
+@endphp
+
 @section('content')
-    <div class="flex gap-4 flex-wrap mb-6">
+    <div class="flex gap-4 flex-wrap mb-4">
         <x-button color="gray" href="{{ route('verifikator.kelola-evaluasi.perlu-ditinjau') }}">Perlu Ditinjau</x-button>
         <x-button color="gray" href="{{ route('verifikator.kelola-evaluasi.sedang-mengerjakan') }}">
             Sedang Mengerjakan
         </x-button>
         <x-button>Evaluasi Selesai</x-button>
     </div>
+
+    <form action="{{ route('verifikator.kelola-evaluasi.evaluasi-selesai') }}" class="flex gap-4 mb-2 flex-wrap"
+        method="get">
+        <div class="flex gap-3 w-full">
+            <x-text-field value="{{ request('cari') }}" type="text" name="cari" placeholder="Cari evaluasi" />
+            <x-button type="submit">
+                <span>Cari</span>
+            </x-button>
+            @if (request('cari') !== null)
+                <x-button type="submit" name="cari" value="" color="red">Hapus</x-button>
+            @endif
+        </div>
+
+        <x-dropdown name="diverifikasi" onchange="this.form.submit()" label="Diverifikasi Oleh">
+            <x-dropdown.option :selected="request('diverifikasi') == 'semua'" value='semua'>Semua</x-dropdown.option>
+            <x-dropdown.option :selected="request('diverifikasi') == 'sendiri'" value='sendiri'>Sendiri</x-dropdown.option>
+        </x-dropdown>
+        <x-dropdown name="kategori-se" onchange="this.form.submit()" label="Kategori SE">
+            <x-dropdown.option :selected="request('kategori-se') == 'semua'" value='semua'>
+                Semua
+            </x-dropdown.option>
+            <x-dropdown.option :selected="request('kategori-se') == 'rendah'" value='rendah'>
+                {{ NilaiEvaluasi::KATEGORI_SE_RENDAH }}
+            </x-dropdown.option>
+            <x-dropdown.option :selected="request('kategori-se') == 'tinggi'" value='tinggi'>
+                {{ NilaiEvaluasi::KATEGORI_SE_TINGGI }}
+            </x-dropdown.option>
+            <x-dropdown.option :selected="request('kategori-se') == 'strategis'" value='strategis'>
+                {{ NilaiEvaluasi::KATEGORI_SE_STRATEGIS }}
+            </x-dropdown.option>
+        </x-dropdown>
+    </form>
 
     <x-table>
         <x-table.thead>
@@ -39,8 +75,8 @@
                             <div class="flex gap-2">
                                 <x-button class="w-fit"
                                     href="{{ route('verifikator.evaluasi.pertanyaan', [1, $hasilEvaluasi->id]) }}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                                        viewBox="0 0 24 24">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                        fill="currentColor" viewBox="0 0 24 24">
                                         <path
                                             d="M14.71 2.29A1 1 0 0 0 14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-.27-.11-.52-.29-.71zM7 7h4v2H7zm10 10H7v-2h10zm0-4H7v-2h10zm-4-4V3.5L18.5 9z">
                                         </path>

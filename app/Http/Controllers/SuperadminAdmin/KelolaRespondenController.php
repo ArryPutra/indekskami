@@ -109,21 +109,17 @@ class KelolaRespondenController extends Controller
             ]
         );
         // Memberikan peran nilai responden (3) secara default
-        $respondenPeranId = Peran::where('nama_peran', 'Responden')->value('id');
-        $validatedTambahResponden['peran_id'] = $respondenPeranId;
+        $validatedTambahResponden['peran_id'] = Peran::PERAN_RESPONDEN_ID;
         // Memberikan enkripsi pada password
         $validatedTambahResponden['password'] = Hash::make($validatedTambahResponden['password']);
-
+        // Membuat user baru
         $user = User::create($validatedTambahResponden);
 
-        // Menambahkan data responden yg dibuat ke table responden
+        // Membuat responden baru
         Responden::create([
+            // Relasikan responden dengan user baru dibuat
             'user_id' => $user->id,
-            'status_progres_evaluasi_responden_id' =>
-            StatusProgresEvaluasiResponden::where(
-                'nama_status_progres_evaluasi_responden',
-                StatusProgresEvaluasiResponden::TIDAK_MENGERJAKAN
-            )->value('id'),
+            'status_progres_evaluasi_responden_id' => StatusProgresEvaluasiResponden::TIDAK_MENGERJAKAN_ID,
             'akses_evaluasi' => $request->akses_evaluasi,
             'daerah' => $request->daerah,
             'alamat' => $request->alamat

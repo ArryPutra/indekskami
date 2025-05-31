@@ -20,6 +20,8 @@ use Database\Seeders\Evaluasi\PertanyaanSuplemenSeeder;
 use Database\Seeders\Evaluasi\SkorEvaluasiUtamaTingkatKematanganSeeder;
 use Database\Seeders\Responden\StatusHasilEvaluasiSeeder;
 use Database\Seeders\Evaluasi\TipeEvaluasiSeeder;
+use Database\Seeders\Responden\JawabanEvaluasiSeeder;
+use Database\Seeders\Responden\PertanyaanEvaluasiSeeder;
 use Database\Seeders\Responden\RespondenSeeder;
 use Database\Seeders\Responden\StatusEvaluasiSeeder;
 use Database\Seeders\Responden\StatusProgresEvaluasiSeeder;
@@ -49,7 +51,8 @@ class DatabaseSeeder extends Seeder
             StatusHasilEvaluasiSeeder::class,
             SkorEvaluasiUtamaTingkatKematanganSeeder::class,
             NilaiEvaluasiUtamaSeeder::class,
-            PeraturanEvaluasiSeeder::class
+            PeraturanEvaluasiSeeder::class,
+            // JawabanEvaluasiSeeder::class
         ]);
     }
 }

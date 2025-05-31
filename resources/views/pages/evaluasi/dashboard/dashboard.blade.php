@@ -124,14 +124,14 @@
             <div class="flex gap-2 items-center">
                 <div class="h-12 flex w-full relative">
                     @switch($nilaiEvaluasi->kategori_se)
-                        @case(NilaiEvaluasi::SKOR_KATEGORI_SE_RENDAH)
+                        @case(NilaiEvaluasi::KATEGORI_SE_RENDAH)
                             <div class="bg-red-600 w-[26.67%] h-full"></div>
                             <div class="bg-yellow-500 w-[20%] h-full"></div>
                             <div class="bg-lime-400 w-[33.33%] h-full"></div>
                             <div class="bg-lime-600 w-[20%] h-full"></div>
                         @break
 
-                        @case(NilaiEvaluasi::SKOR_KATEGORI_SE_TINGGI)
+                        @case(NilaiEvaluasi::KATEGORI_SE_TINGGI)
                             <div class="bg-red-600 w-[40%] h-full"></div>
                             <div class="bg-yellow-500 w-[30%] h-full"></div>
                             <div class="bg-lime-400 w-[20%] h-full"></div>
@@ -170,7 +170,7 @@
             </h1>
         </section>
         <section class="w-full border-b border-gray-200 p-4">
-            <div id="container"></div>
+            <div id="diagram"></div>
         </section>
     </div>
 
@@ -208,6 +208,8 @@
                     id="formVerifikasiEvaluasi" method="post">
                     @csrf
                     <input type="hidden" name="catatan" id="formVerifikasiEvaluasi-catatan">
+                    <input type="hidden" name="akses_evaluasi_responden"
+                        id="formVerifikasiEvaluasi-aksesEvaluasiResponden">
                     <x-button type="submit" onclick="verifikasiEvaluasi()">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                             viewBox="0 0 24 24">
@@ -302,7 +304,7 @@
                                 if (result.isConfirmed && result.value.toLowerCase() == 'konfirmasi') {
                                     const form = document.getElementById('formKirimEvaluasi');
                                     form.submit();
-                                } else if (result.value.toLowerCase() !== 'konfirmasi') {
+                                } else {
                                     Swal.fire({
                                         title: "Konfirmasi Gagal",
                                         text: "Input tidak sesuai! Proses pengiriman evaluasi dibatalkan.",
@@ -320,9 +322,11 @@
 
         @can('verifikator')
             @if ($statusHasilEvaluasiSaatIni === StatusHasilEvaluasi::STATUS_DITINJAU)
+
                 function verifikasiEvaluasi() {
                     window.event.preventDefault();
 
+                    // Tampilkan pesan konfirmasi verifikasi
                     Swal.fire({
                         title: "Verifikasi Evaluasi",
                         html: "Verifikasi evaluasi responden <b>{{ $responden->user->nama }}</b>?",
@@ -333,38 +337,66 @@
                         confirmButtonText: "Ya, verifikasi!",
                         cancelButtonText: "Batal"
                     }).then((result) => {
+                        // Jika verifikasi dikonfirmasi
                         if (result.isConfirmed) {
+                            // Tampilkan pesan apakah nonaktif evaluasi responden
                             Swal.fire({
-                                title: "Pesan catatan verifikasi untuk responden (opsional)",
-                                input: "text",
-                                inputAttributes: {
-                                    autocapitalize: "off"
-                                },
+                                title: "Berikan Akses Evaluasi Responden?",
+                                html: "Apakah Anda ingin memberikan akses evaluasi kepada responden <b>{{ $responden->user->nama }}</b>?",
+                                icon: "question",
                                 showCancelButton: true,
-                                confirmButtonText: "Konfirmasi & Kirim",
                                 confirmButtonColor: "{{ config('app.primary_color') }}",
                                 cancelButtonColor: "#d33",
-                                cancelButtonText: "Batal",
-                                allowOutsideClick: () => !Swal.isLoading()
+                                confirmButtonText: "Ya, berikan!",
+                                cancelButtonText: "Jangan berikan"
                             }).then((result) => {
+                                // Menetapkan data apakah responden selanjutnya
+                                // dapat melakukan akses evaluasi lagi
+                                const aksesEvaluasiRespondenInput = document.getElementById(
+                                    'formVerifikasiEvaluasi-aksesEvaluasiResponden');
+                                // Jika akses evaluasi responden diberikan 
                                 if (result.isConfirmed) {
-                                    if (result.value.length > 255) {
-                                        Swal.fire({
-                                            title: "Catatan Verifikasi Gagal",
-                                            text: "Catatan evaluasi berisikan maksimal 255 karakter! Verifikasi dibatalkan.",
-                                            icon: "error",
-                                            confirmButtonColor: "{{ config('app.primary_color') }}",
-                                        });
-                                    } else {
-                                        const form = document.getElementById('formVerifikasiEvaluasi');
-
-                                        const catatanInput = document.getElementById(
-                                            'formVerifikasiEvaluasi-catatan');
-                                        catatanInput.value = result.value;
-
-                                        form.submit();
-                                    }
+                                    aksesEvaluasiRespondenInput.value = true;
                                 }
+                                // Jika akses evaluasi responden tidak diberikan 
+                                else {
+                                    aksesEvaluasiRespondenInput.value = false;
+                                }
+                                // Tampilkan catatan verifikasi
+                                Swal.fire({
+                                    title: "Pesan catatan verifikasi untuk responden (opsional)",
+                                    input: "text",
+                                    inputAttributes: {
+                                        autocapitalize: "off"
+                                    },
+                                    showCancelButton: true,
+                                    confirmButtonText: "Konfirmasi & Kirim",
+                                    confirmButtonColor: "{{ config('app.primary_color') }}",
+                                    cancelButtonColor: "#d33",
+                                    cancelButtonText: "Batal",
+                                    allowOutsideClick: () => !Swal.isLoading()
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        if (result.value.length > 255) {
+                                            Swal.fire({
+                                                title: "Catatan Verifikasi Gagal",
+                                                text: "Catatan evaluasi berisikan maksimal 255 karakter! Verifikasi dibatalkan.",
+                                                icon: "error",
+                                                confirmButtonColor: "{{ config('app.primary_color') }}",
+                                            });
+                                        } else {
+                                            const form = document.getElementById(
+                                                'formVerifikasiEvaluasi');
+
+                                            const catatanInput = document.getElementById(
+                                                'formVerifikasiEvaluasi-catatan');
+                                            catatanInput.value = result.value;
+
+                                            form.submit();
+                                        }
+                                    }
+                                });
+
                             });
                         }
                     });
@@ -430,7 +462,7 @@
     <script src="https://code.highcharts.com/modules/export-data.js"></script>
     <script src="https://code.highcharts.com/modules/accessibility.js"></script>
     <script>
-        Highcharts.chart('container', {
+        Highcharts.chart('diagram', {
             chart: {
                 polar: true,
                 type: 'area',

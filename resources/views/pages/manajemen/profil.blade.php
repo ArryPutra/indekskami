@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('content')
-    <div class="space-y-2 mb-4">
+    <div class="space-y-2">
         <section>
             <h1>Nama:</h1>
             <h1 class="font-bold text-lg">{{ $user->nama }}</h1>
@@ -19,8 +19,20 @@
             <h1 class="font-bold text-lg">{{ $user->peran->nama_peran }}</h1>
         </section>
         <section>
-            <h1>Nomor SK:</h1>
-            <h1 class="font-bold text-lg">{{ $user->verifikator->nomor_sk }}</h1>
+            <h1>Jabatan:</h1>
+            <h1 class="font-bold text-lg">{{ $user->manajemen->jabatan }}</h1>
+        </section>
+        <section>
+            <h1>Tanggal Akun Dibuat:</h1>
+            <h1 class="font-bold text-lg">
+                {{ Carbon\Carbon::parse($user->created_at)->translatedFormat('l, d F Y, H:i:s') }}
+            </h1>
+        </section>
+        <section>
+            <h1>Tanggal Akun Diperbarui:</h1>
+            <h1 class="font-bold text-lg">
+                {{ Carbon\Carbon::parse($user->updated_at)->translatedFormat('l, d F Y, H:i:s') }}
+            </h1>
         </section>
     </div>
 @endsection

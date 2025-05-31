@@ -23,6 +23,7 @@ class DashboardController extends Controller
 {
     public function index(HasilEvaluasi $hasilEvaluasi)
     {
+        // Load data hasil evaluasi dengan relasi yang dibutuhkan
         $hasilEvaluasi->load([
             'statusHasilEvaluasi',
             'responden.user',
@@ -32,6 +33,7 @@ class DashboardController extends Controller
 
         $nilaiEvaluasi = $hasilEvaluasi->nilaiEvaluasi;
 
+        // Menyiapkan variabel apakah evaluasi dapat dijawab atau tidak (default: false)
         $apakahEvaluasiDapatDikerjakan = false;
         $statusHasilEvaluasiId = $hasilEvaluasi->statusHasilEvaluasi->id;
         // Jika evaluasi sedang dikerjakan oleh responden
@@ -40,7 +42,7 @@ class DashboardController extends Controller
             && Auth::user()->peran_id === Peran::PERAN_RESPONDEN_ID
         ) {
             $apakahEvaluasiDapatDikerjakan = true;
-        } // Jika evaluasi diperiksa oleh verifikator maka buat dapat evaluasi bisa dikerjakan
+        } // Jika evaluasi status ditinjau maka verifikator dapat mengerjakan evaluasi
         else if (
             $statusHasilEvaluasiId === StatusHasilEvaluasi::STATUS_DITINJAU_ID
             && Auth::user()->peran_id === Peran::PERAN_VERIFIKATOR_ID
@@ -91,20 +93,15 @@ class DashboardController extends Controller
     {
         DB::transaction(function () use ($request, $hasilEvaluasi) {
             $hasilEvaluasi->update([
-                'status_hasil_evaluasi_id' => StatusHasilEvaluasi::where(
-                    'nama_status_hasil_evaluasi',
-                    StatusHasilEvaluasi::STATUS_DIVERIFIKASI
-                )->value('id'),
+                'status_hasil_evaluasi_id' => StatusHasilEvaluasi::STATUS_DIVERIFIKASI_ID,
                 'verifikator_id' => Auth::user()->verifikator->id,
                 'tanggal_diverifikasi' => Carbon::now(),
                 'catatan' => $request->catatan
             ]);
 
             $hasilEvaluasi->responden->update([
-                'status_progres_evaluasi_responden_id' => StatusProgresEvaluasiResponden::where(
-                    'nama_status_progres_evaluasi_responden',
-                    StatusProgresEvaluasiResponden::TIDAK_MENGERJAKAN
-                )->value('id')
+                'status_progres_evaluasi_responden_id' => StatusProgresEvaluasiResponden::TIDAK_MENGERJAKAN_ID,
+                'akses_evaluasi' => filter_var($request->akses_evaluasi_responden, FILTER_VALIDATE_BOOLEAN)
             ]);
         });
 

@@ -28,6 +28,7 @@ use App\Http\Controllers\Verifikator\KelolaEvaluasiController;
 
 // Role: Manajemen [5]
 use App\Http\Controllers\Manajemen\DashboardController as ManajemenDashboardController;
+use App\Http\Controllers\Manajemen\ProfilController;
 
 
 // Role: Superadmin & Admin [1 & 2]
@@ -100,6 +101,13 @@ Route::middleware(['auth', 'akunAktif'])->group(function () {
         Route::prefix('evaluasi')->group(function () {
             Route::get('/pesan-evaluasi', [PesanEvaluasiController::class, 'index'])->name('responden.pesan-evaluasi');
 
+            Route::middleware('kepemilikanHasilEvaluasi')->group(function () {
+                Route::get('/pertanyaan/{areaEvaluasi}/{hasilEvaluasi}', [PertanyaanController::class, 'index'])->name('responden.evaluasi.pertanyaan');
+                Route::get('/dashboard/{hasilEvaluasi:id}', [EvaluasiDashboardController::class, 'index'])->name('responden.evaluasi.dashboard');
+
+                Route::get('/cetak-laporan/{hasilEvaluasi:id}', [CetakLaporanEvaluasiController::class, 'index'])->name('responden.evaluasi.dashboard.cetak-laporan');
+            });
+
             Route::middleware('aktifEvaluasi')->group(function () {
                 Route::resource('/identitas-responden', IdentitasRespondenController::class)
                     ->only(['create', 'store', 'edit', 'update'])
@@ -107,17 +115,10 @@ Route::middleware(['auth', 'akunAktif'])->group(function () {
                     ->middleware('statusEvaluasiDikerjakan');
 
                 Route::middleware('kepemilikanHasilEvaluasi')->group(function () {
-                    Route::get('/pertanyaan/{areaEvaluasi}/{hasilEvaluasi}', [PertanyaanController::class, 'index'])->name('responden.evaluasi.pertanyaan');
-                    Route::get('/dashboard/{hasilEvaluasi:id}', [EvaluasiDashboardController::class, 'index'])->name('responden.evaluasi.dashboard');
-
                     Route::middleware('statusEvaluasiDikerjakan')->group(function () {
                         Route::post('/pertanyaan/simpan-jawaban/{areaEvaluasi}/{hasilEvaluasi}', [PertanyaanController::class, 'simpanJawaban'])->name('responden.evaluasi.pertanyaan.simpan-jawaban');
                         Route::post('/dashboard/kirim-evaluasi/{hasilEvaluasi:id}', [EvaluasiDashboardController::class, 'kirimEvaluasi'])->name('responden.evaluasi.dashboard.kirim-evaluasi');
                     });
-                });
-
-                Route::middleware('kepemilikanHasilEvaluasi')->group(function () {
-                    Route::get('/cetak-laporan/{hasilEvaluasi:id}', [CetakLaporanEvaluasiController::class, 'index'])->name('responden.evaluasi.dashboard.cetak-laporan');
                 });
             });
         });
@@ -156,6 +157,9 @@ Route::middleware(['auth', 'akunAktif'])->group(function () {
 
     Route::prefix('manajemen')->middleware('manajemen')->group(function () {
         Route::get('/dashboard', [ManajemenDashboardController::class, 'index'])->name('manajemen.dashboard');
+        Route::get('/cetak-laporan/{hasilEvaluasi:id}', [CetakLaporanEvaluasiController::class, 'index'])->name('manajemen.evaluasi.dashboard.cetak-laporan');
+
+        Route::get('/profil', [ProfilController::class, 'index'])->name('manajemen.profil');
     });
 
     // Akses File Evaluasi

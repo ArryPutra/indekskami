@@ -24,15 +24,15 @@ class NilaiEvaluasi extends Model
     }
 
     // Skor Kategori SE
-    const SKOR_KATEGORI_SE_RENDAH = 'Rendah';
-    const SKOR_KATEGORI_SE_TINGGI = 'Tinggi';
-    const SKOR_KATEGORI_SE_STRATEGIS = 'Strategis';
-    public static function getSkorKategoriSeOptions()
+    const KATEGORI_SE_RENDAH = 'Rendah';
+    const KATEGORI_SE_TINGGI = 'Tinggi';
+    const KATEGORI_SE_STRATEGIS = 'Strategis';
+    public static function getKategoriSeOptions()
     {
         return [
-            self::SKOR_KATEGORI_SE_RENDAH,
-            self::SKOR_KATEGORI_SE_TINGGI,
-            self::SKOR_KATEGORI_SE_STRATEGIS
+            self::KATEGORI_SE_RENDAH,
+            self::KATEGORI_SE_TINGGI,
+            self::KATEGORI_SE_STRATEGIS
         ];
     }
 
@@ -54,10 +54,19 @@ class NilaiEvaluasi extends Model
     public static function getKategoriSe(int $totalSkorKategoriSe)
     {
         return match (true) {
-            $totalSkorKategoriSe < 16 => self::SKOR_KATEGORI_SE_RENDAH,
-            $totalSkorKategoriSe < 35 => self::SKOR_KATEGORI_SE_TINGGI,
-            default => self::SKOR_KATEGORI_SE_STRATEGIS,
+            $totalSkorKategoriSe < 16 => self::KATEGORI_SE_RENDAH,
+            $totalSkorKategoriSe < 35 => self::KATEGORI_SE_TINGGI,
+            default => self::KATEGORI_SE_STRATEGIS,
         };
+    }
+
+    public static function getSkorMaksimalIso()
+    {
+        $totalSkorEvaluasiUtama = PertanyaanEvaluasiUtama::whereHas('pertanyaanEvaluasi', function ($query) {
+            $query->where('apakah_tampil', true);
+        })->sum('skor_status_keempat');
+
+        return $totalSkorEvaluasiUtama;
     }
 
     public static function getHasilEvaluasiAkhir(
@@ -124,7 +133,7 @@ class NilaiEvaluasi extends Model
             return self::HASIL_EVALUASI_AKHIR_TIDAK_LAYAK;
         }
 
-        if ($kategoriSe === self::SKOR_KATEGORI_SE_RENDAH) {
+        if ($kategoriSe === self::KATEGORI_SE_RENDAH) {
             if ($tingkatKelengkapanIso <= 247) {
                 return self::HASIL_EVALUASI_AKHIR_TIDAK_LAYAK;
             } else if ($tingkatKelengkapanIso <= 443) {
@@ -134,7 +143,7 @@ class NilaiEvaluasi extends Model
             } else if ($tingkatKelengkapanIso <= 918) {
                 return self::HASIL_EVALUASI_AKHIR_BAIK;
             }
-        } else if ($kategoriSe === self::SKOR_KATEGORI_SE_TINGGI) {
+        } else if ($kategoriSe === self::KATEGORI_SE_TINGGI) {
             if ($tingkatKelengkapanIso <= 387) {
                 return self::HASIL_EVALUASI_AKHIR_TIDAK_LAYAK;
             } else if ($tingkatKelengkapanIso <= 646) {
@@ -144,7 +153,7 @@ class NilaiEvaluasi extends Model
             } else if ($tingkatKelengkapanIso <= 918) {
                 return self::HASIL_EVALUASI_AKHIR_BAIK;
             }
-        } else if ($kategoriSe === self::SKOR_KATEGORI_SE_STRATEGIS) {
+        } else if ($kategoriSe === self::KATEGORI_SE_STRATEGIS) {
             if ($tingkatKelengkapanIso <= 472) {
                 return self::HASIL_EVALUASI_AKHIR_TIDAK_LAYAK;
             } else if ($tingkatKelengkapanIso <= 760) {
@@ -159,11 +168,7 @@ class NilaiEvaluasi extends Model
 
     public static function getTingkatKelengkapanIso(int $tingkatKelengkapanIso)
     {
-        $totalSkorEvaluasiUtama = PertanyaanEvaluasiUtama::whereHas('pertanyaanEvaluasi', function ($query) {
-            $query->where('apakah_tampil', true);
-        })->sum('skor_status_keempat');
-
-        $maksimalSkorTingkatKelengkapanIso = $totalSkorEvaluasiUtama;
+        $maksimalSkorTingkatKelengkapanIso = self::getSkorMaksimalIso();
 
         return [
             'persentase'

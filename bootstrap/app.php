@@ -1,22 +1,5 @@
 <?php
 
-use App\Http\Middleware\Admin\AdminMiddleware;
-use App\Http\Middleware\Admin\SesiAreaEvaluasiIdMiddleware;
-use App\Http\Middleware\Admin\SesiAreaEvaluasiMiddleware;
-use App\Http\Middleware\AkunAktifMiddleware;
-use App\Http\Middleware\ManajemenMiddleware;
-use App\Http\Middleware\Responden\AktifEvaluasiMiddleware;
-use App\Http\Middleware\Responden\BelumEvaluasiMiddleware;
-use App\Http\Middleware\Responden\EvaluasiStatusDikerjakanMiddleware;
-use App\Http\Middleware\Responden\KepemilikanHasilEvaluasiMiddleware;
-use App\Http\Middleware\Responden\MengerjakanEvaluasiMiddleware;
-use App\Http\Middleware\Responden\RespondenMiddleware;
-use App\Http\Middleware\Evaluasi\StatusEvaluasiDikerjakanMiddleware;
-use App\Http\Middleware\Evaluasi\StatusEvaluasiDitinjauMiddleware;
-use App\Http\Middleware\RoleMiddleware;
-use App\Http\Middleware\SuperAdminMiddleware;
-use App\Http\Middleware\VerifikatorMiddleware;
-use App\Models\Manajemen\Manajemen;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -29,25 +12,25 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'akunAktif' => AkunAktifMiddleware::class,
+            'akunAktif' => App\Http\Middleware\AkunAktifMiddleware::class,
             // Role
-            'role' => RoleMiddleware::class,
+            'role' => App\Http\Middleware\RoleMiddleware::class,
             // Super Admin
-            'superadmin' => SuperAdminMiddleware::class,
+            'superadmin' => App\Http\Middleware\SuperadminMiddleware::class,
             // Admin
-            'admin' => AdminMiddleware::class,
-            'sesiAreaEvaluasiId' => SesiAreaEvaluasiIdMiddleware::class,
+            'admin' => App\Http\Middleware\Admin\AdminMiddleware::class,
+            'sesiAreaEvaluasiId' => App\Http\Middleware\Admin\SesiAreaEvaluasiIdMiddleware::class,
             // Verifikator
-            'verifikator' => VerifikatorMiddleware::class,
+            'verifikator' => App\Http\Middleware\VerifikatorMiddleware::class,
             // Responden
-            'responden' => RespondenMiddleware::class,
-            'aktifEvaluasi' => AktifEvaluasiMiddleware::class,
-            'kepemilikanHasilEvaluasi' => KepemilikanHasilEvaluasiMiddleware::class,
-            'mengerjakanEvaluasi' => MengerjakanEvaluasiMiddleware::class,
-            'statusEvaluasiDikerjakan' => StatusEvaluasiDikerjakanMiddleware::class,
-            'statusEvaluasiDitinjau' => StatusEvaluasiDitinjauMiddleware::class,
+            'responden' => App\Http\Middleware\Responden\RespondenMiddleware::class,
+            'aktifEvaluasi' => App\Http\Middleware\Responden\AktifEvaluasiMiddleware::class,
+            'kepemilikanHasilEvaluasi' =>  App\Http\Middleware\Responden\KepemilikanHasilEvaluasiMiddleware::class,
+            'mengerjakanEvaluasi' => App\Http\Middleware\Responden\MengerjakanEvaluasiMiddleware::class,
+            'statusEvaluasiDikerjakan' => App\Http\Middleware\Evaluasi\StatusEvaluasiDikerjakanMiddleware::class,
+            'statusEvaluasiDitinjau' => App\Http\Middleware\Evaluasi\StatusEvaluasiDitinjauMiddleware::class,
             // Manajemen
-            'manajemen' => ManajemenMiddleware::class,
+            'manajemen' => App\Http\Middleware\ManajemenMiddleware::class,
             // Kostum
         ]);
     })

@@ -140,6 +140,7 @@ class PertanyaanController extends Controller
             'dokumen_tidak_valid' => [],
         ];
 
+        // Proses setiap jawaban
         foreach ($daftarJawaban as $nomor => $jawaban) {
             $pertanyaanId = $jawaban['pertanyaan_id'] ?? null;
             $statusJawaban = $jawaban['status_jawaban'] ?? null;

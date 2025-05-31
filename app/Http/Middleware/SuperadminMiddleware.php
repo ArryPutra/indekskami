@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Peran;
+use App\Models\Responden\Responden;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

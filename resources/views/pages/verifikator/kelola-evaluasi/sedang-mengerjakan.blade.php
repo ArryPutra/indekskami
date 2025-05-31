@@ -31,9 +31,9 @@
                         <x-table.td>{{ ($daftarHasilEvaluasi->currentPage() - 1) * $daftarHasilEvaluasi->perPage() + $index + 1 }}</x-table.td>
                         <x-table.td class="font-bold">{{ $hasilEvaluasi->responden->user->nama }}</x-table.td>
                         <x-table.td>{{ $hasilEvaluasi->identitasResponden->pengisi_lembar_evaluasi }}</x-table.td>
-                        <x-table.td>{{ $hasilEvaluasi->evaluasi_ke }}</x-table.td>
                         <x-table.td>{{ $hasilEvaluasi->identitasResponden->email }}</x-table.td>
                         <x-table.td>{{ $hasilEvaluasi->identitasResponden->nomor_telepon }}</x-table.td>
+                        <x-table.td>{{ $hasilEvaluasi->evaluasi_ke }}</x-table.td>
                         <x-table.td>{{ Carbon\Carbon::parse($hasilEvaluasi->created_at)->translatedFormat('l, d F Y, H:i:s') }}</x-table.td>
                         <x-table.td>
                             <div class="flex gap-2">

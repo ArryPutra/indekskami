@@ -83,7 +83,6 @@ class KelolaVerifikatorController extends Controller
                 'nomor_telepon' => ['required', 'regex:/^[0-9]+$/', 'min:10', 'max:13', 'unique:users,nomor_telepon'],
                 'nomor_sk' => ['required'],
                 'password' => ['required', 'min:8', 'confirmed', 'regex:/^(?=.*[A-Za-z])(?=.*\d).+$/'],
-                'akses_verifikasi' => ['required', 'boolean']
             ]
         );
         // Memberikan peran nilai verifikator (2) secara default
@@ -98,7 +97,6 @@ class KelolaVerifikatorController extends Controller
         Verifikator::create([
             'user_id' => $user->id,
             'nomor_sk' => $request->nomor_sk,
-            'akses_verifikasi' => $request->akses_verifikasi,
         ]);
 
         return redirect()->route('kelola-verifikator.index')->with('success', "Verifikator <b>$user->nama</b> berhasil ditambahkan");

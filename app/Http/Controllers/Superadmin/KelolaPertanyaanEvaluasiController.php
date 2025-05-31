@@ -192,6 +192,7 @@ class KelolaPertanyaanEvaluasiController extends Controller
 
     public function update(Request $request, string $pertanyaanEvaluasiId)
     {
+        // Validasi pertanyaan baru
         $pertanyaanBaruRequest = [
             'nomor' => [
                 'required',
@@ -243,29 +244,33 @@ class KelolaPertanyaanEvaluasiController extends Controller
 
         $request->validate($pertanyaanBaruRequest);
 
-        PertanyaanEvaluasi::find($pertanyaanEvaluasiId)->update([
-            'area_evaluasi_id' => $this->getAreaEvaluasiId(),
-            'tingkat_kematangan' => $request->tingkat_kematangan,
-            'nomor' => $request->nomor,
-            'catatan' => $request->catatan,
-            'pertanyaan' => $request->pertanyaan,
-        ]);
+        DB::transaction(function () use ($request, $pertanyaanEvaluasiId) {
+            // Mencari pertanyaan yang akan diupdate
+            PertanyaanEvaluasi::find($pertanyaanEvaluasiId)->update([
+                'area_evaluasi_id' => $this->getAreaEvaluasiId(),
+                'tingkat_kematangan' => $request->tingkat_kematangan,
+                'nomor' => $request->nomor,
+                'catatan' => $request->catatan,
+                'pertanyaan' => $request->pertanyaan,
+            ]);
 
-        $this->getPertanyaanRelasi($pertanyaanEvaluasiId)->update([
-            'pertanyaan_evaluasi_id' => $pertanyaanEvaluasiId,
-            'tingkat_kematangan' => $request->tingkat_kematangan,
-            'pertanyaan_tahap' => $request->pertanyaan_tahap,
-            'status_pertama' => $request->status_pertama,
-            'status_kedua' => $request->status_kedua,
-            'status_ketiga' => $request->status_ketiga,
-            'status_keempat' => $request->status_keempat,
-            'status_kelima' => $request->status_kelima,
-            'skor_status_pertama' => $request->skor_status_pertama,
-            'skor_status_kedua' => $request->skor_status_kedua,
-            'skor_status_ketiga' => $request->skor_status_ketiga,
-            'skor_status_keempat' => $request->skor_status_keempat,
-            'skor_status_kelima' => $request->skor_status_kelima
-        ]);
+            // Mencari pertanyaan relasi yang akan diupdate
+            $this->getPertanyaanRelasi($pertanyaanEvaluasiId)->update([
+                'pertanyaan_evaluasi_id' => $pertanyaanEvaluasiId,
+                'tingkat_kematangan' => $request->tingkat_kematangan,
+                'pertanyaan_tahap' => $request->pertanyaan_tahap,
+                'status_pertama' => $request->status_pertama,
+                'status_kedua' => $request->status_kedua,
+                'status_ketiga' => $request->status_ketiga,
+                'status_keempat' => $request->status_keempat,
+                'status_kelima' => $request->status_kelima,
+                'skor_status_pertama' => $request->skor_status_pertama,
+                'skor_status_kedua' => $request->skor_status_kedua,
+                'skor_status_ketiga' => $request->skor_status_ketiga,
+                'skor_status_keempat' => $request->skor_status_keempat,
+                'skor_status_kelima' => $request->skor_status_kelima
+            ]);
+        });
 
         return redirect()->route('kelola-pertanyaan-evaluasi.index')->with('success', 'Pertanyaan berhasil diperbarui!');
     }

@@ -220,9 +220,8 @@
     </main>
 
     <script>
-        const header = document.getElementById('header');
-
         function cetakLaporan() {
+            const header = document.getElementById('header');
             header.style.display = 'none';
             window.print();
         }

@@ -67,7 +67,7 @@ class JudulTemaPertanyaanSeeder extends Seeder
             // Evaluasi: Suplemen
             [
                 'area_evaluasi_id' => 8,
-                'judul' => 'Pengamanan Keterlibatan Pihak Ketiga Penyedia Layanan',
+                'judul' => 'Pengamanan Keterlibatan Pihak Ketiga Penyedia Layanan (Nomor 1 - 27)',
                 'letakkan_sebelum_nomor' => 1
             ],
             [

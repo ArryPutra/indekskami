@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Evaluasi;
 
 use App\Http\Controllers\Controller;
-use App\Models\Evaluasi\NilaiEvaluasiUtamaResponden;
+use App\Models\Responden\NilaiEvaluasiUtamaResponden;
 use App\Models\Responden\HasilEvaluasi;
 use App\Models\Responden\NilaiEvaluasi;
 use Illuminate\Http\Request;

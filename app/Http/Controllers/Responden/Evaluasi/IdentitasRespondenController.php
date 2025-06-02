@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Responden\Evaluasi;
 
 use App\Http\Controllers\Controller;
 use App\Models\Evaluasi\AreaEvaluasi;
-use App\Models\Evaluasi\NilaiEvaluasiUtama;
-use App\Models\Evaluasi\NilaiEvaluasiUtamaResponden;
+use App\Models\Responden\NilaiEvaluasiUtama;
+use App\Models\Responden\NilaiEvaluasiUtamaResponden;
 use App\Models\Evaluasi\PertanyaanEvaluasiUtama;
 use App\Models\Responden\HasilEvaluasi;
 use App\Models\Responden\StatusHasilEvaluasi;

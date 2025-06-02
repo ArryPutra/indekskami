@@ -4,7 +4,7 @@ namespace Database\Seeders\Evaluasi;
 
 use App\Models\Evaluasi\AreaEvaluasi;
 use App\Models\Evaluasi\EvaluasiUtama;
-use App\Models\Evaluasi\NilaiEvaluasiUtama;
+use App\Models\Responden\NilaiEvaluasiUtama;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 

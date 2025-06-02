@@ -169,8 +169,8 @@
                 <b>{{ $nilaiEvaluasi->pengamanan_keterlibatan_pihak_ketiga }}%</b>
             </h1>
         </section>
-        <section class="w-full border-b border-gray-200 p-4">
-            <div id="diagram"></div>
+        <section class="max-lg:overflow-x-scroll border-b border-gray-200 p-4">
+            <div class="min-w-3xl" id="diagram"></div>
         </section>
     </div>
 

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Models\Evaluasi;
+namespace App\Models\Responden;
 
+use App\Models\Evaluasi\AreaEvaluasi;
 use App\Models\Responden\NilaiEvaluasi;
 use Illuminate\Database\Eloquent\Model;
 

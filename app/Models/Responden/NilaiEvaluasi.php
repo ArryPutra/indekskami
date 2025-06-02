@@ -3,8 +3,8 @@
 namespace App\Models\Responden;
 
 use App\Models\Evaluasi\AreaEvaluasi;
-use App\Models\Evaluasi\NilaiEvaluasiUtama;
-use App\Models\Evaluasi\NilaiEvaluasiUtamaResponden;
+use App\Models\Responden\NilaiEvaluasiUtama;
+use App\Models\Responden\NilaiEvaluasiUtamaResponden;
 use App\Models\Evaluasi\PertanyaanEvaluasi;
 use App\Models\Evaluasi\PertanyaanEvaluasiUtama;
 use App\Models\Evaluasi\SkorEvaluasiUtamaTingkatKematangan;

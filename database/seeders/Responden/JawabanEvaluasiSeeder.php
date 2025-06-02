@@ -2,8 +2,8 @@
 
 namespace Database\Seeders\Responden;
 
-use App\Models\Evaluasi\NilaiEvaluasiUtama;
-use App\Models\Evaluasi\NilaiEvaluasiUtamaResponden;
+use App\Models\Responden\NilaiEvaluasiUtama;
+use App\Models\Responden\NilaiEvaluasiUtamaResponden;
 use App\Models\Evaluasi\PertanyaanEvaluasi;
 use App\Models\Evaluasi\PertanyaanEvaluasiUtama;
 use App\Models\Responden\HasilEvaluasi;
@@ -32,7 +32,7 @@ class JawabanEvaluasiSeeder extends Seeder
         $daftarPertanyaan = PertanyaanEvaluasi::all();
 
         foreach ($daftarResponden as $responden) {
-            foreach (range(1, 5) as $range) {
+            foreach (range(1, 3) as $range) {
                 $identitasResponden = IdentitasResponden::create([
                     'responden_id' => $responden->id,
                     'nomor_telepon' => $responden->user->nomor_telepon,
@@ -67,32 +67,34 @@ class JawabanEvaluasiSeeder extends Seeder
                     )->value('id')
                 ]);
 
+                // foreach ($daftarPertanyaan as $pertanyaan) {
+                //     $jawabanEvaluasi = JawabanEvaluasi::create(
+                //         [
+                //             'responden_id' => $responden->id,
+                //             'pertanyaan_evaluasi_id' => $pertanyaan->id,
+                //             'hasil_evaluasi_id' => $hasilEvaluasi->id,
+                //             'status_jawaban' => $faker->randomElement(JawabanEvaluasi::getStatusOptions()),
+                //             'status_jawaban' => 'status_ketiga',
+                //             'bukti_dokumen' => $faker->url(),
+                //             // 'keterangan' => $faker->text
+                //         ]
+                //     );
+                // }
+
                 // hasil jawaban
                 $nilaiEvaluasi->update([
                     'kategori_se' => $faker->randomElement(NilaiEvaluasi::getKategoriSeOptions()),
                     'tingkat_kelengkapan_iso' => $faker->numberBetween(100, 918),
                 ]);
+
                 $hasilEvaluasi->update([
                     'status_hasil_evaluasi_id' => StatusHasilEvaluasi::STATUS_DIVERIFIKASI_ID,
                     'verifikator_id' => Verifikator::all()->random()->id,
                     'tanggal_diverifikasi' => $faker->dateTimeBetween('-2 year', 'now')
                 ]);
                 $responden->update([
-                    'status_progres_evaluasi_responden_id' => StatusProgresEvaluasiResponden::SELESAI_MENGERJAKAN_ID
+                    'status_progres_evaluasi_responden_id' => StatusProgresEvaluasiResponden::TIDAK_MENGERJAKAN_ID
                 ]);
-
-                // foreach ($daftarPertanyaan as $pertanyaan) {
-                //     JawabanEvaluasi::create(
-                //         [
-                //             'responden_id' => $responden->id,
-                //             'pertanyaan_evaluasi_id' => $pertanyaan->id,
-                //             'hasil_evaluasi_id' => $hasilEvaluasi->id,
-                //             'status_jawaban' => $faker->randomElement(JawabanEvaluasi::getStatusOptions()),
-                //             'bukti_dokumen' => $faker->imageUrl(),
-                //             'keterangan' => $faker->text
-                //         ]
-                //     );
-                // }
             }
         }
     }

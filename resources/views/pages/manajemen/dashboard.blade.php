@@ -31,21 +31,19 @@
             </x-card>
         </div>
 
-        <section class="flex gap-4">
-            <x-dropdown onchange="this.form.submit()" name="kategori-se" label="Kategori Sistem Elektronik" class="!w-fit">
-                <x-dropdown.option value="semua">Semua</x-dropdown.option>
-                @foreach (NilaiEvaluasi::getKategoriSeOptions() as $kategoriSe)
-                    <x-dropdown.option :value="Str::lower($kategoriSe)" :selected="Str::lower($kategoriSe) === request('kategori-se')">{{ $kategoriSe }}</x-dropdown.option>
-                @endforeach
-            </x-dropdown>
-        </section>
+        <x-dropdown onchange="this.form.submit()" name="kategori-se" label="Kategori Sistem Elektronik" class="!w-fit">
+            <x-dropdown.option value="semua">Semua</x-dropdown.option>
+            @foreach (NilaiEvaluasi::getKategoriSeOptions() as $kategoriSe)
+                <x-dropdown.option :value="Str::lower($kategoriSe)" :selected="Str::lower($kategoriSe) === request('kategori-se')">{{ $kategoriSe }}</x-dropdown.option>
+            @endforeach
+        </x-dropdown>
     </form>
 
-    <div id="diagram"></div>
+    <section class="mt-4 mb-6 border-b-2 border-gray-200">
+        <div id="diagram"></div>
+    </section>
 
-    <div class="w-full h-0.5 bg-gray-200 my-4"></div>
-
-    <h1 class="mb-3 font-bold text-xl">Daftar Evaluasi Terverifikasi</h1>
+    <h1 class="mb-3 font-bold text-xl">Daftar Evaluasi Terverifikasi Terbaru</h1>
     <x-table>
         <x-table.thead>
             <x-table.th>No.</x-table.th>
@@ -115,7 +113,8 @@
                 text: 'Daftar SKPD Skor ISO27001 Tertinggi'
             },
             subtitle: {
-                text: 'Kategori Sistem Elektronik: <strong>' + "{{ Str::title(request('kategori-se')) }}" +
+                text: 'Kategori Sistem Elektronik: <strong>' +
+                    "{{ Str::title(request('kategori-se') ?? 'Semua') }}" +
                     '</strong>'
             },
             accessibility: {
@@ -147,7 +146,7 @@
             tooltip: {
                 headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
                 pointFormat: '<span style="color:{point.color}">{point.name}</span>: ' +
-                    '<b>{point.y:.0f}</b> Skor ISO27001<br/>'
+                    '<b>{point.y:.0f}</b> Skor ISO27001 <br> {point.tanggal_diverifikasi}'
             },
             series: [{
                 name: 'Responden',

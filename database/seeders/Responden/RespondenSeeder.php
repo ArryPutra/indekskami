@@ -21,9 +21,9 @@ class RespondenSeeder extends Seeder
                 'nama' => 'Diskominfo Prov. Kalsel',
                 'username' => 'diskominfoprovkalsel',
                 'email' => 'diskominfoprovkalsel@egov.id',
-                'nomor_telepon' => '081234567809',
+                'nomor_telepon' => '081345677809',
                 'daerah' => 'Provinsi',
-                'alamat' => 'Jl. Dharma Praja II, Cempaka, Kota Banjarbaru, Kalimantan Selatan 70711',
+                'alamat' => 'Jalan Dharma Praja II, Kawasan Perkantoran Pemerintah Provinsi Kalimantan Selatan, Cempaka, Kota Banjarbaru, Kalimantan Selatan 70732',
             ],
             [
                 'nama' => 'Diskominfo Kota Banjarbaru',
@@ -31,7 +31,7 @@ class RespondenSeeder extends Seeder
                 'email' => 'diskominfo.kotabanjarbaru@egov.id',
                 'nomor_telepon' => '081234567810',
                 'daerah' => 'Kabupaten/Kota',
-                'alamat' => 'Jl. Pangeran Suriansyah No. 5Komet, Kec. Banjarbaru Utara, Kota Banjar Baru, Kalimantan Selatan 70714',
+                'alamat' => 'Jl. Pangeran Suriansyah No.5, Kel. Komet, Kec. Banjarbaru Utara, Kota Banjarbaru, Kalimantan Selatan 70711',
             ],
             [
                 'nama' => 'Disdikbud Prov Kalsel',
@@ -39,7 +39,7 @@ class RespondenSeeder extends Seeder
                 'email' => 'disdikbud.provkalsel@egov.com',
                 'nomor_telepon' => '081234567811',
                 'daerah' => 'Provinsi',
-                'alamat' => 'Jl. Dharma Praja II, Cempaka, Kota Banjarbaru, Kalimantan Selatan 70711',
+                'alamat' => 'Jl. Jenderal Basuki Rahmat No.1, Loktabat Utara, Kec. Banjarbaru Utara, Kota Banjarbaru, Kalimantan Selatan 70713',
             ],
             [
                 'nama' => 'Disdukcapil Prov Kalsel',
@@ -47,15 +47,15 @@ class RespondenSeeder extends Seeder
                 'email' => 'disdukcapil.provkalsel@egov.com',
                 'nomor_telepon' => '081234567812',
                 'daerah' => 'Provinsi',
-                'alamat' => '',
+                'alamat' => 'Jl. Jenderal Basuki Rahmat No.1, Loktabat Utara, Kec. Banjarbaru Utara, Kota Banjarbaru, Kalimantan Selatan 70713',
             ],
             [
-                'nama' => 'RSGM',
+                'nama' => 'RSGM Gusti Hasan Aman',
                 'username' => 'rsgm',
                 'email' => 'rsgm@egov.com',
                 'nomor_telepon' => '081234567813',
                 'daerah' => 'Provinsi',
-                'alamat' => '',
+                'alamat' => 'Jl. Simpang Ulin No.28, Kel. Sungai Baru, Kec. Banjarmasin Tengah, Kota Banjarmasin, Kalimantan Selatan 70122',
             ],
             [
                 'nama' => 'Dinas Sosial Prov Kalsel',
@@ -63,7 +63,7 @@ class RespondenSeeder extends Seeder
                 'email' => 'dinassosial.provkalsel@egov.com',
                 'nomor_telepon' => '081234567814',
                 'daerah' => 'Provinsi',
-                'alamat' => '',
+                'alamat' => 'Jl. Letjend. R. Soeprapto No.8, Antasan Besar, Kec. Banjarmasin Tengah, Kota Banjarmasin, Kalimantan Selatan 70111',
             ],
             [
                 'nama' => 'Dispar Prov Kalsel',
@@ -71,7 +71,7 @@ class RespondenSeeder extends Seeder
                 'email' => 'dispar.provkalsel@egov.com',
                 'nomor_telepon' => '081234567815',
                 'daerah' => 'Provinsi',
-                'alamat' => '',
+                'alamat' => 'Jl. Jend. A. Yani Km 7,5, Kertak Hanyar, Kabupaten Banjar, Kalimantan Selatan 70654',
             ],
             [
                 'nama' => 'Disperin Prov Kalsel',
@@ -79,7 +79,7 @@ class RespondenSeeder extends Seeder
                 'email' => 'disperin.provkalsel@egov.com',
                 'nomor_telepon' => '081234567816',
                 'daerah' => 'Provinsi',
-                'alamat' => '',
+                'alamat' => 'Jl. Dharma Praja, Komplek Perkantoran Provinsi Kalimantan Selatan, Banjarbaru',
             ],
             [
                 'nama' => 'Dinas PMD Prov Kalsel',
@@ -87,7 +87,7 @@ class RespondenSeeder extends Seeder
                 'email' => 'dinaspmd.provkalsel@egov.com',
                 'nomor_telepon' => '081234567817',
                 'daerah' => 'Provinsi',
-                'alamat' => '',
+                'alamat' => 'l. Bangun Praja No.1, Komplek Perkantoran Pemerintah Provinsi Kalimantan Selatan, Cempaka, Kota Banjarbaru',
             ],
             [
                 'nama' => 'DP3A Prov Kalsel',
@@ -95,7 +95,7 @@ class RespondenSeeder extends Seeder
                 'email' => 'dp3a.provkalsel@egov.com',
                 'nomor_telepon' => '081234567818',
                 'daerah' => 'Provinsi',
-                'alamat' => '',
+                'alamat' => 'Palam, Cempaka, Kota Banjarbaru, Kalimantan Selatan 70732',
             ],
             [
                 'nama' => 'Diskominfo Kab. Banjar',
@@ -103,7 +103,7 @@ class RespondenSeeder extends Seeder
                 'email' => 'diskominfo.banjar@egov.com',
                 'nomor_telepon' => '081234567819',
                 'daerah' => 'Kabupaten/Kota',
-                'alamat' => '',
+                'alamat' => 'Tidak tersedia',
             ],
             [
                 'nama' => 'Diskominfo Banjarmasin',
@@ -111,7 +111,7 @@ class RespondenSeeder extends Seeder
                 'email' => 'diskominfo.bmb@egov.com',
                 'nomor_telepon' => '081234567820',
                 'daerah' => 'Kabupaten/Kota',
-                'alamat' => '',
+                'alamat' => 'Tidak tersedia',
             ],
             [
                 'nama' => 'Diskominfo Kab. Tanah Laut',
@@ -119,7 +119,7 @@ class RespondenSeeder extends Seeder
                 'email' => 'diskominfo.tanahlaut@egov.com',
                 'nomor_telepon' => '081234567821',
                 'daerah' => 'Kabupaten/Kota',
-                'alamat' => '',
+                'alamat' => 'Tidak tersedia',
             ],
             [
                 'nama' => 'Diskominfo Kab. Tapin',
@@ -127,7 +127,7 @@ class RespondenSeeder extends Seeder
                 'email' => 'diskominfo.tapin@egov.com',
                 'nomor_telepon' => '081234567822',
                 'daerah' => 'Kabupaten/Kota',
-                'alamat' => '',
+                'alamat' => 'Tidak tersedia',
             ],
             [
                 'nama' => 'Diskominfo Kab. Balangan',
@@ -135,7 +135,7 @@ class RespondenSeeder extends Seeder
                 'email' => 'diskominfo.balangan@egov.com',
                 'nomor_telepon' => '081234567823',
                 'daerah' => 'Kabupaten/Kota',
-                'alamat' => '',
+                'alamat' => 'Tidak tersedia',
             ],
             [
                 'nama' => 'Diskominfo Kab. Kotabaru',
@@ -143,7 +143,7 @@ class RespondenSeeder extends Seeder
                 'email' => 'diskominfo.kotabaru@egov.com',
                 'nomor_telepon' => '081234567824',
                 'daerah' => 'Kabupaten/Kota',
-                'alamat' => '',
+                'alamat' => 'Tidak tersedia',
             ],
             [
                 'nama' => 'Diskominfo Kab. Tabalong',
@@ -151,7 +151,7 @@ class RespondenSeeder extends Seeder
                 'email' => 'diskominfo.tabalong@egov.com',
                 'nomor_telepon' => '081234567825',
                 'daerah' => 'Kabupaten/Kota',
-                'alamat' => '',
+                'alamat' => 'Tidak tersedia',
             ],
             [
                 'nama' => 'Diskominfo Kab. Tanbu',
@@ -159,7 +159,7 @@ class RespondenSeeder extends Seeder
                 'email' => 'diskominfo.tanbu@egov.com',
                 'nomor_telepon' => '081234567826',
                 'daerah' => 'Kabupaten/Kota',
-                'alamat' => '',
+                'alamat' => 'Tidak tersedia',
             ],
             [
                 'nama' => 'Diskominfo Kab. HSU',
@@ -167,7 +167,7 @@ class RespondenSeeder extends Seeder
                 'email' => 'diskominfo.hsu@egov.com',
                 'nomor_telepon' => '081234567827',
                 'daerah' => 'Kabupaten/Kota',
-                'alamat' => '',
+                'alamat' => 'Tidak tersedia',
             ],
             [
                 'nama' => 'Diskominfo Kab. Rantau',
@@ -175,7 +175,7 @@ class RespondenSeeder extends Seeder
                 'email' => 'diskominfo.rantau@egov.com',
                 'nomor_telepon' => '081234567828',
                 'daerah' => 'Kabupaten/Kota',
-                'alamat' => '',
+                'alamat' => 'Tidak tersedia',
             ],
             [
                 'nama' => 'Diskominfo Kab. Pelaihari',
@@ -183,7 +183,7 @@ class RespondenSeeder extends Seeder
                 'email' => 'diskominfo.pelaihari@egov.com',
                 'nomor_telepon' => '081234567829',
                 'daerah' => 'Kabupaten/Kota',
-                'alamat' => '',
+                'alamat' => 'Tidak tersedia',
             ],
         ];
 

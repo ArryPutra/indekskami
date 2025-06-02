@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-use App\Models\Evaluasi\NilaiEvaluasiUtama;
+use App\Models\Responden\NilaiEvaluasiUtama;
 use App\Models\Responden\StatusHasilEvaluasi;
 use App\Models\Responden\StatusProgresEvaluasiResponden;
 use App\Models\SuperAdmin\SuperAdmin;
@@ -35,13 +35,9 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            // # WAJIB SEKALI INSERT
             PeranSeeder::class,
-            SuperAdminSeeder::class,
-            AdminSeeder::class,
             StatusProgresEvaluasiSeeder::class,
-            RespondenSeeder::class,
-            VerifikatorSeeder::class,
-            ManajemenSeeder::class,
             TipeEvaluasiSeeder::class,
             AreaEvaluasiSeeder::class,
             PertanyaanKategoriSeSeeder::class,
@@ -52,7 +48,14 @@ class DatabaseSeeder extends Seeder
             SkorEvaluasiUtamaTingkatKematanganSeeder::class,
             NilaiEvaluasiUtamaSeeder::class,
             PeraturanEvaluasiSeeder::class,
-            // JawabanEvaluasiSeeder::class
+            // # TIDAK WAJIB
+            SuperAdminSeeder::class,
+            AdminSeeder::class,
+            RespondenSeeder::class,
+            VerifikatorSeeder::class,
+            ManajemenSeeder::class,
+            // # HANYA UNTUK DEBUG
+            // JawabanEvaluasiSeeder::class // Menambahkan jawaban evaluasi pada responden (untuk debug)
         ]);
     }
 }

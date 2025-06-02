@@ -21,7 +21,10 @@
             'md:hidden': !isOpenSidebar,
         }"
             src="{{ asset('images/logo/prov-kalsel.png') }}" alt="Logo Prov Kalsel">
-        <svg @click="isOpenSidebar = false; localStorage.setItem('isOpenSidebar', false)"
+        <svg @click="
+            isOpenSidebar = false; 
+            localStorage.setItem('isOpenSidebar', false);
+        "
             xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
             class="size-12 fill-white mb-2 cursor-pointer"
             :class="{
@@ -37,7 +40,11 @@
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
         class="fixed top-4 max-md:left-3 md:left-1.5 size-12 cursor-pointer max-md:-z-10 md:z-0 md:fill-white"
         :class="{ 'md:hidden': isOpenSidebar }"
-        @click="isOpenSidebar = true; localStorage.setItem('isOpenSidebar', true)">
+        @click="        
+        isOpenSidebar = true; 
+        if (window.innerWidth >= 768) {
+            localStorage.setItem('isOpenSidebar', true);
+        }">
         <path d="M4 11h12v2H4zm0-5h16v2H4zm0 12h7.235v-2H4z"></path>
     </svg>
 

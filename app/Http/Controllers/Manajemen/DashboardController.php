@@ -56,11 +56,12 @@ class DashboardController extends Controller
             ->map(function ($item) {
                 return [
                     'name' => $item->responden->user->nama,
-                    'y' => $item->nilaiEvaluasi->tingkat_kelengkapan_iso
+                    'y' => $item->nilaiEvaluasi->tingkat_kelengkapan_iso,
+                    'tanggal_diverifikasi' => Carbon::parse($item->tanggal_diverifikasi)->translatedFormat('l, d F Y, H:i:s'),
                 ];
             })
             ->sortByDesc('y')
-            ->take(5)
+            // ->take(5)
             ->values();
 
         return view('pages.manajemen.dashboard', [
@@ -69,7 +70,9 @@ class DashboardController extends Controller
             'dataCard' => [
                 'totalEvaluasiDiverifikasi' => $totalEvaluasiDiverifikasi,
             ],
-            'daftarEvaluasiDiverifikasi' => $daftarHasilEvaluasiQuery->paginate(10)
+            'daftarEvaluasiDiverifikasi' => $daftarHasilEvaluasiQuery
+                ->orderBy('tanggal_diverifikasi', 'desc')
+                ->paginate(10)
                 ->appends(request()->query())
         ]);
     }

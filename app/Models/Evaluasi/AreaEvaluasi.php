@@ -2,6 +2,7 @@
 
 namespace App\Models\Evaluasi;
 
+use App\Models\Responden\NilaiEvaluasiUtama;
 use Illuminate\Database\Eloquent\Model;
 
 class AreaEvaluasi extends Model

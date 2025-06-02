@@ -7,8 +7,8 @@ use App\Models\Evaluasi\AreaEvaluasi;
 use App\Models\Responden\HasilEvaluasi;
 use App\Models\Responden\JawabanEvaluasi;
 use App\Models\Evaluasi\JudulTemaPertanyaan;
-use App\Models\Evaluasi\NilaiEvaluasiUtama;
-use App\Models\Evaluasi\NilaiEvaluasiUtamaResponden;
+use App\Models\Responden\NilaiEvaluasiUtama;
+use App\Models\Responden\NilaiEvaluasiUtamaResponden;
 use App\Models\Evaluasi\PeraturanEvaluasi;
 use App\Models\Evaluasi\PertanyaanEvaluasi;
 use App\Models\Evaluasi\TipeEvaluasi;
@@ -149,19 +149,20 @@ class PertanyaanController extends Controller
             $pathDokumenLama = $jawaban['path_dokumen_lama'] ?? null;
             $dokumen = $unggahDokumenBaru ?? $pathDokumenLama;
 
-            $dokumen = 'dokumen.pdf';
-            JawabanEvaluasi::updateOrCreate(
-                [
-                    'responden_id' => $responden->id,
-                    'pertanyaan_evaluasi_id' => $pertanyaanId,
-                    'hasil_evaluasi_id' => $hasilEvaluasi->id,
-                ],
-                [
-                    'status_jawaban' => 'status_keempat',
-                    'bukti_dokumen' => $dokumen,
-                    'keterangan' => $keterangan
-                ]
-            );
+            // Fungsi untuk debug jawaban tanpa unggah dokumen
+            // $dokumen = 'dokumen.pdf';
+            // JawabanEvaluasi::updateOrCreate(
+            //     [
+            //         'responden_id' => $responden->id,
+            //         'pertanyaan_evaluasi_id' => $pertanyaanId,
+            //         'hasil_evaluasi_id' => $hasilEvaluasi->id,
+            //     ],
+            //     [
+            //         'status_jawaban' => 'status_keempat',
+            //         'bukti_dokumen' => $dokumen,
+            //         'keterangan' => $keterangan
+            //     ]
+            // );
 
             $isSkorStatusPertama = $statusJawaban == 'status_pertama'
                 && $namaTipeEvaluasi !== TipeEvaluasi::KATEGORI_SISTEM_ELEKTRONIK;

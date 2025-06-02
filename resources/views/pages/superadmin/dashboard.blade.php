@@ -78,4 +78,111 @@
             <x-slot:value>{{ $dataCard['totalPertanyaan'] }}</x-slot:value>
         </x-card>
     </div>
+
+    <div id="diagram"></div>
 @endsection
+@push('script')
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    {{-- <script>
+        Highcharts.chart('diagram', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: 'Daftar Evaluasi Tahunan'
+            },
+            subtitle: {
+                text: 'Daftar Total Evaluasi Dari Tahun ke Tahun'
+            },
+            accessibility: {
+                announceNewData: {
+                    enabled: true
+                }
+            },
+            xAxis: {
+                type: 'category',
+                max: 0
+            },
+            yAxis: {
+                title: {
+                    text: 'Total SKPD Melakukan Evaluasi'
+                },
+                max: 0
+            },
+            legend: {
+                enabled: false
+            },
+            plotOptions: {
+                series: {
+                    borderWidth: 0,
+                    dataLabels: {
+                        enabled: true,
+                        format: '{point.y:.0f}' // tanpa desimal
+                    }
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+                pointFormat: '<span style="color:{point.color}">{point.name}</span>: ' +
+                    '<b>{point.y:.0f}</b> Skor ISO27001 <br> {point.tanggal_diverifikasi}'
+            },
+            series: [{
+                name: 'Evaluasi',
+                colorByPoint: true,
+                data: @json($daftarTotalHasilEvaluasiTahunan),
+            }],
+        });
+    </script> --}}
+    <script>
+        Highcharts.chart('diagram', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: 'Daftar SKPD Skor ISO27001 Tertinggi'
+            },
+            subtitle: {
+
+            },
+            accessibility: {
+                announceNewData: {
+                    enabled: true
+                }
+            },
+            xAxis: {
+                type: 'category'
+            },
+            yAxis: {
+                title: {
+                    text: 'Skor ISO27001'
+                },
+            },
+            legend: {
+                enabled: false
+            },
+            plotOptions: {
+                series: {
+                    borderWidth: 0,
+                    dataLabels: {
+                        enabled: true,
+                        format: '{point.y:.0f}' // tanpa desimal
+                    }
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+                pointFormat: '<span style="color:{point.color}">{point.name}</span>: ' +
+                    '<b>{point.y:.0f}</b>'
+            },
+            series: [{
+                name: 'Evaluasi',
+                colorByPoint: true,
+                data: @json($daftarTotalHasilEvaluasiTahunan),
+            }],
+        });
+    </script>
+@endpush

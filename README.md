@@ -1,3 +1,5 @@
+## Perintah Production
+- composer install --optimize-autoloader --no-dev
 
 ## Catatan Kepada: Programmer
 

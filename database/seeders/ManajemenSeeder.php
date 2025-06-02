@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Testing\Fakes\Fake;
 
 class ManajemenSeeder extends Seeder
 {
@@ -17,7 +18,7 @@ class ManajemenSeeder extends Seeder
     public function run(): void
     {
         $user = User::create([
-            'nama' => 'Manajemen',
+            'nama' => Fake()->name(),
             'username' => 'manajemen',
             'email' => 'manajemen@gmail.com',
             'nomor_telepon' => '08123456999',

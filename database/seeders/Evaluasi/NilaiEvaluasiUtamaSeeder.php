@@ -2,7 +2,7 @@
 
 namespace Database\Seeders\Evaluasi;
 
-use App\Models\Evaluasi\NilaiEvaluasiUtama;
+use App\Models\Responden\NilaiEvaluasiUtama;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 

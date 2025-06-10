@@ -90,6 +90,8 @@ Route::middleware(['auth', 'akunAktif'])->group(function () {
         Route::resource('/kelola-responden', KelolaRespondenController::class);
         Route::resource('/kelola-verifikator', KelolaVerifikatorController::class);
         Route::resource('/kelola-manajemen', KelolaManajemenController::class);
+
+        Route::get('/cetak-laporan/{hasilEvaluasi:id}', [CetakLaporanEvaluasiController::class, 'index'])->name('superadminadmin.evaluasi.dashboard.cetak-laporan');
     });
 
     // # PERAN: Responden [ID: 3] #

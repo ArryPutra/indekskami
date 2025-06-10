@@ -5,6 +5,7 @@ namespace App\Http\Controllers\SuperadminAdmin;
 use App\Http\Controllers\Controller;
 use App\Models\Peran;
 use App\Models\Responden\Responden;
+use App\Models\Responden\StatusHasilEvaluasi;
 use App\Models\Responden\StatusProgresEvaluasiResponden;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -135,9 +136,19 @@ class KelolaRespondenController extends Controller
     {
         $responden = Responden::find($id);
 
+        $daftarRiwayatEvaluasi = $responden->hasilEvaluasi
+            ->where('status_hasil_evaluasi_id', StatusHasilEvaluasi::STATUS_DIVERIFIKASI_ID)
+            ->sortByDesc('tanggal_diverifikasi')
+            ->values();
+        $daftarRiwayatEvaluasi->load([
+            'nilaiEvaluasi',
+            'verifikator.user'
+        ]);
+
         return view('pages.superadmin-admin.kelola-responden.detail', [
             'title' => 'Detail Responden',
             'responden' => $responden,
+            'daftarRiwayatEvaluasi' => $daftarRiwayatEvaluasi
         ]);
     }
 

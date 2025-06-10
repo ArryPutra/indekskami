@@ -87,7 +87,7 @@
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script src="https://code.highcharts.com/modules/export-data.js"></script>
     <script src="https://code.highcharts.com/modules/accessibility.js"></script>
-    {{-- <script>
+    <script>
         Highcharts.chart('diagram', {
             chart: {
                 type: 'column'
@@ -104,61 +104,11 @@
                 }
             },
             xAxis: {
-                type: 'category',
-                max: 0
-            },
-            yAxis: {
-                title: {
-                    text: 'Total SKPD Melakukan Evaluasi'
-                },
-                max: 0
-            },
-            legend: {
-                enabled: false
-            },
-            plotOptions: {
-                series: {
-                    borderWidth: 0,
-                    dataLabels: {
-                        enabled: true,
-                        format: '{point.y:.0f}' // tanpa desimal
-                    }
-                }
-            },
-            tooltip: {
-                headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
-                pointFormat: '<span style="color:{point.color}">{point.name}</span>: ' +
-                    '<b>{point.y:.0f}</b> Skor ISO27001 <br> {point.tanggal_diverifikasi}'
-            },
-            series: [{
-                name: 'Evaluasi',
-                colorByPoint: true,
-                data: @json($daftarTotalHasilEvaluasiTahunan),
-            }],
-        });
-    </script> --}}
-    <script>
-        Highcharts.chart('diagram', {
-            chart: {
-                type: 'column'
-            },
-            title: {
-                text: 'Daftar SKPD Skor ISO27001 Tertinggi'
-            },
-            subtitle: {
-
-            },
-            accessibility: {
-                announceNewData: {
-                    enabled: true
-                }
-            },
-            xAxis: {
                 type: 'category'
             },
             yAxis: {
                 title: {
-                    text: 'Skor ISO27001'
+                    text: 'Evaluasi'
                 },
             },
             legend: {
@@ -174,9 +124,9 @@
                 }
             },
             tooltip: {
-                headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+                headerFormat: '<span style="font-size:11px">Tahun</span><br>',
                 pointFormat: '<span style="color:{point.color}">{point.name}</span>: ' +
-                    '<b>{point.y:.0f}</b>'
+                    '<b>{point.y:.0f} {series.name}</b>'
             },
             series: [{
                 name: 'Evaluasi',

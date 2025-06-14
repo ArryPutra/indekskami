@@ -18,7 +18,7 @@ class KelolaRespondenController extends Controller
     public function index()
     {
         // Query terhas responden dengan relasi user
-        $queryRespondenWithUser = Responden::with('user');
+        $queryRespondenWithUser = Responden::with(['user.responden']);
 
         // Request cari
         if ($requestCari = request('cari')) {
@@ -77,9 +77,6 @@ class KelolaRespondenController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('pages.superadmin-admin.kelola-responden.form', [
@@ -92,9 +89,6 @@ class KelolaRespondenController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validatedTambahResponden = $request->validate(
@@ -129,9 +123,6 @@ class KelolaRespondenController extends Controller
         return redirect()->route('kelola-responden.index')->with('success', "Responden <b>$user->nama</b> berhasil ditambahkan");
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         $responden = Responden::find($id);
@@ -152,9 +143,6 @@ class KelolaRespondenController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         $responden = Responden::find($id);
@@ -169,9 +157,6 @@ class KelolaRespondenController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $responden = Responden::find($id);
@@ -224,9 +209,6 @@ class KelolaRespondenController extends Controller
         return redirect()->route('kelola-responden.index')->with('success', "Responden <b>" . $responden->user->nama . "</b> berhasil diperbarui");
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id, Request $request)
     {
         $apakahAkunNonaktif = filter_var($request->apakah_akun_nonaktif, FILTER_VALIDATE_BOOLEAN);

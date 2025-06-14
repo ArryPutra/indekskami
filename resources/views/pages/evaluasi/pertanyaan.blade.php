@@ -34,7 +34,7 @@
                 <x-table.th>#</x-table.th>
                 <x-table.th>Pertanyaan</x-table.th>
                 <x-table.th>Skor</x-table.th>
-                <x-table.th>Dokumen</x-table.th>
+                <x-table.th class="!text-center">Dokumen</x-table.th>
                 <x-table.th>Keterangan</x-table.th>
             </x-table.thead>
             <x-table.tbody>
@@ -154,10 +154,36 @@
                         {{-- Kolom: Dokumen --}}
                         <x-table.td>
                             @if ($isResponden)
+                                {{-- Jika status evaluasi dapat dikerjakan --}}
                                 @if ($statusHasilEvaluasiSaatIni === StatusHasilEvaluasi::STATUS_DIKERJAKAN)
-                                    <x-file-upload :disabled="$statusHasilEvaluasiSaatIni !== StatusHasilEvaluasi::STATUS_DIKERJAKAN"
+                                    {{-- <x-file-upload :disabled="$statusHasilEvaluasiSaatIni !== StatusHasilEvaluasi::STATUS_DIKERJAKAN"
                                         name="{{ $pertanyaanDanJawaban['nomor'] }}[unggah_dokumen_baru]"
-                                        oninput="tampilkanSaveButton()" />
+                                        oninput="tampilkanSaveButton()" /> --}}
+                                    <div class="flex items-center justify-center w-full">
+                                        <label for="dropzone-file"
+                                            class="flex items-center w-full h-fit border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 p-3">
+                                            <div x-data="{ fileName: '' }" class="flex gap-3 items-center">
+                                                <div class="w-6 h-6">
+                                                    <svg class="w-6 h-6 text-gray-500" aria-hidden="true"
+                                                        xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                        viewBox="0 0 20 16">
+                                                        <path stroke="currentColor" stroke-linecap="round"
+                                                            stroke-linejoin="round" stroke-width="2"
+                                                            d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+                                                    </svg>
+                                                </div>
+
+                                                <p x-text="fileName ? fileName : 'Klik untuk unggah atau seret dan lepas'"
+                                                    class="text-sm text-gray-500 font-semibold line-clamp-2">
+                                                </p>
+
+                                                <input name="{{ $pertanyaanDanJawaban['nomor'] }}[unggah_dokumen_baru]"
+                                                    id="dropzone-file" type="file" class="hidden"
+                                                    oninput="tampilkanSaveButton();" @disabled($statusHasilEvaluasiSaatIni !== StatusHasilEvaluasi::STATUS_DIKERJAKAN)
+                                                    @change="fileName = $event.target.files.length ? $event.target.files[0].name : ''">
+                                            </div>
+                                        </label>
+                                    </div>
                                 @endif
                             @endif
                             @if ($pertanyaanDanJawaban['dokumen'])

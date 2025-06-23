@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="grid lg:grid-cols-3 md:grid-cols-2 gap-4">
-        <x-card>
+        <x-card href="{{ route('verifikator.kelola-evaluasi.perlu-ditinjau') }}">
             <x-slot:icon>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
                     <path fill-rule="evenodd"
@@ -16,7 +16,7 @@
             <x-slot:label>Total Perlu Ditinjau</x-slot:label>
             <x-slot:value>{{ $dataCard['totalDitinjau'] }}</x-slot:value>
         </x-card>
-        <x-card>
+        <x-card href="{{ route('verifikator.kelola-evaluasi.sedang-mengerjakan') }}">
             <x-slot:icon>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
                     <path fill-rule="evenodd"
@@ -30,7 +30,7 @@
             <x-slot:label>Total Mengerjakan</x-slot:label>
             <x-slot:value>{{ $dataCard['totalMengerjakan'] }}</x-slot:value>
         </x-card>
-        <x-card>
+        <x-card href="{{ route('verifikator.kelola-evaluasi.evaluasi-selesai') }}">
             <x-slot:icon>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
                     <path fill-rule="evenodd"

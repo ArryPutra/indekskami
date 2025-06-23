@@ -4,7 +4,7 @@
     <h1 class="mb-4 text-xl">Halo, <b>{{ auth()->user()->nama }}</b></h1>
 
     <div class="grid lg:grid-cols-3 md:grid-cols-2 gap-4 mb-6">
-        <x-card>
+        <x-card href="{{ route('responden.riwayat') }}">
             <x-slot:icon>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
                     <path fill-rule="evenodd"

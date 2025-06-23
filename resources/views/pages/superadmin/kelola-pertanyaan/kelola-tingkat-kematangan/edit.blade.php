@@ -27,7 +27,7 @@
     </x-alert>
 
     <form class="space-y-2" action="{{ route('kelola-tingkat-kematangan.update', $skorEvaluasiUtamaTingkatKematanganId) }}"
-        method="post">
+        method="post" x-data="{ isDisabled: true }">
         @csrf
         @method('PUT')
         @foreach ($daftarSkorTingkatKematangan as $skorTingkatKematangan)
@@ -37,12 +37,16 @@
                 $pencapaianName = 'skor_pencapaian_tingkat_kematangan_' . strtolower($tingkatKematangan);
             @endphp
             <x-text-field label="Skor Minimum Tingkat Kematangan {{ $tingkatKematangan }}" name="{{ $minimumName }}"
-                placeholder="Masukkan skor minimum"
-                value="{{ old($minimumName, $skorTingkatKematangan[$minimumName]) }}" />
+                placeholder="Masukkan skor minimum" value="{{ old($minimumName, $skorTingkatKematangan[$minimumName]) }}"
+                x-bind:disabled="isDisabled" />
             <x-text-field label="Skor Pencapaian Tingkat Kematangan {{ $tingkatKematangan }}" name="{{ $pencapaianName }}"
                 placeholder="Masukkan skor pencapaian"
-                value="{{ old($pencapaianName, $skorTingkatKematangan[$pencapaianName]) }}" />
+                value="{{ old($pencapaianName, $skorTingkatKematangan[$pencapaianName]) }}" x-bind:disabled="isDisabled" />
         @endforeach
-        <x-button class="mt-4" type="submit">Perbarui Skor Tingkat Kematangan</x-button>
+        <div class="flex gap-2 mt-4">
+            <x-button color="blue" @click.prevent="isDisabled = !isDisabled"
+                x-text="isDisabled ? 'Edit' : 'Batal'"></x-button>
+            <x-button type="submit" x-show="!isDisabled">Perbarui Skor Tingkat Kematangan</x-button>
+        </div>
     </form>
 @endsection

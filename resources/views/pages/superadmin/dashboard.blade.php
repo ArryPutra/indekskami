@@ -3,7 +3,7 @@
 @section('content')
     <h1 class="font-bold mb-3 text-2xl">Data Pengguna</h1>
     <div class="grid lg:grid-cols-3 md:grid-cols-2 gap-4 mb-6">
-        <x-card>
+        <x-card href="{{ route('kelola-admin.index') }}">
             <x-slot:icon>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
                     <path
@@ -17,9 +17,10 @@
             <x-slot:label>Total Admin</x-slot:label>
             <x-slot:value>{{ $dataCard['totalAdmin'] }}</x-slot:value>
         </x-card>
-        <x-card>
+        <x-card href="{{ route('kelola-responden.index') }}">
             <x-slot:icon>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                    viewBox="0 0 24 24">
                     <path
                         d="M8 4a4 4 0 1 0 0 8 4 4 0 1 0 0-8M15.54 11.54c2.02-2.02 2.02-5.06 0-7.07l-1.41 1.41c1.23 1.23 1.23 3.01 0 4.24l1.41 1.41Z">
                     </path>
@@ -31,7 +32,7 @@
             <x-slot:label>Total Responden</x-slot:label>
             <x-slot:value>{{ $dataCard['totalResponden'] }}</x-slot:value>
         </x-card>
-        <x-card>
+        <x-card href="{{ route('kelola-verifikator.index') }}">
             <x-slot:icon>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                     viewBox="0 0 24 24">
@@ -46,7 +47,7 @@
             <x-slot:label>Total Verifikator</x-slot:label>
             <x-slot:value>{{ $dataCard['totalVerifikator'] }}</x-slot:value>
         </x-card>
-        <x-card>
+        <x-card href="{{ route('kelola-manajemen.index') }}">
             <x-slot:icon>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                     viewBox="0 0 24 24">
@@ -65,7 +66,7 @@
 
     <h1 class="font-bold mb-3 text-2xl">Data Pertanyaan</h1>
     <div class="grid lg:grid-cols-3 md:grid-cols-2 gap-4 mb-6">
-        <x-card>
+        <x-card href="{{ route('kelola-area-evaluasi.index') }}">
             <x-slot:icon>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                     viewBox="0 0 24 24">

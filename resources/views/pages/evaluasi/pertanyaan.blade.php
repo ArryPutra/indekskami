@@ -7,9 +7,9 @@
 @endphp
 
 @section('content')
+
     <h1 class="font-bold text-2xl">{{ $areaEvaluasi->judul }}</h1>
     <p>{{ $areaEvaluasi->deskripsi }}</p>
-
     {{-- Alert: Informasi pertanyaan kesalahan --}}
     @if (session('pesanError'))
         <x-alert class="mt-2" :isClosed=true>
@@ -21,7 +21,8 @@
         @foreach (session('daftarInformasiPertanyaanKesalahan') as $daftarPertanyaanKesalahan)
             <x-alert class="mt-2" :isClosed=true>
                 <b>{{ $daftarPertanyaanKesalahan['pesan'] }}</b>
-                <p>Berikut nomor pertanyaan yang harus diperbaiki: {{ $daftarPertanyaanKesalahan['daftarNomor'] }}</p>
+                <p>Berikut nomor pertanyaan yang harus diperbaiki: {{ $daftarPertanyaanKesalahan['daftarNomor'] }}
+                </p>
             </x-alert>
         @endforeach
     @endif
@@ -159,9 +160,9 @@
                                     {{-- <x-file-upload :disabled="$statusHasilEvaluasiSaatIni !== StatusHasilEvaluasi::STATUS_DIKERJAKAN"
                                         name="{{ $pertanyaanDanJawaban['nomor'] }}[unggah_dokumen_baru]"
                                         oninput="tampilkanSaveButton()" /> --}}
-                                    <div class="flex items-center justify-center w-full">
-                                        <label for="dropzone-file"
-                                            class="flex items-center w-full h-fit border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 p-3">
+                                    <div class="flex items-center justify-center w-60 overflow-clip">
+                                        <label for="dropzone-file{{ $pertanyaanDanJawaban['nomor'] }}"
+                                            class="flex items-center w-full h-fit border-2 border-gray-300 border-dashed rounded-lg cursor-pointer p-3 bg-gray-50 hover:bg-gray-100">
                                             <div x-data="{ fileName: '' }" class="flex gap-3 items-center">
                                                 <div class="w-6 h-6">
                                                     <svg class="w-6 h-6 text-gray-500" aria-hidden="true"
@@ -173,13 +174,14 @@
                                                     </svg>
                                                 </div>
 
-                                                <p x-text="fileName ? fileName : 'Klik untuk unggah atau seret dan lepas'"
-                                                    class="text-sm text-gray-500 font-semibold line-clamp-2">
+                                                <p x-text="fileName ? fileName : 'Klik untuk unggah dokumen'"
+                                                    class="text-sm text-gray-500 font-medium line-clamp-2">
                                                 </p>
 
                                                 <input name="{{ $pertanyaanDanJawaban['nomor'] }}[unggah_dokumen_baru]"
-                                                    id="dropzone-file" type="file" class="hidden"
-                                                    oninput="tampilkanSaveButton();" @disabled($statusHasilEvaluasiSaatIni !== StatusHasilEvaluasi::STATUS_DIKERJAKAN)
+                                                    id="dropzone-file{{ $pertanyaanDanJawaban['nomor'] }}" type="file"
+                                                    class="hidden" oninput="tampilkanSaveButton();"
+                                                    @disabled($statusHasilEvaluasiSaatIni !== StatusHasilEvaluasi::STATUS_DIKERJAKAN)
                                                     @change="fileName = $event.target.files.length ? $event.target.files[0].name : ''">
                                             </div>
                                         </label>
@@ -316,6 +318,7 @@
             </footer>
         @endif
     </div>
+
 @endsection
 @push('script')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

@@ -1,4 +1,4 @@
-<div
+<a
     {{ $attributes->merge([
         'class' =>
             'bg-primary text-white p-4 rounded-lg hover:ring-primary/50 hover:ring-4 ring-0 cursor-pointer duration-200 flex items-center gap-3',
@@ -10,4 +10,4 @@
         <h1>{{ $label }}</h1>
         <h1 class="font-bold text-xl">{{ $value }}</h1>
     </div>
-</div>
+</a>

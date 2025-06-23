@@ -22,7 +22,7 @@
                         clip-rule="evenodd" />
                 </svg>
             </x-slot:icon>
-            <x-slot:label>Total Kabupaten/Kota</x-slot:label>
+            <x-slot:label>Total Responden dari Kabupaten/Kota</x-slot:label>
             <x-slot:value>{{ $daftarDataCard['totalKabupatenKota'] }}</x-slot:value>
         </x-card>
         {{-- Total Provinsi --}}
@@ -37,7 +37,7 @@
                     <path d="M12 7.875a1.125 1.125 0 1 0 0-2.25 1.125 1.125 0 0 0 0 2.25Z" />
                 </svg>
             </x-slot:icon>
-            <x-slot:label>Total Provinsi</x-slot:label>
+            <x-slot:label>Total Responden dari Provinsi</x-slot:label>
             <x-slot:value>{{ $daftarDataCard['totalProvinsi'] }}</x-slot:value>
         </x-card>
     </div>

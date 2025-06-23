@@ -166,7 +166,7 @@ class PertanyaanController extends Controller
 
             $isSkorStatusPertama = $statusJawaban == 'status_pertama'
                 && $namaTipeEvaluasi !== TipeEvaluasi::KATEGORI_SISTEM_ELEKTRONIK;
-            if ($isSkorStatusPertama) {
+            if ($isSkorStatusPertama && $isResponden) {
                 if ($pathDokumenLama) {
                     Storage::delete($pathDokumenLama);
                 }

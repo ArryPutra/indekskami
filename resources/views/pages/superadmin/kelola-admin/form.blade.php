@@ -6,13 +6,13 @@
         @csrf
         @method($page_meta['method'])
         <x-text-field name="nama" label="Nama Admin" placeholder="Masukkan nama admin"
-            value="{{ old('nama', $admin->user->nama) }}" />
+            value="{{ old('nama', $admin?->user?->nama) }}" />
         <x-text-field name="username" label="Username" placeholder="Masukkan username"
-            value="{{ old('username', $admin->user->username) }}" />
+            value="{{ old('username', $admin?->user?->username) }}" />
         <x-text-field name="email" label="Email" placeholder="Masukkan email"
-            value="{{ old('email', $admin->user->email) }}" />
+            value="{{ old('email', $admin?->user?->email) }}" />
         <x-text-field name="nomor_telepon" label="Nomor Telepon" placeholder="Masukkan nomor telepon"
-            value="{{ old('nomor_telepon', $admin->user->nomor_telepon) }}" />
+            value="{{ old('nomor_telepon', $admin?->user?->nomor_telepon) }}" />
         <x-text-field name="password" label="Password {{ $page_meta['method'] == 'PUT' ? 'baru' : false }}"
             placeholder="Masukkan password" type="password" :required=false />
         <x-text-field name="password_confirmation"

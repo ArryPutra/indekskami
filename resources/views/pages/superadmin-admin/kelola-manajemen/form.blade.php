@@ -5,7 +5,7 @@
     <form method="POST" class="flex flex-col gap-2" action="{{ $page_meta['route'] }}">
         @csrf
         @method($page_meta['method'])
-        <x-text-field name="nama" label="Nama Admin" placeholder="Masukkan nama admin"
+        <x-text-field name="nama" label="Nama Manajemen" placeholder="Masukkan nama manajemen"
             value="{{ old('nama', $manajemen?->user?->nama) }}" />
         <x-text-field name="username" label="Username" placeholder="Masukkan username"
             value="{{ old('username', $manajemen?->user?->username) }}" />

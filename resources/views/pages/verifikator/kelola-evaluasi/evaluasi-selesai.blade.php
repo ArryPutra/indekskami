@@ -6,10 +6,10 @@
 
 @section('content')
     <div class="flex gap-4 flex-wrap mb-4">
-        <x-button color="gray" href="{{ route('verifikator.kelola-evaluasi.perlu-ditinjau') }}">Perlu Ditinjau</x-button>
         <x-button color="gray" href="{{ route('verifikator.kelola-evaluasi.sedang-mengerjakan') }}">
             Sedang Mengerjakan
         </x-button>
+        <x-button color="gray" href="{{ route('verifikator.kelola-evaluasi.perlu-ditinjau') }}">Perlu Ditinjau</x-button>
         <x-button>Evaluasi Selesai</x-button>
     </div>
 

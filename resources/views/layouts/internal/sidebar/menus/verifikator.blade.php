@@ -15,7 +15,7 @@
     </h1>
 </a>
 {{-- MENU: KELOLA EVALUASI --}}
-<a href="{{ route('verifikator.kelola-evaluasi.perlu-ditinjau') }}"
+<a href="{{ route('verifikator.kelola-evaluasi.sedang-mengerjakan') }}"
     class="
                 {{ request()->is('verifikator/kelola-evaluasi*') ? $activeMenuClass : false }} {{ $defaultMenuClass }}">
     <svg class="size-6 min-w-6 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"

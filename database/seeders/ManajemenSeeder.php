@@ -18,10 +18,10 @@ class ManajemenSeeder extends Seeder
     public function run(): void
     {
         $user = User::create([
-            'nama' => Fake()->name(),
+            'nama' => 'Abdul Gafur',
             'username' => 'manajemen',
-            'email' => 'manajemen@gmail.com',
-            'nomor_telepon' => '08123456999',
+            'email' => 'abdulgafur@gmail.com',
+            'nomor_telepon' => '081234567890',
             'peran_id' => Peran::PERAN_MANAJEMEN_ID,
             'password' => Hash::make('password123'),
         ]);

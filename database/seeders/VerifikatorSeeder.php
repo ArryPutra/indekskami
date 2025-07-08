@@ -24,9 +24,9 @@ class VerifikatorSeeder extends Seeder
         //     ->create();
 
         $user = User::create([
-            'nama' => fake()->name(),
-            'username' => 'verifikator',
-            'email' => fake()->email(),
+            'nama' => 'Ahim Kurniawan',
+            'username' => 'ahimkurniawan',
+            'email' => 'ahimkurniawan@gmailcom',
             'nomor_telepon' => '08134567899',
             'peran_id' => Peran::PERAN_VERIFIKATOR_ID,
             'password' => Hash::make('password123'),

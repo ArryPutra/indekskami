@@ -2,11 +2,11 @@
 
 @section('content')
     <div class="flex gap-4 flex-wrap mb-6">
-        <x-button href="{{ route('verifikator.kelola-evaluasi.perlu-ditinjau') }}" color="gray">
-            Perlu Ditinjau
-        </x-button>
         <x-button>
             Sedang Mengerjakan
+        </x-button>
+        <x-button href="{{ route('verifikator.kelola-evaluasi.perlu-ditinjau') }}" color="gray">
+            Perlu Ditinjau
         </x-button>
         <x-button href="{{ route('verifikator.kelola-evaluasi.evaluasi-selesai') }}" color="gray">
             Evaluasi Selesai

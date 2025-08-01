@@ -43,13 +43,10 @@
         <div class="flex gap-2">
             <x-button.back />
             <x-button onclick="cetakLaporan()" id="cetakButton">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                    viewBox="0 0 24 24">
-                    <path
-                        d="m19,7h-1V2H6v5h-1c-1.65,0-3,1.35-3,3v7c0,1.1.9,2,2,2h2v3h12v-3h2c1.1,0,2-.9,2-2v-7c0-1.65-1.35-3-3-3Zm-11-3h8v3h-8v-3Zm8,16h-8v-4h8v4Zm3-8h-4v-2h4v2Z">
-                    </path>
-                </svg>
-                Cetak
+                PDF
+            </x-button>
+            <x-button href="/evaluasi/1/export-excel">
+                EXCEL
             </x-button>
         </div>
     </header>

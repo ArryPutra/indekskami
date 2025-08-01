@@ -60,7 +60,7 @@ class KelolaRespondenController extends Controller
         }
 
         // Menampilkan daftar responden
-        $daftarResponden = $queryRespondenWithUser->latest()->paginate(10);
+        $daftarResponden = $queryRespondenWithUser->latest()->paginate(10)->appends(request()->query());
 
         $totalDaftarDaerahResponden = Responden::selectRaw('daerah, COUNT(*) as total')
             ->groupBy('daerah')

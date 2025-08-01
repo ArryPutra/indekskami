@@ -18,7 +18,7 @@ class AdminSeeder extends Seeder
     {
         $user = User::create([
             'nama' => 'Alfiansyah',
-            'username' => 'alfiansyah',
+            'username' => 'admin',
             'email' => 'alfiansyah@gmail.com',
             'nomor_telepon' => '08123456799',
             'peran_id' => Peran::PERAN_ADMIN_ID,

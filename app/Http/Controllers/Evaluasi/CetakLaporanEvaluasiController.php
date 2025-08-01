@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Evaluasi;
 
+use App\Exports\HasilEvaluasiExport;
 use App\Http\Controllers\Controller;
 use App\Models\Responden\NilaiEvaluasiUtamaResponden;
 use App\Models\Responden\HasilEvaluasi;
 use App\Models\Responden\NilaiEvaluasi;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CetakLaporanEvaluasiController extends Controller
 {
@@ -53,5 +55,24 @@ class CetakLaporanEvaluasiController extends Controller
                 'label' => NilaiEvaluasi::HASIL_EVALUASI_AKHIR_BAIK
             ],
         };
+    }
+
+    public function exportExcel(HasilEvaluasi $hasilEvaluasi)
+    {
+        $nilaiEvaluasi = $hasilEvaluasi->nilaiEvaluasi->load('nilaiEvaluasiUtamaResponden.nilaiEvaluasiUtama');
+        $hasilEvaluasiAkhir = $this->getHasilEvaluasiAkhir($nilaiEvaluasi->hasil_evaluasi_akhir);
+        $tingkatKelengkapanIso = NilaiEvaluasi::getTingkatKelengkapanIso($nilaiEvaluasi->tingkat_kelengkapan_iso);
+
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new \App\Exports\HasilEvaluasiExport(
+                $hasilEvaluasi->responden,
+                $hasilEvaluasi,
+                $hasilEvaluasi->identitasResponden,
+                $nilaiEvaluasi,
+                $tingkatKelengkapanIso,
+                $hasilEvaluasiAkhir
+            ),
+            'laporan-hasil-evaluasi.xlsx'
+        );
     }
 }

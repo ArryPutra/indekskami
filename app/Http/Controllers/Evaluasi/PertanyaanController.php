@@ -149,20 +149,9 @@ class PertanyaanController extends Controller
             $pathDokumenLama = $jawaban['path_dokumen_lama'] ?? null;
             $dokumen = $unggahDokumenBaru ?? $pathDokumenLama;
 
-            // Fungsi untuk debug jawaban tanpa unggah dokumen
-            // $dokumen = 'dokumen.pdf';
-            // JawabanEvaluasi::updateOrCreate(
-            //     [
-            //         'responden_id' => $responden->id,
-            //         'pertanyaan_evaluasi_id' => $pertanyaanId,
-            //         'hasil_evaluasi_id' => $hasilEvaluasi->id,
-            //     ],
-            //     [
-            //         'status_jawaban' => 'status_keempat',
-            //         'bukti_dokumen' => $dokumen,
-            //         'keterangan' => $keterangan
-            //     ]
-            // );
+            // Kode di bawah hanya untuk debug jawab soal secara cepat !!
+            // $statusJawaban = 'status_keempat';
+            // $dokumen = "Evaluasi/$responden->daerah/" . $responden->user->username . "/Evaluasi " . $responden->hasilEvaluasi->count() . "/$namaAreaEvaluasi/$nomor - test-dokumen.pdf";
 
             $isSkorStatusPertama = $statusJawaban == 'status_pertama'
                 && $namaTipeEvaluasi !== TipeEvaluasi::KATEGORI_SISTEM_ELEKTRONIK;

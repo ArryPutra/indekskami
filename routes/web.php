@@ -167,3 +167,5 @@ Route::middleware(['auth', 'akunAktif'])->group(function () {
     // Akses File Evaluasi
     Route::get('/file/{path}', [BukaDokumenController::class, 'index'])->where('path', '.*');
 });
+
+Route::get('/evaluasi/{hasilEvaluasi}/export-excel', [CetakLaporanEvaluasiController::class, 'exportExcel']);

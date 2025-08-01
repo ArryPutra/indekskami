@@ -17,7 +17,7 @@ class SuperadminSeeder extends Seeder
     {
         $user = User::create([
             'nama' => 'Abdul Hafizh',
-            'username' => 'abdulhafizh',
+            'username' => 'superadmin',
             'email' => 'abdulhafizh@gmail.com',
             'nomor_telepon' => '082354333363',
             'peran_id' => Peran::PERAN_SUPERADMIN_ID,

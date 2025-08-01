@@ -9,11 +9,14 @@
         <img class="h-14 max-md:hidden" src="{{ asset('images/logo/prov-kalsel.png') }}" alt="Logo Prov Kalsel">
         <div class="md:hidden"></div>
 
-        <div @click="showProfileMenu = !showProfileMenu" class="flex gap-2 cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+        <div @click="showProfileMenu = !showProfileMenu"
+            class="flex gap-2 cursor-pointer w-4/5 items-center justify-end h-full">
+            <svg class="shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                 <path d="M16.293 9.293 12 13.586 7.707 9.293l-1.414 1.414L12 16.414l5.707-5.707z"></path>
             </svg>
-            <h1>{{ auth()->user()->nama }}</h1>
+            <h1 class="truncate max-w-full overflow-hidden whitespace-nowrap">
+                {{ auth()->user()->nama }}
+            </h1>
         </div>
     </header>
     <div x-cloak x-show="showProfileMenu" @click.outside="showProfileMenu = false"

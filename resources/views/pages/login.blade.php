@@ -30,7 +30,7 @@
             @enderror
             <div class="space-y-2">
                 {{-- USERNAME INPUT --}}
-                <x-text-field name="username" label="Username" placeholder="Masukkan username" value="abdulhafizh" />
+                <x-text-field name="username" label="Username" placeholder="Masukkan username" value="superadmin" />
                 {{-- PASSWORD INPUT --}}
                 <x-text-field name="password" label="Password" placeholder="Masukkan password" type="password"
                     value="password123" />

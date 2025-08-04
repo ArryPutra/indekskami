@@ -20,10 +20,6 @@
             <h1 class="font-bold text-lg">{{ $responden->user->nomor_telepon }}</h1>
         </section>
         <section>
-            <h1>Tanggal Dibuat:</h1>
-            <h1 class="font-bold text-lg">{{ $responden->created_at }}</h1>
-        </section>
-        <section>
             <h1>Status Evaluasi:</h1>
             <h1 class="font-bold text-lg {{ $responden->akses_evaluasi ? 'text-green-500' : 'text-red-500' }}">
                 {{ $responden->akses_evaluasi ? 'Aktif' : 'Nonaktif' }}

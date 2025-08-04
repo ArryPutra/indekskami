@@ -1,16 +1,5 @@
 <table>
     <tr>
-        <th colspan="2" style="text-align:center; font-weight:bold; font-size:20px;">LAPORAN HASIL EVALUASI</th>
-    </tr>
-</table>
-
-<br>
-
-<table>
-    <tr>
-        <th colspan="2">Data Utama</th>
-    </tr>
-    <tr>
         <td>Nama Instansi</td>
         <td>{{ $responden->user->nama }}</td>
     </tr>
@@ -99,11 +88,11 @@
     </tr>
     <tr>
         <td>Hasil Evaluasi Akhir</td>
-        <td>{{ $hasilEvaluasiAkhir['label'] }}</td>
+        <td>{{ $nilaiEvaluasi->hasil_evaluasi_akhir }}</td>
     </tr>
     <tr>
         <td>Tingkat Kelengkapan ISO 27001</td>
-        <td>{{ $tingkatKelengkapanIso['skor'] }} ({{ $tingkatKelengkapanIso['persentase'] }}%)</td>
+        <td>{{ $nilaiEvaluasi->tingkat_kelengkapan_iso }}</td>
     </tr>
 
     @foreach ($nilaiEvaluasi->nilaiEvaluasiUtamaResponden as $item)

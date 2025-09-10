@@ -19,7 +19,7 @@ class SuperadminSeeder extends Seeder
             'nama' => 'Abdul Hafizh',
             'username' => 'superadmin',
             'email' => 'abdulhafizh@gmail.com',
-            'nomor_telepon' => '082354333363',
+            'nomor_telepon' => '08987654321',
             'peran_id' => Peran::PERAN_SUPERADMIN_ID,
             'password' => Hash::make('password123'),
         ]);

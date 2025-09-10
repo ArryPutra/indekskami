@@ -1,3 +1,5 @@
+![Mockup](/public/Mockup.jpg)
+
 # Kontak Programmer
 - WhatsApp: 0813-5044-5065
 
